@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,11 +37,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           content: _contentController.text,
           image: _image,
         );
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -52,9 +53,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final postProvider = Provider.of<PostProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Post'),
-      ),
+      appBar: AppBar(title: const Text('Create Post')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -95,10 +94,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               if (postProvider.isLoading)
                 const CircularProgressIndicator()
               else
-                PrimaryButton(
-                  onPressed: _submit,
-                  text: 'Create Post',
-                ),
+                PrimaryButton(onPressed: _submit, text: 'Create Post'),
             ],
           ),
         ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "880784295838",
+    "project_id": "clgjone",
+    "storage_bucket": "clgjone.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880784295838:android:e7b6eb47df5728dfaf788f",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAd8pRA-EVzLqrxzSpVJ8vZ7jiYP6XZEeI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

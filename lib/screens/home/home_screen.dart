@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -22,12 +21,16 @@ class HomeScreen extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => Provider.of<AuthProvider>(context, listen: false).signOut(),
+            onPressed: () =>
+                Provider.of<AuthProvider>(context, listen: false).signOut(),
           ),
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('posts').orderBy('timestamp', descending: true).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -37,7 +40,9 @@ class HomeScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final posts = snapshot.data!.docs.map((doc) => Post.fromFirestore(doc)).toList();
+          final posts = snapshot.data!.docs
+              .map((doc) => Post.fromFirestore(doc))
+              .toList();
 
           return ListView.builder(
             itemCount: posts.length,
@@ -50,10 +55,12 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(post.title, style: Theme.of(context).textTheme.headlineSmall),
+                      Text(
+                        post.title,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                       const SizedBox(height: 8),
-                      if (post.imageUrl != null)
-                        Image.network(post.imageUrl!),
+                      if (post.imageUrl != null) Image.network(post.imageUrl!),
                       const SizedBox(height: 8),
                       Text(post.content),
                     ],
@@ -65,7 +72,7 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/create-post'),
+        onPressed: () => context.go('/shell/create-post'),
         child: const Icon(Icons.add),
       ),
     );

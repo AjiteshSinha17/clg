@@ -1,6 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import '../../state/auth_provider.dart';
 import '../../core/widgets/primary_button.dart';
@@ -27,25 +28,116 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      try {
-        if (_isLogin) {
-          await authProvider.signInWithEmailAndPassword(
-            _emailController.text,
-            _passwordController.text,
-          );
-        } else {
-          await authProvider.createUserWithEmailAndPassword(
-            _emailController.text,
-            _passwordController.text,
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // Validate email format
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email address'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate password length for signup
+    if (!_isLogin && password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      if (_isLogin) {
+        await authProvider.signInWithEmailAndPassword(email, password);
+      } else {
+        // Extract name from email for signup
+        final name = email.split('@')[0];
+        await authProvider.createUserWithEmailAndPassword(
+          email,
+          password,
+          displayName: name,
         );
       }
+
+      // Wait a bit for auth state to update
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Check if user is authenticated
+      if (authProvider.user != null && mounted) {
+        // Clear form
+        _emailController.clear();
+        _passwordController.clear();
+
+        // Navigate to main app
+        if (mounted) {
+          context.go('/shell');
+        }
+      }
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      String errorMessage = _isLogin ? 'Login failed' : 'Registration failed';
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found for that email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Wrong password provided.';
+          break;
+        case 'email-already-in-use':
+          errorMessage = 'The account already exists for that email.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'The email address is badly formatted.';
+          break;
+        case 'weak-password':
+          errorMessage = 'The password provided is too weak.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This user has been disabled.';
+          break;
+        case 'operation-not-allowed':
+          errorMessage = 'Email/password accounts are not enabled.';
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Network error. Please check your connection.';
+          break;
+        default:
+          errorMessage = e.message ?? 'An error occurred: ${e.code}';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An unexpected error occurred: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     }
   }
 

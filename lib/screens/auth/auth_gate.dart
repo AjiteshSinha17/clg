@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../state/auth_provider.dart';
-import '../home/home_screen.dart';
+import '../../screens/main_shell/main_scaffold.dart';
 import 'login_screen.dart';
 
 class AuthGate extends StatelessWidget {
@@ -13,6 +12,12 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    return authProvider.user != null ? const HomeScreen() : const LoginScreen();
+    if (!authProvider.isInitialized) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    return authProvider.user != null
+        ? const MainScaffold()
+        : const LoginScreen();
   }
 }

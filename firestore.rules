@@ -2,17 +2,86 @@ rules_version='2'
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 12, 22);
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. USERS COLLECTION
+    // Users who make ID or login back to the app
+    match /users/{userId} {
+      // Users can read their own profile and public profiles
+      allow read: if isAuthenticated();
+      // Users can create/update their own profile
+      allow create, update: if isOwner(userId);
+      // Users cannot delete their profile (soft delete via isActive flag)
+      allow delete: if false;
+    }
+
+    // 2. ROOMMATE_PROFILES COLLECTION
+    // Who is finding roommate
+    match /roommate_profiles/{profileId} {
+      // Anyone authenticated can read roommate profiles
+      allow read: if isAuthenticated();
+      // Users can create/update their own roommate profile
+      allow create, update: if isAuthenticated() && 
+        (request.resource.data.userId == request.auth.uid || 
+         resource == null || resource.data.userId == request.auth.uid);
+      // Users can delete their own profile
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // 3. COMMUNITY_CONTENT COLLECTION
+    // Uploaded files/PDF URLs (notes and images) in community and people section
+    match /community_content/{contentId} {
+      // Anyone authenticated can read public and approved content
+      allow read: if isAuthenticated() && 
+        (resource.data.isPublic == true && resource.data.isApproved == true && resource.data.isActive == true) ||
+        (isAuthenticated() && resource.data.authorId == request.auth.uid);
+      
+      // Users can create content
+      allow create: if isAuthenticated() && 
+        request.resource.data.authorId == request.auth.uid;
+      
+      // Users can update their own content
+      allow update: if isAuthenticated() && 
+        resource.data.authorId == request.auth.uid;
+      
+      // Users can soft delete their own content
+      allow delete: if isAuthenticated() && 
+        resource.data.authorId == request.auth.uid;
+    }
+
+    // Other collections (posts, chats, etc.) - keep existing rules
+    // Personal 1:1 chats
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated() && request.auth.uid in request.resource.data.participants;
+      allow update: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // Community chat rooms (e.g. global)
+    match /community_rooms/{roomId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if false;
+      }
     }
   }
 }

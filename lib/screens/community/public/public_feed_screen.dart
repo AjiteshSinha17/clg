@@ -1,15 +1,19 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 import '../../../models/post.dart';
 import '../../../widgets/post_card.dart';
+import '../../../state/theme_provider.dart';
 
 class PublicFeedScreen extends StatelessWidget {
   const PublicFeedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('posts')
