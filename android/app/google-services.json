@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "880784295838",
+    "firebase_url": "https://clgjone-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "clgjone",
     "storage_bucket": "clgjone.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.myapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "880784295838-vtp1l5bf691kh7kp0fok0pj5e002dblk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myapp",
+            "certificate_hash": "ea50bf15a50d1341a466ff247cc9b01a7fc8f6e8"
+          }
+        },
+        {
+          "client_id": "880784295838-r4ttro021i4tuss2d01nj2p8jrptq3bi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAd8pRA-EVzLqrxzSpVJ8vZ7jiYP6XZEeI"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "880784295838-r4ttro021i4tuss2d01nj2p8jrptq3bi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

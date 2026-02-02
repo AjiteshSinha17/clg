@@ -107,6 +107,16 @@ class AppDrawer extends StatelessWidget {
                       },
                       isDark: isDark,
                     ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.notifications,
+                      title: 'Notifications',
+                      onTap: () {
+                        context.pop();
+                        context.push('/shell/notifications');
+                      },
+                      isDark: isDark,
+                    ),
                     const Divider(),
                     _buildDrawerItem(
                       context,

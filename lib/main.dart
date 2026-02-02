@@ -15,6 +15,7 @@ import 'state/community_provider.dart';
 import 'state/roommate_provider.dart';
 import 'state/chat_provider.dart';
 import 'state/filter_provider.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +49,15 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
             routerConfig: router,
+            builder: (context, child) {
+              // Initialize notifications when app is built
+              final notificationService = NotificationService();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                notificationService.init();
+                notificationService.listenForeground(context);
+              });
+              return child ?? const SizedBox();
+            },
           );
         },
       ),

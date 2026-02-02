@@ -22,6 +22,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    // Reset unread count when opening the chat
+    _chatService.markChatRead(widget.chatId);
+  }
+
+  @override
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();

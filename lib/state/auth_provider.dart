@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../services/user_service.dart';
+import '../services/notification_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,6 +22,11 @@ class AuthProvider with ChangeNotifier {
       if (user != null) {
         // Update last login timestamp
         await _userService.updateLastLogin(user.uid);
+        // Initialize FCM token registration after login
+        final notificationService = NotificationService();
+        await notificationService.init();
+      } else {
+        _user = null;
       }
       _isInitialized = true;
       notifyListeners();

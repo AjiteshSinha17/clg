@@ -16,10 +16,23 @@ service cloud.firestore {
     match /users/{userId} {
       // Users can read their own profile and public profiles
       allow read: if isAuthenticated();
-      // Users can create/update their own profile
+      // Users can create/update their own profile (including notificationPreferences, fcmTokens, etc.)
       allow create, update: if isOwner(userId);
       // Users cannot delete their profile (soft delete via isActive flag)
       allow delete: if false;
+
+      // In-app notifications (push + in-app feed)
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId);
+        // Client should not create notifications; Cloud Functions (Admin SDK) bypasses rules.
+        allow create, delete: if false;
+        // Allow owner to mark as read (and only limited fields)
+        allow update: if isOwner(userId)
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'read',
+            'readAt'
+          ]);
+      }
     }
 
     // 2. ROOMMATE_PROFILES COLLECTION

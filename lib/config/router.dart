@@ -12,6 +12,7 @@ import '../screens/roommates/roommate_detail_screen.dart';
 import '../screens/roommates/roommate_search_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/chats/chat_screen.dart';
+import '../screens/notifications/notifications_screen.dart';
 import '../models/user.dart';
 
 final router = GoRouter(
@@ -54,6 +55,10 @@ final router = GoRouter(
             GoRoute(
               path: 'settings',
               builder: (context, state) => const SettingsScreen(),
+            ),
+            GoRoute(
+              path: 'notifications',
+              builder: (context, state) => const NotificationsScreen(),
             ),
           ],
         ),

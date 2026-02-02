@@ -43,12 +43,15 @@ class ChatService {
     if (currentUserId == null || user == null)
       throw Exception('User not logged in');
 
+    // Load chat to identify other participants for unread counts
+    final chatRef = _firestore.collection('chats').doc(chatId);
+    final chatSnap = await chatRef.get();
+    final chatData = chatSnap.data() ?? {};
+    final participants = List<String>.from(chatData['participants'] ?? []);
+    final otherParticipants = participants.where((id) => id != currentUserId);
+
     // Add message to subcollection
-    await _firestore
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .add({
+    await chatRef.collection('messages').add({
           'chatId': chatId,
           'senderId': currentUserId,
           'senderName': user.displayName ?? 'Unknown',
@@ -58,12 +61,26 @@ class ChatService {
           'isRead': false,
         });
 
-    // Update chat document
-    await _firestore.collection('chats').doc(chatId).update({
+    // Update chat document and increment unread counts for other participants
+    final Map<String, dynamic> unreadUpdates = {};
+    for (final uid in otherParticipants) {
+      unreadUpdates['unreadCounts.$uid'] = FieldValue.increment(1);
+    }
+    unreadUpdates['unreadCounts.$currentUserId'] = 0;
+
+    await chatRef.update({
       'lastMessage': content,
       'lastMessageTime': FieldValue.serverTimestamp(),
-      // Increment unread count for other participants (simplified for 2 users)
-      // In a real app, you'd need to know who the other participant is here efficiently
+      ...unreadUpdates,
+    });
+  }
+
+  /// Mark this chat as read for current user (sets unread count to 0)
+  Future<void> markChatRead(String chatId) async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) return;
+    await _firestore.collection('chats').doc(chatId).update({
+      'unreadCounts.$currentUserId': 0,
     });
   }
 
