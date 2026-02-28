@@ -109,6 +109,12 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     await _auth.signOut();
+    // Clear Google Sign-In cache so next login shows account picker
+    try {
+      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      await googleSignIn.signOut();
+      await googleSignIn.disconnect();
+    } catch (_) {}
   }
 
   Future<void> signInWithGoogle() async {
@@ -118,14 +124,22 @@ class AuthProvider with ChangeNotifier {
       UserCredential userCredential;
 
       if (kIsWeb) {
-        final googleProvider = GoogleAuthProvider();
+        // Force account picker on web
+        final googleProvider = GoogleAuthProvider()
+            .setCustomParameters({'prompt': 'select_account'});
         userCredential = await _auth.signInWithPopup(googleProvider);
       } else {
         // Configure GoogleSignIn with proper scopes
         final googleSignIn = GoogleSignIn(
           scopes: ['email', 'profile'],
         );
-        
+        // Clear cached account to force account picker every time
+        try {
+          await googleSignIn.signOut();
+          await googleSignIn.disconnect();
+        } catch (_) {
+          // Ignore if no account was connected
+        }
         final googleUser = await googleSignIn.signIn();
         if (googleUser == null) {
           throw FirebaseAuthException(

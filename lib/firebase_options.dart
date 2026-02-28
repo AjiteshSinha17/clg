@@ -55,6 +55,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '880784295838',
     projectId: 'clgjone',
     authDomain: 'clgjone.firebaseapp.com',
+    // We no longer use Firebase Storage in the app, but leaving the original
+    // bucket value here keeps FirebaseOptions assertions happy.
     storageBucket: 'clgjone.firebasestorage.app',
     measurementId: 'G-22X08D7FYC',
   );
@@ -64,6 +66,8 @@ class DefaultFirebaseOptions {
     appId: '1:880784295838:android:e7b6eb47df5728dfaf788f',
     messagingSenderId: '880784295838',
     projectId: 'clgjone',
+    // Keep original bucket value to satisfy FirebaseOptions requirements,
+    // even though uploads now go to Cloudinary.
     storageBucket: 'clgjone.firebasestorage.app',
   );
 }

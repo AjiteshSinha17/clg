@@ -40,7 +40,6 @@ dependencies:
   go_router: ^17.0.0
   firebase_auth: ^6.1.2
   cloud_firestore: ^6.1.0
-  firebase_storage: ^13.0.4
   firebase_messaging: ^16.0.0
   image_picker: ^1.2.1
   file_picker: ^8.1.4
@@ -50,6 +49,7 @@ dependencies:
   lottie: ^3.3.1
   url_launcher: ^6.3.1
   onesignal_flutter: ^5.3.0
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:

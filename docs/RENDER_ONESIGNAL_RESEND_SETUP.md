@@ -43,9 +43,17 @@ Copy the full JSON and set it on Render as a secret env var:
 - `ONESIGNAL_APP_ID`
 - `ONESIGNAL_REST_API_KEY`
 
-### Optional (emails via Resend)
-- `RESEND_API_KEY`
-- `RESEND_FROM` (example: `ClgJone <no-reply@yourdomain.com>`)
+### Resend (emails) – required for welcome, password reset, account activity
+
+1. **Create Resend account**: https://resend.com → Sign up (free tier: 100 emails/day)
+2. **Get API key**: Resend Dashboard → API Keys → Create API Key → copy the key (starts with `re_`)
+3. **Verify domain** (for production):
+   - Resend Dashboard → Domains → Add domain
+   - Add the DNS records they provide (MX, TXT, etc.)
+   - Until verified, you can only send to your own email (for testing)
+4. **Add to Render** (Dashboard → your service → Environment):
+   - `RESEND_API_KEY` = your API key (e.g. `re_xxxxxxxx`) — set as **Secret**
+   - `RESEND_FROM` = sender address, e.g. `ClgJone <onboarding@resend.dev>` (Resend’s test domain) or `ClgJone <no-reply@yourdomain.com>` (after domain verification)
 
 ## 5) Keep the Render service awake (free plan)
 
