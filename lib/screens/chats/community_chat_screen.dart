@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import '../../models/chat_media.dart';
 import '../../models/message.dart';
 import '../../services/community_chat_service.dart';
 import '../../services/storage_service.dart';
+import '../../utils/read_file_bytes.dart';
 
 class CommunityChatScreen extends StatefulWidget {
   const CommunityChatScreen({super.key});
@@ -40,9 +43,9 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       _scrollToBottom();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to send: $e')));
     }
   }
 
@@ -102,15 +105,15 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       await _service.sendMediaMessage('image', url, fileName: file.name);
       _scrollToBottom();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Image sent')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Image sent')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -119,19 +122,22 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
 
   Future<void> _pickAndSendPdf() async {
     final result = await FilePicker.platform.pickFiles(
-  type: FileType.custom,
-  allowedExtensions: ['pdf'],
-  withData: true,   // REQUIRED
-);
-    if (result == null || result.files.isEmpty || !mounted) return;
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+      withData: true,
+    );
+    if (result == null) return;
 
     final platformFile = result.files.single;
-    final bytes = platformFile.bytes;
+    Uint8List? bytes = platformFile.bytes;
+    if (bytes == null && platformFile.path != null) {
+      bytes = await readFileBytes(platformFile.path);
+    }
     if (bytes == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not read file')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not read file')));
       }
       return;
     }
@@ -147,15 +153,15 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       await _service.sendMediaMessage('pdf', url, fileName: platformFile.name);
       _scrollToBottom();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF sent')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('PDF sent')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -201,7 +207,9 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       final media = list[index];
                       return ListTile(
                         leading: Icon(
-                          media.type == 'pdf' ? Icons.picture_as_pdf : Icons.image,
+                          media.type == 'pdf'
+                              ? Icons.picture_as_pdf
+                              : Icons.image,
                           color: AppTheme.paletteViolet,
                         ),
                         title: Text(media.fileName),
@@ -227,9 +235,9 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open link')));
     }
   }
 
@@ -324,7 +332,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 1,
@@ -380,7 +391,9 @@ class _CommunityBubble extends StatelessWidget {
             ),
           ],
         ),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.78,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -427,7 +440,9 @@ class _CommunityBubble extends StatelessWidget {
                       child: Text(
                         message.fileName ?? 'document.pdf',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isMe ? Colors.white : theme.textTheme.bodyMedium?.color,
+                          color: isMe
+                              ? Colors.white
+                              : theme.textTheme.bodyMedium?.color,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -444,7 +459,9 @@ class _CommunityBubble extends StatelessWidget {
               Text(
                 message.content,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isMe ? Colors.white : theme.textTheme.bodyMedium?.color,
+                  color: isMe
+                      ? Colors.white
+                      : theme.textTheme.bodyMedium?.color,
                 ),
               ),
           ],
