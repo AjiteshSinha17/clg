@@ -348,6 +348,7 @@ async function main() {
     const app = (0, express_1.default)();
     app.use((0, cors_1.default)());
     app.use(express_1.default.json({ limit: '1mb' }));
+    app.get('/', (_req, res) => res.json({ service: 'clgjone-notify', status: 'ok', endpoints: ['/healthz', '/status'] }));
     app.get('/healthz', (_req, res) => res.json({ ok: true }));
     // Optional debug: validate env connectivity (do NOT expose secrets)
     app.get('/status', (_req, res) => {
