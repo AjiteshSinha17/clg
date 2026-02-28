@@ -72,16 +72,19 @@ class NotificationPreferencesService {
 class NotificationPreferences {
   final bool personalChatEnabled;
   final bool communityChatEnabled;
+  final bool roommateRequestEnabled;
 
   const NotificationPreferences({
     required this.personalChatEnabled,
     required this.communityChatEnabled,
+    required this.roommateRequestEnabled,
   });
 
   factory NotificationPreferences.defaults() {
     return const NotificationPreferences(
       personalChatEnabled: true,
       communityChatEnabled: true,
+      roommateRequestEnabled: true,
     );
   }
 
@@ -89,6 +92,7 @@ class NotificationPreferences {
     return NotificationPreferences(
       personalChatEnabled: map['personalChatEnabled'] ?? true,
       communityChatEnabled: map['communityChatEnabled'] ?? true,
+      roommateRequestEnabled: map['roommateRequestEnabled'] ?? true,
     );
   }
 
@@ -96,16 +100,19 @@ class NotificationPreferences {
     return {
       'personalChatEnabled': personalChatEnabled,
       'communityChatEnabled': communityChatEnabled,
+      'roommateRequestEnabled': roommateRequestEnabled,
     };
   }
 
   NotificationPreferences copyWith({
     bool? personalChatEnabled,
     bool? communityChatEnabled,
+    bool? roommateRequestEnabled,
   }) {
     return NotificationPreferences(
       personalChatEnabled: personalChatEnabled ?? this.personalChatEnabled,
       communityChatEnabled: communityChatEnabled ?? this.communityChatEnabled,
+      roommateRequestEnabled: roommateRequestEnabled ?? this.roommateRequestEnabled,
     );
   }
 }

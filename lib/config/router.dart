@@ -5,6 +5,7 @@ import '../state/auth_provider.dart';
 import '../screens/auth/auth_gate.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
+import '../screens/auth/onboarding_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/community/public/create_post_screen.dart';
 import '../screens/main_shell/main_scaffold.dart';
@@ -13,6 +14,7 @@ import '../screens/roommates/roommate_search_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/chats/chat_screen.dart';
 import '../screens/notifications/notifications_screen.dart';
+import '../screens/connections/connection_requests_screen.dart';
 import '../models/user.dart';
 
 final router = GoRouter(
@@ -28,6 +30,10 @@ final router = GoRouter(
         GoRoute(
           path: 'signup',
           builder: (context, state) => const SignupScreen(),
+        ),
+        GoRoute(
+          path: 'onboarding',
+          builder: (context, state) => const OnboardingScreen(),
         ),
         GoRoute(
           path: 'shell',
@@ -60,6 +66,10 @@ final router = GoRouter(
               path: 'notifications',
               builder: (context, state) => const NotificationsScreen(),
             ),
+            GoRoute(
+              path: 'connection-requests',
+              builder: (context, state) => const ConnectionRequestsScreen(),
+            ),
           ],
         ),
         GoRoute(
@@ -85,21 +95,18 @@ final router = GoRouter(
     final loggedIn = authProvider.user != null;
     final isLoginPage = state.matchedLocation == '/login';
     final isSignupPage = state.matchedLocation == '/signup';
+    final isOnboarding = state.matchedLocation == '/onboarding';
     final isAuthPage = isLoginPage || isSignupPage;
     final isRoot = state.matchedLocation == '/';
+    final isAllowedUnauth = isRoot || isAuthPage || isOnboarding;
 
     // If not logged in and trying to access protected routes
-    if (!loggedIn && !isAuthPage && !isRoot) {
-      return '/login';
+    if (!loggedIn && !isAllowedUnauth) {
+      return '/';
     }
 
-    // If logged in and on auth pages, redirect to main app
-    if (loggedIn && isAuthPage) {
-      return '/shell';
-    }
-
-    // If logged in and on root, redirect to main app
-    if (loggedIn && isRoot) {
+    // If logged in and on splash/auth/onboarding, go to main app
+    if (loggedIn && (isRoot || isAuthPage || isOnboarding)) {
       return '/shell';
     }
 

@@ -40,7 +40,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     // Background Image Logic
     final String bgImage = isDark
         ? 'assets/images/dark_wallpaper.jpg'
-        : 'assets/images/light_wallpaper.jpg';
+        : 'assets/images/lk.jpg';
 
     return Scaffold(
       key: _scaffoldKey,

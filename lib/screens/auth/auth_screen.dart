@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import '../../state/auth_provider.dart';
+import '../../state/theme_provider.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/app_text_field.dart';
 
@@ -144,63 +145,85 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+
+    final String bgImage = isDark
+        ? 'assets/images/dark_wallpaper.jpg'
+        : 'assets/images/lk.jpg';
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _isLogin ? 'Login' : 'Register',
-                  style: Theme.of(context).textTheme.displayLarge,
-                ),
-                const SizedBox(height: 32),
-                AppTextField(
-                  controller: _emailController,
-                  labelText: 'Email',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                AppTextField(
-                  controller: _passwordController,
-                  labelText: 'Password',
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                if (authProvider.isLoading)
-                  const CircularProgressIndicator()
-                else
-                  PrimaryButton(
-                    onPressed: _submit,
-                    text: _isLogin ? 'Login' : 'Register',
-                  ),
-                TextButton(
-                  onPressed: _toggleAuthMode,
-                  child: Text(
-                    _isLogin
-                        ? 'Create an account'
-                        : 'I already have an account',
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          // Background wallpaper (matches main shell & drawer)
+          Positioned.fill(
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                BlendMode.darken,
+              ),
+              child: Image.asset(bgImage, fit: BoxFit.cover),
             ),
           ),
-        ),
+
+          // Auth content
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _isLogin ? 'Login' : 'Register',
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                    const SizedBox(height: 32),
+                    AppTextField(
+                      controller: _emailController,
+                      labelText: 'Email',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _passwordController,
+                      labelText: 'Password',
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    if (authProvider.isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      PrimaryButton(
+                        onPressed: _submit,
+                        text: _isLogin ? 'Login' : 'Register',
+                      ),
+                    TextButton(
+                      onPressed: _toggleAuthMode,
+                      child: Text(
+                        _isLogin
+                            ? 'Create an account'
+                            : 'I already have an account',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

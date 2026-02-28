@@ -108,10 +108,10 @@ class _SignupScreenState extends State<SignupScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
 
-    // Background Image Logic - Using Samurai for Dark Mode Signup
+    // Background Image Logic - match app light theme wallpaper
     final String bgImage = isDark
-        ? 'assets/images/samurai_bg.png'
-        : 'assets/images/blossom_bg.jpg';
+        ? 'assets/images/theme_dark.jpg'
+        : 'assets/images/ik.jpg';
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -135,7 +135,15 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Stack(
         children: [
           // 1. Background Image
-          Positioned.fill(child: Image.asset(bgImage, fit: BoxFit.cover)),
+          Positioned.fill(
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                BlendMode.darken,
+              ),
+              child: Image.asset(bgImage, fit: BoxFit.cover),
+            ),
+          ),
 
           // 2. Glassmorphic Overlay
           Center(

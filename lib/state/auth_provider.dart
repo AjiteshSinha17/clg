@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../services/user_service.dart';
 import '../services/notification_service.dart';
+import '../services/onesignal_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,6 +26,11 @@ class AuthProvider with ChangeNotifier {
         // Initialize FCM token registration after login
         final notificationService = NotificationService();
         await notificationService.init();
+
+        // Save OneSignal device id to Firestore for Render backend pushes
+        try {
+          await OneSignalService().syncCurrentUser();
+        } catch (_) {}
       } else {
         _user = null;
       }

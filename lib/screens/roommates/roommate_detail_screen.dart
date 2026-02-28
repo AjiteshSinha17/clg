@@ -1,20 +1,125 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 
+import '../../models/connection_request.dart';
 import '../../models/user.dart';
 import '../../state/theme_provider.dart';
 import '../../config/theme.dart';
+import '../../services/connection_service.dart';
+import '../../services/chat_service.dart';
 
-class RoommateDetailScreen extends StatelessWidget {
+class RoommateDetailScreen extends StatefulWidget {
   final User profile;
 
   const RoommateDetailScreen({super.key, required this.profile});
 
   @override
+  State<RoommateDetailScreen> createState() => _RoommateDetailScreenState();
+}
+
+class _RoommateDetailScreenState extends State<RoommateDetailScreen> {
+  final ConnectionService _connectionService = ConnectionService();
+
+  String _connectionStatus = 'none';
+  bool _loadingStatus = true;
+  bool _actionLoading = false;
+  ConnectionRequest? _pendingRequestToMe; // when status == pending_received
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConnectionStatus();
+  }
+
+  Future<void> _loadConnectionStatus() async {
+    setState(() => _loadingStatus = true);
+    try {
+      final status = await _connectionService.getConnectionStatus(widget.profile.uid);
+      ConnectionRequest? pending;
+      if (status == 'pending_received') {
+        final list = await _connectionService.getPendingRequestsToMe();
+        try {
+          pending = list.firstWhere((r) => r.fromUserId == widget.profile.uid);
+        } catch (_) {
+          pending = null;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _connectionStatus = status;
+          _pendingRequestToMe = pending;
+          _loadingStatus = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingStatus = false);
+    }
+  }
+
+  Future<void> _sendRequest() async {
+    setState(() => _actionLoading = true);
+    try {
+      await _connectionService.sendRequest(widget.profile.uid);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Connection request sent!')),
+        );
+        _loadConnectionStatus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _actionLoading = false);
+    }
+  }
+
+  Future<void> _acceptRequest() async {
+    final req = _pendingRequestToMe;
+    if (req == null) return;
+    setState(() => _actionLoading = true);
+    try {
+      final chatId = await _connectionService.acceptRequest(req.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Connected! Opening chat.')),
+        );
+        context.push('/chat/$chatId', extra: widget.profile);
+        _loadConnectionStatus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _actionLoading = false);
+    }
+  }
+
+  Future<void> _rejectRequest() async {
+    final req = _pendingRequestToMe;
+    if (req == null) return;
+    setState(() => _actionLoading = true);
+    try {
+      await _connectionService.rejectRequest(req.id);
+      if (mounted) _loadConnectionStatus();
+    } finally {
+      if (mounted) setState(() => _actionLoading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final profile = widget.profile;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -217,21 +322,105 @@ class RoommateDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Navigate to chat
-          // context.push('/chat/${profile.userId}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Chat feature coming soon!')),
-          );
-        },
-        label: const Text('Connect & Chat'),
-        icon: const Icon(Icons.chat),
-        backgroundColor: isDark
-            ? AppTheme.mountainGold
-            : AppTheme.mountainOrange,
-      ),
+      floatingActionButton: _buildConnectButton(isDark, profile),
     );
+  }
+
+  Widget _buildConnectButton(bool isDark, User profile) {
+    if (_loadingStatus) {
+      return FloatingActionButton.extended(
+        onPressed: null,
+        label: const Text('Loading...'),
+        icon: const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+        ),
+        backgroundColor: isDark ? AppTheme.mountainGold : AppTheme.mountainOrange,
+      );
+    }
+
+    if (_connectionStatus == 'accepted') {
+      return FloatingActionButton.extended(
+        onPressed: _actionLoading ? null : _openChat,
+        label: Text(_actionLoading ? 'Opening...' : 'Open Chat'),
+        icon: _actionLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : const Icon(Icons.chat),
+        backgroundColor: isDark ? AppTheme.mountainGold : AppTheme.mountainOrange,
+      );
+    }
+
+    if (_connectionStatus == 'pending_sent') {
+      return FloatingActionButton.extended(
+        onPressed: null,
+        label: const Text('Request sent'),
+        icon: const Icon(Icons.schedule),
+        backgroundColor: Colors.grey,
+      );
+    }
+
+    if (_connectionStatus == 'pending_received') {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+            onPressed: _actionLoading ? null : _rejectRequest,
+            label: const Text('Reject'),
+            icon: const Icon(Icons.close),
+            backgroundColor: Colors.grey[700],
+          ),
+          const SizedBox(width: 12),
+          FloatingActionButton.extended(
+            onPressed: _actionLoading ? null : _acceptRequest,
+            label: Text(_actionLoading ? '...' : 'Accept & Chat'),
+            icon: _actionLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  )
+                : const Icon(Icons.chat),
+            backgroundColor: isDark ? AppTheme.mountainGold : AppTheme.mountainOrange,
+          ),
+        ],
+      );
+    }
+
+    return FloatingActionButton.extended(
+      onPressed: _actionLoading ? null : _sendRequest,
+      label: Text(_actionLoading ? 'Sending...' : 'Connect & Chat'),
+      icon: _actionLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            )
+          : const Icon(Icons.chat),
+      backgroundColor: isDark ? AppTheme.mountainGold : AppTheme.mountainOrange,
+    );
+  }
+
+  Future<void> _openChat() async {
+    final profile = widget.profile;
+    setState(() => _actionLoading = true);
+    try {
+      final chatService = ChatService();
+      final chatId = await chatService.createChat(profile.uid);
+      if (mounted) context.push('/chat/$chatId', extra: profile);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open chat: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _actionLoading = false);
+    }
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {

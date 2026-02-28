@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: clgjone-notify-server
+    env: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add these in Render dashboard as Secret:
+      # FIREBASE_SERVICE_ACCOUNT_JSON
+      # ONESIGNAL_APP_ID
+      # ONESIGNAL_REST_API_KEY
+      # RESEND_API_KEY
+      # RESEND_FROM

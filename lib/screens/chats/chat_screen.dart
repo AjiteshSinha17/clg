@@ -1,10 +1,15 @@
-import 'package:flutter/material.dart';
-
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import '../../services/chat_service.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../config/theme.dart';
+import '../../models/chat_media.dart';
 import '../../models/message.dart';
 import '../../models/user.dart';
-import '../../config/theme.dart';
+import '../../services/chat_service.dart';
+import '../../services/storage_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -19,12 +24,13 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
+  final StorageService _storageService = StorageService();
   final ScrollController _scrollController = ScrollController();
+  bool _uploading = false;
 
   @override
   void initState() {
     super.initState();
-    // Reset unread count when opening the chat
     _chatService.markChatRead(widget.chatId);
   }
 
@@ -45,18 +51,206 @@ class _ChatScreenState extends State<ChatScreen> {
       _scrollToBottom();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to send message: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send message: $e')),
+      );
     }
   }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        0, // List is reversed, so 0 is the bottom
+        0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _showAttachOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: const Text('Image'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndSendImage();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf),
+              title: const Text('PDF'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndSendPdf();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndSendImage() async {
+    final picker = ImagePicker();
+    final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+    if (file == null || !mounted) return;
+
+    setState(() => _uploading = true);
+    try {
+      final bytes = await file.readAsBytes();
+      final url = await _storageService.uploadChatImage(
+        widget.chatId,
+        auth.FirebaseAuth.instance.currentUser!.uid,
+        bytes,
+        fileName: file.name,
+      );
+      await _chatService.sendMediaMessage(
+        widget.chatId,
+        'image',
+        url,
+        fileName: file.name,
+      );
+      _scrollToBottom();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Image sent')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Upload failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
+  Future<void> _pickAndSendPdf() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+    if (result == null || result.files.isEmpty || !mounted) return;
+
+    final platformFile = result.files.single;
+    final bytes = platformFile.bytes;
+    if (bytes == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not read file')),
+        );
+      }
+      return;
+    }
+
+    setState(() => _uploading = true);
+    try {
+      final url = await _storageService.uploadChatPdf(
+        widget.chatId,
+        auth.FirebaseAuth.instance.currentUser!.uid,
+        bytes,
+        fileName: platformFile.name,
+      );
+      await _chatService.sendMediaMessage(
+        widget.chatId,
+        'pdf',
+        url,
+        fileName: platformFile.name,
+      );
+      _scrollToBottom();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PDF sent')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Upload failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
+  void _showDownloads() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.95,
+        minChildSize: 0.3,
+        expand: false,
+        builder: (context, scrollController) => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Downloads',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<List<ChatMedia>>(
+                stream: _chatService.getMediaStream(widget.chatId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final list = snapshot.data ?? [];
+                  if (list.isEmpty) {
+                    return const Center(
+                      child: Text('No files shared in this chat yet'),
+                    );
+                  }
+                  return ListView.builder(
+                    controller: scrollController,
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      final media = list[index];
+                      return ListTile(
+                        leading: Icon(
+                          media.type == 'pdf'
+                              ? Icons.picture_as_pdf
+                              : Icons.image,
+                          color: AppTheme.paletteViolet,
+                        ),
+                        title: Text(media.fileName),
+                        subtitle: Text(media.senderName),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.download),
+                          onPressed: () => _openUrl(media.fileUrl),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open link')),
       );
     }
   }
@@ -82,12 +276,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   : null,
             ),
             const SizedBox(width: 10),
-            Text(widget.otherUser.name),
+            Expanded(child: Text(widget.otherUser.name)),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.folder_open),
+            onPressed: _showDownloads,
+            tooltip: 'Downloads',
+          ),
+        ],
       ),
       body: Column(
         children: [
+          if (_uploading)
+            const LinearProgressIndicator(),
           Expanded(
             child: StreamBuilder<List<Message>>(
               stream: _chatService.getMessagesStream(widget.chatId),
@@ -95,17 +298,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
-
                 final messages = snapshot.data ?? [];
-
                 if (messages.isEmpty) {
-                  return const Center(child: Text('No messages yet. Say hi!'));
+                  return const Center(
+                    child: Text('No messages yet. Say hi!'),
+                  );
                 }
-
                 return ListView.builder(
                   controller: _scrollController,
                   reverse: true,
@@ -113,8 +314,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     final isMe = message.senderId == currentUserId;
-
-                    return _MessageBubble(message: message, isMe: isMe);
+                    return _MessageBubble(
+                      message: message,
+                      isMe: isMe,
+                      onOpenUrl: _openUrl,
+                    );
                   },
                 );
               },
@@ -128,7 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageInput() {
     return Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
@@ -142,6 +346,11 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SafeArea(
         child: Row(
           children: [
+            IconButton(
+              icon: const Icon(Icons.attach_file),
+              onPressed: _uploading ? null : _showAttachOptions,
+              tooltip: 'Attach image or PDF',
+            ),
             Expanded(
               child: TextField(
                 controller: _messageController,
@@ -164,7 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             const SizedBox(width: 8),
             FloatingActionButton(
-              onPressed: _sendMessage,
+              onPressed: _uploading ? null : _sendMessage,
               mini: true,
               child: const Icon(Icons.send),
             ),
@@ -178,8 +387,13 @@ class _ChatScreenState extends State<ChatScreen> {
 class _MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
+  final Future<void> Function(String) onOpenUrl;
 
-  const _MessageBubble({required this.message, required this.isMe});
+  const _MessageBubble({
+    required this.message,
+    required this.isMe,
+    required this.onOpenUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +403,7 @@ class _MessageBubble extends StatelessWidget {
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isMe ? AppTheme.mountainOrange : theme.cardColor,
           borderRadius: BorderRadius.only(
@@ -207,17 +421,68 @@ class _MessageBubble extends StatelessWidget {
           ],
         ),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
+          maxWidth: MediaQuery.of(context).size.width * 0.78,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              message.content,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isMe ? Colors.white : theme.textTheme.bodyMedium?.color,
+            if (message.type == MessageType.image && message.fileUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  onTap: () => onOpenUrl(message.fileUrl!),
+                  child: Image.network(
+                    message.fileUrl!,
+                    width: 220,
+                    height: 180,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      width: 220,
+                      height: 120,
+                      child: Center(child: Icon(Icons.broken_image)),
+                    ),
+                  ),
+                ),
+              )
+            else if (message.type == MessageType.pdf && message.fileUrl != null)
+              InkWell(
+                onTap: () => onOpenUrl(message.fileUrl!),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.picture_as_pdf,
+                      color: isMe ? Colors.white : theme.colorScheme.primary,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        message.fileName ?? 'document.pdf',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: isMe
+                              ? Colors.white
+                              : theme.textTheme.bodyMedium?.color,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.open_in_new,
+                      size: 18,
+                      color: isMe ? Colors.white70 : theme.colorScheme.primary,
+                    ),
+                  ],
+                ),
+              )
+            else
+              Text(
+                message.content,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isMe ? Colors.white : theme.textTheme.bodyMedium?.color,
+                ),
               ),
-            ),
             const SizedBox(height: 4),
             Text(
               _formatTime(message.timestamp),

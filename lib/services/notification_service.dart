@@ -18,7 +18,12 @@ class NotificationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  static bool _initialized = false;
+  static bool _foregroundListenerRegistered = false;
+
   Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
     try {
       // Request permissions (Android 13+ / iOS)
       final settings = await _messaging.requestPermission(
@@ -61,20 +66,31 @@ class NotificationService {
     }, SetOptions(merge: true));
   }
 
-  /// Listen for foreground messages and show a snackbar.
-  void listenForeground(BuildContext context) {
+  /// Listen for foreground messages. Pass [messengerKey] from MaterialApp so
+  /// SnackBar is shown even when user has navigated to another screen.
+  void listenForeground(GlobalKey<ScaffoldMessengerState>? messengerKey) {
+    if (_foregroundListenerRegistered) return;
+    _foregroundListenerRegistered = true;
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final notif = message.notification;
-      if (notif == null) return;
-      final title = notif.title ?? 'Notification';
-      final body = notif.body ?? '';
+      final title = notif?.title ?? message.data['title'] ?? 'Notification';
+      final body = notif?.body ?? message.data['body'] ?? '';
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$title: $body'),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      final messenger = messengerKey?.currentState ?? null;
+      if (messenger != null) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(body.isEmpty ? title : '$title: $body'),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    });
+
+    // Optional: handle when user taps notification (app in background)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      // Could navigate to a specific route based on message.data
+      debugPrint('Notification opened: ${message.messageId}');
     });
   }
 }

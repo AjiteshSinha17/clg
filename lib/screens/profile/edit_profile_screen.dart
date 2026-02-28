@@ -201,10 +201,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final textColor = isDark ? Colors.white : const Color(0xFF372F37);
+    final subtextColor = isDark ? Colors.white70 : Colors.black54;
+    final surfaceColor = isDark ? AppTheme.paletteCharcoal : AppTheme.paletteCream;
+    final cardColor = isDark ? Colors.grey[850]! : Colors.white;
 
     return Scaffold(
+      backgroundColor: surfaceColor,
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        backgroundColor: surfaceColor,
+        iconTheme: IconThemeData(color: textColor),
         actions: [
           if (_isLoading)
             const Padding(
@@ -216,7 +230,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             )
           else
-            IconButton(icon: const Icon(Icons.check), onPressed: _submit),
+            IconButton(
+              icon: Icon(Icons.check, color: AppTheme.paletteViolet),
+              onPressed: _submit,
+            ),
         ],
       ),
       body: Form(
@@ -362,20 +379,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    _buildSectionHeader('Personal Details'),
-                    _buildTextField(_nameController, 'Full Name', Icons.person),
+                    _buildSectionHeader('Personal Details', textColor: textColor),
+                    _buildTextField(
+                      _nameController,
+                      'Full Name',
+                      Icons.person,
+                      textColor: textColor,
+                      subtextColor: subtextColor,
+                      cardColor: cardColor,
+                      isDark: isDark,
+                    ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       _bioController,
                       'Bio',
                       Icons.info_outline,
                       maxLines: 3,
+                      textColor: textColor,
+                      subtextColor: subtextColor,
+                      cardColor: cardColor,
+                      isDark: isDark,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       _collegeController,
                       'College Name',
                       Icons.school,
+                      textColor: textColor,
+                      subtextColor: subtextColor,
+                      cardColor: cardColor,
+                      isDark: isDark,
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -385,6 +418,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             _branchController,
                             'Branch',
                             Icons.book,
+                            textColor: textColor,
+                            subtextColor: subtextColor,
+                            cardColor: cardColor,
+                            isDark: isDark,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -393,6 +430,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             _yearController,
                             'Year',
                             Icons.calendar_today,
+                            textColor: textColor,
+                            subtextColor: subtextColor,
+                            cardColor: cardColor,
+                            isDark: isDark,
                           ),
                         ),
                       ],
@@ -400,16 +441,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 32),
 
                     // Roommate Preferences
-                    _buildSectionHeader('Roommate Preferences'),
-                    SwitchListTile(
-                      title: const Text('Looking for a Roommate?'),
-                      subtitle: const Text(
-                        'Turn this on to appear in search results',
+                    _buildSectionHeader('Roommate Preferences', textColor: textColor),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isDark ? Colors.white12 : Colors.black12,
+                        ),
                       ),
-                      value: _isLookingForRoommate,
-                      onChanged: (val) =>
-                          setState(() => _isLookingForRoommate = val),
-                      activeColor: AppTheme.mountainOrange,
+                      child: SwitchListTile(
+                        title: Text(
+                          'Looking for a Roommate?',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Turn this on to appear in search results',
+                          style: TextStyle(color: subtextColor, fontSize: 13),
+                        ),
+                        value: _isLookingForRoommate,
+                        onChanged: (val) =>
+                            setState(() => _isLookingForRoommate = val),
+                        activeColor: AppTheme.paletteViolet,
+                      ),
                     ),
 
                     if (_isLookingForRoommate) ...[
@@ -421,6 +479,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               _cityController,
                               'City',
                               Icons.location_city,
+                              textColor: textColor,
+                              subtextColor: subtextColor,
+                              cardColor: cardColor,
+                              isDark: isDark,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -429,6 +491,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               _areaController,
                               'Area',
                               Icons.map,
+                              textColor: textColor,
+                              subtextColor: subtextColor,
+                              cardColor: cardColor,
+                              isDark: isDark,
                             ),
                           ),
                         ],
@@ -442,6 +508,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               'Min Budget',
                               Icons.currency_rupee,
                               keyboardType: TextInputType.number,
+                              textColor: textColor,
+                              subtextColor: subtextColor,
+                              cardColor: cardColor,
+                              isDark: isDark,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -451,46 +521,63 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               'Max Budget',
                               Icons.currency_rupee,
                               keyboardType: TextInputType.number,
+                              textColor: textColor,
+                              subtextColor: subtextColor,
+                              cardColor: cardColor,
+                              isDark: isDark,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
 
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Interests',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: textColor,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _allInterests.map((tag) {
-                            final isSelected = _selectedInterests.contains(tag);
-                            return FilterChip(
-                              label: Text(tag),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                setState(() {
-                                  if (selected) {
-                                    _selectedInterests.add(tag);
-                                  } else {
-                                    _selectedInterests.remove(tag);
-                                  }
-                                });
-                              },
-                              selectedColor: AppTheme.mountainOrange.withValues(
-                                alpha: 0.2,
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _allInterests.map((tag) {
+                          final isSelected = _selectedInterests.contains(tag);
+                          return FilterChip(
+                            label: Text(
+                              tag,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? (isDark ? Colors.white : const Color(0xFF372F37))
+                                    : subtextColor,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                               ),
-                              checkmarkColor: AppTheme.mountainOrange,
-                            );
-                          }).toList(),
-                        ),
+                            ),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  _selectedInterests.add(tag);
+                                } else {
+                                  _selectedInterests.remove(tag);
+                                }
+                              });
+                            },
+                            backgroundColor: cardColor,
+                            selectedColor: AppTheme.paletteViolet.withValues(alpha: 0.25),
+                            checkmarkColor: AppTheme.paletteViolet,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? AppTheme.paletteViolet
+                                  : (isDark ? Colors.white24 : Colors.black26),
+                            ),
+                          );
+                        }).toList(),
                       ),
                       const SizedBox(height: 24),
 
@@ -499,6 +586,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _sleepSchedule,
                         ['early', 'late', 'flexible'],
                         (v) => setState(() => _sleepSchedule = v!),
+                        textColor: textColor,
+                        subtextColor: subtextColor,
+                        cardColor: cardColor,
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 16),
 
@@ -506,33 +597,72 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Cleanliness Level: ${_cleanlinessLevel.toInt()}/5',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
-                      Slider(
-                        value: _cleanlinessLevel,
-                        min: 1,
-                        max: 5,
-                        divisions: 4,
-                        label: _cleanlinessLevel.toInt().toString(),
-                        activeColor: AppTheme.mountainOrange,
-                        onChanged: (v) => setState(() => _cleanlinessLevel = v),
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: AppTheme.paletteViolet,
+                          thumbColor: AppTheme.paletteViolet,
+                          overlayColor: AppTheme.paletteViolet.withValues(alpha: 0.2),
+                        ),
+                        child: Slider(
+                          value: _cleanlinessLevel,
+                          min: 1,
+                          max: 5,
+                          divisions: 4,
+                          label: _cleanlinessLevel.toInt().toString(),
+                          onChanged: (v) => setState(() => _cleanlinessLevel = v),
+                        ),
                       ),
 
-                      _buildDropdown('Smoking', _smoking, [
-                        'no',
-                        'occasionally',
-                        'yes',
-                      ], (v) => setState(() => _smoking = v!)),
-                      _buildDropdown('Drinking', _drinking, [
-                        'no',
-                        'occasionally',
-                        'yes',
-                      ], (v) => setState(() => _drinking = v!)),
+                      _buildDropdown(
+                        'Smoking',
+                        _smoking,
+                        ['no', 'occasionally', 'yes'],
+                        (v) => setState(() => _smoking = v!),
+                        textColor: textColor,
+                        subtextColor: subtextColor,
+                        cardColor: cardColor,
+                        isDark: isDark,
+                      ),
+                      _buildDropdown(
+                        'Drinking',
+                        _drinking,
+                        ['no', 'occasionally', 'yes'],
+                        (v) => setState(() => _drinking = v!),
+                        textColor: textColor,
+                        subtextColor: subtextColor,
+                        cardColor: cardColor,
+                        isDark: isDark,
+                      ),
 
-                      SwitchListTile(
-                        title: const Text('Do you currently live alone?'),
-                        value: _livesAlone,
-                        onChanged: (v) => setState(() => _livesAlone = v),
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark ? Colors.white12 : Colors.black12,
+                          ),
+                        ),
+                        child: SwitchListTile(
+                          title: Text(
+                            'Do you currently live alone?',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: textColor,
+                              fontSize: 15,
+                            ),
+                          ),
+                          value: _livesAlone,
+                          onChanged: (v) => setState(() => _livesAlone = v),
+                          activeColor: AppTheme.paletteViolet,
+                        ),
                       ),
 
                       _buildDropdown(
@@ -540,22 +670,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _preferredGender,
                         ['any', 'male', 'female'],
                         (v) => setState(() => _preferredGender = v!),
+                        textColor: textColor,
+                        subtextColor: subtextColor,
+                        cardColor: cardColor,
+                        isDark: isDark,
                       ),
                     ],
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
+                      height: 52,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _submit,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: isDark
-                              ? AppTheme.mountainGold
-                              : AppTheme.mountainOrange,
+                          backgroundColor: AppTheme.paletteViolet,
                           foregroundColor: Colors.white,
+                          elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         child: _isLoading
@@ -572,6 +706,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.3,
                                 ),
                               ),
                       ),
@@ -587,7 +722,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, {required Color textColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -595,9 +730,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+              letterSpacing: 0.3,
+            ),
           ),
-          const Divider(),
+          const SizedBox(height: 8),
+          Divider(color: textColor.withValues(alpha: 0.3), thickness: 1),
         ],
       ),
     );
@@ -609,17 +750,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     IconData icon, {
     int maxLines = 1,
     TextInputType? keyboardType,
+    Color? textColor,
+    Color? subtextColor,
+    Color? cardColor,
+    bool isDark = false,
   }) {
+    final labelColor = subtextColor ?? Colors.black54;
+    final fill = cardColor ?? Theme.of(context).cardColor;
+    final borderColor = isDark ? Colors.white24 : Colors.black26;
+
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
+      style: TextStyle(color: textColor ?? const Color(0xFF372F37), fontSize: 16),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, size: 20),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        labelStyle: TextStyle(color: labelColor, fontWeight: FontWeight.w500),
+        prefixIcon: Icon(icon, size: 22, color: AppTheme.paletteViolet),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: borderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppTheme.paletteViolet, width: 2),
+        ),
         filled: true,
-        fillColor: Theme.of(context).cardColor,
+        fillColor: fill,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       validator: (value) {
         if (label == 'Full Name' && (value == null || value.isEmpty)) {
@@ -634,20 +794,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String label,
     String value,
     List<String> items,
-    ValueChanged<String?> onChanged,
-  ) {
+    ValueChanged<String?> onChanged, {
+    Color? textColor,
+    Color? subtextColor,
+    Color? cardColor,
+    bool isDark = false,
+  }) {
+    final labelColor = subtextColor ?? Colors.black54;
+    final fill = cardColor ?? Theme.of(context).cardColor;
+    final borderColor = isDark ? Colors.white24 : Colors.black26;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
         value: value,
+        dropdownColor: fill,
+        style: TextStyle(color: textColor ?? const Color(0xFF372F37), fontSize: 16),
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          labelStyle: TextStyle(color: labelColor, fontWeight: FontWeight.w500),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: AppTheme.paletteViolet, width: 2),
+          ),
           filled: true,
+          fillColor: fill,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
         items: items
             .map(
-              (e) => DropdownMenuItem(value: e, child: Text(e.toUpperCase())),
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e.toUpperCase(), style: TextStyle(color: textColor)),
+              ),
             )
             .toList(),
         onChanged: onChanged,

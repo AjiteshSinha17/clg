@@ -92,10 +92,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
 
-    // Background Image Logic
+    // Background Image Logic - use app light theme wallpaper
     final String bgImage = isDark
-        ? 'assets/images/mountain_dark.jpg'
-        : 'assets/images/mountain_light.jpg';
+        ? 'assets/images/theme_dark.jpg'
+        : 'assets/images/light.jpg';
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -112,7 +112,15 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: [
           // 1. Background Image
-          Positioned.fill(child: Image.asset(bgImage, fit: BoxFit.cover)),
+          Positioned.fill(
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                BlendMode.darken,
+              ),
+              child: Image.asset(bgImage, fit: BoxFit.cover),
+            ),
+          ),
 
           // 2. Glassmorphic Overlay
           Center(

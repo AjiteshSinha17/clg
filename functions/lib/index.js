@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onCommunityMessageCreated = exports.onChatMessageCreated = void 0;
+exports.onConnectionRequestCreated = exports.onCommunityMessageCreated = exports.onChatMessageCreated = void 0;
 const admin = require("firebase-admin");
 const firestore_1 = require("firebase-functions/v2/firestore");
 admin.initializeApp();
@@ -21,8 +21,16 @@ async function shouldNotifyCommunityChat(uid) {
         return true; // Default: enabled
     const data = userSnap.data();
     const prefs = data?.notificationPreferences;
-    // Default to true if preferences not set
     return prefs?.communityChatEnabled !== false;
+}
+// Helper function to check if user wants notifications for roommate/connection requests
+async function shouldNotifyRoommateRequest(uid) {
+    const userSnap = await admin.firestore().collection('users').doc(uid).get();
+    if (!userSnap.exists)
+        return true; // Default: enabled
+    const data = userSnap.data();
+    const prefs = data?.notificationPreferences;
+    return prefs?.roommateRequestEnabled !== false;
 }
 // Personal chat messages trigger
 exports.onChatMessageCreated = (0, firestore_1.onDocumentCreated)('chats/{chatId}/messages/{messageId}', async (event) => {
@@ -144,5 +152,54 @@ exports.onCommunityMessageCreated = (0, firestore_1.onDocumentCreated)('communit
             },
         });
     }));
+});
+exports.onConnectionRequestCreated = (0, firestore_1.onDocumentCreated)('connection_requests/{requestId}', async (event) => {
+    const request = event.data?.data();
+    if (!request)
+        return;
+    const fromUserId = request.fromUserId ?? '';
+    const toUserId = request.toUserId ?? '';
+    const status = request.status ?? 'pending';
+    if (!fromUserId || !toUserId || status !== 'pending')
+        return;
+    const shouldNotify = await shouldNotifyRoommateRequest(toUserId);
+    if (!shouldNotify)
+        return;
+    const fromUserSnap = await admin.firestore().collection('users').doc(fromUserId).get();
+    const fromName = fromUserSnap.data()?.name ?? 'Someone';
+    await admin
+        .firestore()
+        .collection('users')
+        .doc(toUserId)
+        .collection('notifications')
+        .add({
+        type: 'connection_request',
+        title: 'New connection request',
+        body: `${fromName} wants to connect with you`,
+        fromUserId,
+        requestId: event.params.requestId,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        read: false,
+    });
+    const toUserSnap = await admin.firestore().collection('users').doc(toUserId).get();
+    const toData = toUserSnap.data();
+    const tokens = (toData?.fcmTokens ?? []).filter(Boolean);
+    if (tokens.length === 0)
+        return;
+    await admin.messaging().sendEachForMulticast({
+        tokens,
+        notification: {
+            title: 'New connection request',
+            body: `${fromName} wants to connect with you`,
+        },
+        data: {
+            type: 'connection_request',
+            fromUserId,
+            requestId: event.params.requestId,
+        },
+        android: {
+            priority: 'high',
+        },
+    });
 });
 //# sourceMappingURL=index.js.map

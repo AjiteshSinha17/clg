@@ -23,14 +23,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _updatePreference({
-    required bool personalChat,
-    required bool communityChat,
+    bool? personalChat,
+    bool? communityChat,
+    bool? roommateRequest,
     required bool value,
   }) async {
     final currentPrefs = await _prefsService.getPreferences();
     final updated = currentPrefs.copyWith(
-      personalChatEnabled: personalChat ? value : currentPrefs.personalChatEnabled,
-      communityChatEnabled: communityChat ? value : currentPrefs.communityChatEnabled,
+      personalChatEnabled: personalChat != null ? value : currentPrefs.personalChatEnabled,
+      communityChatEnabled: communityChat != null ? value : currentPrefs.communityChatEnabled,
+      roommateRequestEnabled: roommateRequest != null ? value : currentPrefs.roommateRequestEnabled,
     );
     await _prefsService.setPreferences(updated);
   }
@@ -56,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 image: AssetImage(
                   isDark
                       ? 'assets/images/theme_dark.jpg'
-                      : 'assets/images/theme_light.jpg',
+                      : 'assets/images/theme_light_new.jpg',
                 ),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
@@ -118,7 +120,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: prefs.personalChatEnabled,
                             onChanged: (value) => _updatePreference(
                               personalChat: true,
-                              communityChat: false,
                               value: value,
                             ),
                             secondary: Icon(
@@ -135,12 +136,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             subtitle: const Text('Receive notifications for community messages'),
                             value: prefs.communityChatEnabled,
                             onChanged: (value) => _updatePreference(
-                              personalChat: false,
                               communityChat: true,
                               value: value,
                             ),
                             secondary: Icon(
                               Icons.forum,
+                              color: isDark
+                                  ? AppTheme.mountainGold
+                                  : AppTheme.mountainOrange,
+                            ),
+                            activeColor: AppTheme.mountainGold,
+                          ),
+                          const Divider(height: 1),
+                          SwitchListTile(
+                            title: const Text('Roommate Request Alerts'),
+                            subtitle: const Text('Get notified when someone sends a connection request'),
+                            value: prefs.roommateRequestEnabled,
+                            onChanged: (value) => _updatePreference(
+                              roommateRequest: true,
+                              value: value,
+                            ),
+                            secondary: Icon(
+                              Icons.handshake,
                               color: isDark
                                   ? AppTheme.mountainGold
                                   : AppTheme.mountainOrange,

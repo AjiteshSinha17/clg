@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../config/theme.dart';
+import '../../state/theme_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -42,7 +44,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final bgColor = isDark ? AppTheme.paletteCharcoal : AppTheme.paletteCream;
+
     return Scaffold(
+      backgroundColor: bgColor,
       body: Stack(
         children: [
           PageView.builder(
@@ -54,7 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             },
             itemCount: _pages.length,
             itemBuilder: (context, index) {
-              return _buildPage(_pages[index]);
+              return _buildPage(context, _pages[index]);
             },
           ),
           Positioned(
@@ -65,7 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 _pages.length,
-                (index) => _buildDot(index),
+                (index) => _buildDot(context, index),
               ),
             ),
           ),
@@ -99,12 +106,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       );
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
-                    ),
-                  ),
                   child: Text(
                     _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
                   ),
@@ -117,13 +118,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage(OnboardingPage page) {
+  Widget _buildPage(BuildContext context, OnboardingPage page) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final iconColor = isDark ? AppTheme.mountainGold : AppTheme.paletteViolet;
+
     return Padding(
       padding: const EdgeInsets.all(40.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(page.icon, size: 120, color: AppTheme.mountainOrange),
+          Icon(page.icon, size: 120, color: iconColor),
           const SizedBox(height: 40),
           Text(
             page.title,
@@ -144,15 +149,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildDot(int index) {
+  Widget _buildDot(BuildContext context, int index) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final activeColor = isDark ? AppTheme.mountainGold : AppTheme.paletteViolet;
+    final inactiveColor = isDark ? Colors.white38 : Colors.grey.shade400;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
       width: _currentPage == index ? 12 : 8,
       height: 8,
       decoration: BoxDecoration(
-        color: _currentPage == index
-            ? AppTheme.mountainOrange
-            : Colors.grey.shade300,
+        color: _currentPage == index ? activeColor : inactiveColor,
         borderRadius: BorderRadius.circular(4),
       ),
     );

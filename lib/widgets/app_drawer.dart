@@ -18,12 +18,12 @@ class AppDrawer extends StatelessWidget {
     final user = userProvider.user;
 
     return Drawer(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color.fromARGB(0, 143, 110, 110),
       child: Container(
         decoration: BoxDecoration(
           color: isDark
-              ? Colors.black.withValues(alpha: 0.8)
-              : Colors.white.withValues(alpha: 0.9),
+              ? AppTheme.mountainDarkBlue.withValues(alpha: 0.95)
+              : Colors.white.withValues(alpha: 0.95),
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -34,12 +34,12 @@ class AppDrawer extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isDark
                       ? AppTheme.mountainDarkBlue
-                      : AppTheme.mountainLightBlue,
+                      : AppTheme.mountainOrange,
                   image: DecorationImage(
                     image: AssetImage(
                       isDark
                           ? 'assets/images/theme_dark.jpg'
-                          : 'assets/images/theme_light.jpg',
+                          : 'assets/images/lk.jpg',
                     ),
                     fit: BoxFit.cover,
                     colorFilter: ColorFilter.mode(
@@ -73,9 +73,16 @@ class AppDrawer extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
+                    color: Colors
+                        .white, // Force white for visibility on dark overlay
                   ),
                 ),
-                accountEmail: Text(user?.email ?? ''),
+                accountEmail: Text(
+                  user?.email ?? '',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                  ), // Force light color
+                ),
               ),
 
               // Menu Items
@@ -85,11 +92,33 @@ class AppDrawer extends StatelessWidget {
                   children: [
                     _buildDrawerItem(
                       context,
+                      icon: Icons.chat_bubble_outline,
+                      title: 'Community Chat',
+                      onTap: () {
+                        context.pop(); // Close drawer
+                        context.go(
+                          '/shell',
+                        ); // Navigate to main shell (Community is default)
+                      },
+                      isDark: isDark,
+                    ),
+                    _buildDrawerItem(
+                      context,
                       icon: Icons.person_search,
                       title: 'Search People',
                       onTap: () {
-                        context.pop(); // Close drawer
+                        context.pop();
                         context.go('/shell/roommate-search');
+                      },
+                      isDark: isDark,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.handshake,
+                      title: 'Connection requests',
+                      onTap: () {
+                        context.pop();
+                        context.go('/shell/connection-requests');
                       },
                       isDark: isDark,
                     ),
