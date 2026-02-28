@@ -135,9 +135,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _pickAndSendPdf() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
+  type: FileType.custom,
+  allowedExtensions: ['pdf'],
+  withData: true,   // REQUIRED
+);
     if (result == null || result.files.isEmpty || !mounted) return;
 
     final platformFile = result.files.single;

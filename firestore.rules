@@ -96,5 +96,36 @@ service cloud.firestore {
         allow update, delete: if false;
       }
     }
+
+    // Community chat media (images/PDFs in community chat)
+    match /community_media/{docId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Personal chat media (images/PDFs in 1:1 chat)
+    match /chat_media/{docId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Posts (for community feed)
+    match /posts/{postId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+    }
+
+    // Connection requests
+    match /connection_requests/{requestId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Notification markers (used by Render server)
+    match /notification_markers/{markerId} {
+      allow read, write: if isAuthenticated();
+    }
   }
 }
