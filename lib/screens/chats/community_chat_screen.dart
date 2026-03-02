@@ -59,6 +59,18 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     }
   }
 
+  Future<Uint8List?> _readStreamToBytes(Stream<List<int>> stream) async {
+    try {
+      final builder = BytesBuilder();
+      await for (final chunk in stream) {
+        builder.add(chunk);
+      }
+      return builder.toBytes();
+    } catch (_) {
+      return null;
+    }
+  }
+
   void _showAttachOptions() {
     showModalBottomSheet(
       context: context,
@@ -132,6 +144,9 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     Uint8List? bytes = platformFile.bytes;
     if (bytes == null && platformFile.path != null) {
       bytes = await readFileBytes(platformFile.path);
+    }
+    if (bytes == null && platformFile.readStream != null) {
+      bytes = await _readStreamToBytes(platformFile.readStream!);
     }
     if (bytes == null) {
       if (mounted) {
