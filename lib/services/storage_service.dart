@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
@@ -43,7 +42,10 @@ class StorageService {
     required String publicId,
     required int timestamp,
   }) async {
-    final baseUrl = BackendConfig.baseUrl.trim().replaceFirst(RegExp(r'/$'), '');
+    final baseUrl = BackendConfig.baseUrl.trim().replaceFirst(
+      RegExp(r'/$'),
+      '',
+    );
     if (baseUrl.isEmpty) {
       return null;
     }
@@ -69,7 +71,9 @@ class StorageService {
       );
 
       if (resp.statusCode != 200) {
-        debugPrint('[StorageService] Signer returned ${resp.statusCode}: ${resp.body}');
+        debugPrint(
+          '[StorageService] Signer returned ${resp.statusCode}: ${resp.body}',
+        );
         return null;
       }
 
@@ -129,7 +133,9 @@ class StorageService {
     final timestamp = sign['timestamp'];
     final type = (sign['type'] as String?) ?? 'upload';
 
-    final tsStr = (timestamp is num) ? timestamp.toInt().toString() : '$timestamp';
+    final tsStr = (timestamp is num)
+        ? timestamp.toInt().toString()
+        : '$timestamp';
     if (signature == null ||
         signature.isEmpty ||
         apiKey == null ||
@@ -152,11 +158,7 @@ class StorageService {
       ..fields['public_id'] = publicId
       ..fields['type'] = type
       ..files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          bytes,
-          filename: fileName,
-        ),
+        http.MultipartFile.fromBytes('file', bytes, filename: fileName),
       );
 
     final streamed = await request.send();
@@ -282,7 +284,7 @@ class StorageService {
       bytes: bytes,
       fileName: name,
       folder: 'community_content/pdfs/$safeId',
-      resourceType: 'raw',
+      resourceType: 'image', // 'image' handles PDFs and gives a public URL
       maxBytes: _maxPdfBytes,
       contextLabel: 'PDF',
     );
@@ -324,7 +326,8 @@ class StorageService {
       bytes: bytes,
       fileName: name,
       folder: 'community_content/files/$safeId',
-      resourceType: isPdf ? 'raw' : 'image',
+      resourceType:
+          'image', // 'image' handles both images and PDFs with public URLs
       maxBytes: isPdf ? _maxPdfBytes : _maxImageBytes,
       contextLabel: 'file',
     );
@@ -387,7 +390,8 @@ class StorageService {
       bytes: bytes,
       fileName: name,
       folder: 'chat_media/personal/$safeChat',
-      resourceType: 'raw',
+      resourceType:
+          'image', // 'image' handles PDFs and gives accessible public URLs
       maxBytes: _maxPdfBytes,
       contextLabel: 'chat PDF',
     );
@@ -429,7 +433,8 @@ class StorageService {
       bytes: bytes,
       fileName: name,
       folder: 'chat_media/community/$safeRoom',
-      resourceType: 'raw',
+      resourceType:
+          'image', // 'image' handles PDFs and gives accessible public URLs
       maxBytes: _maxPdfBytes,
       contextLabel: 'community chat PDF',
     );

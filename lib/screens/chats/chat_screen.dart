@@ -417,72 +417,203 @@ class _ChatScreenState extends State<ChatScreen> {
         : 'assets/images/chat_light_wallpaper.png';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: widget.otherUser.avatarUrl.isNotEmpty
-                  ? NetworkImage(widget.otherUser.avatarUrl)
-                  : null,
-              child: widget.otherUser.avatarUrl.isEmpty
-                  ? Text(
-                      widget.otherUser.name.isNotEmpty
-                          ? widget.otherUser.name[0].toUpperCase()
-                          : '?',
-                    )
-                  : null,
-            ),
-            const SizedBox(width: 10),
-            Expanded(child: Text(widget.otherUser.name)),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.folder_open),
-            onPressed: _showDownloads,
-            tooltip: 'Downloads',
+      // ── AppBar ────────────────────────────────────────────────────────
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(64),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppTheme.darkSurface : AppTheme.pureWhite,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                children: [
+                  // Back button
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 20,
+                      color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  // Avatar
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppTheme.orange.withValues(alpha: 0.6),
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: AppTheme.darkCard,
+                      backgroundImage: widget.otherUser.avatarUrl.isNotEmpty
+                          ? NetworkImage(widget.otherUser.avatarUrl)
+                                as ImageProvider
+                          : null,
+                      child: widget.otherUser.avatarUrl.isEmpty
+                          ? Text(
+                              widget.otherUser.name.isNotEmpty
+                                  ? widget.otherUser.name[0].toUpperCase()
+                                  : '?',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Name + status
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.otherUser.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF1A1A1A),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'Online',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppTheme.orange.withValues(alpha: 0.85),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Downloads action
+                  IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.orange.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.folder_open_rounded,
+                        color: AppTheme.orange,
+                        size: 18,
+                      ),
+                    ),
+                    onPressed: _showDownloads,
+                    tooltip: 'Downloads',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
-      // Modified: Wrapped body in Stack with wallpaper background
+      // ── Body ──────────────────────────────────────────────────────────
       body: Stack(
         children: [
           // Wallpaper background image
           Positioned.fill(child: Image.asset(bgImage, fit: BoxFit.cover)),
-          // Subtle overlay to ensure text/bubbles remain readable
+          // Overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.45)
+                  : Colors.white.withValues(alpha: 0.10),
             ),
           ),
-          // Chat content on top of wallpaper
+          // Chat content
           Column(
             children: [
-              if (_uploading) const LinearProgressIndicator(),
+              if (_uploading)
+                LinearProgressIndicator(
+                  backgroundColor: AppTheme.orange.withValues(alpha: 0.15),
+                  color: AppTheme.orange,
+                ),
               Expanded(
                 child: StreamBuilder<List<Message>>(
                   stream: _chatService.getMessagesStream(widget.chatId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: AppTheme.orange,
+                          strokeWidth: 2.5,
+                        ),
+                      );
                     }
                     if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
+                      return Center(child: Text('Error: \${snapshot.error}'));
                     }
                     final messages = snapshot.data ?? [];
                     if (messages.isEmpty) {
                       return Center(
-                        child: Text(
-                          'No messages yet. Say hi!',
-                          style: TextStyle(
-                            color: isDark ? Colors.white70 : Colors.black54,
-                          ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppTheme.darkCard.withValues(alpha: 0.8)
+                                    : AppTheme.pureWhite.withValues(
+                                        alpha: 0.85,
+                                      ),
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: isDark
+                                    ? AppTheme.clayShadowRecvDark
+                                    : AppTheme.clayShadowRecvLight,
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.chat_bubble_outline_rounded,
+                                    size: 48,
+                                    color: AppTheme.orange.withValues(
+                                      alpha: 0.6,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Say hi to \${widget.otherUser.name}!',
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black54,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }
                     return ListView.builder(
                       controller: _scrollController,
                       reverse: true,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final message = messages[index];
@@ -508,53 +639,136 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageInput() {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
     return Container(
-      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: isDark ? AppTheme.darkSurface : AppTheme.pureWhite,
         boxShadow: [
           BoxShadow(
-            offset: const Offset(0, -2),
-            blurRadius: 4,
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: isDark ? 0.40 : 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: SafeArea(
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.attach_file),
-              onPressed: _uploading ? null : _showAttachOptions,
-              tooltip: 'Attach image or PDF',
-            ),
-            Expanded(
-              child: TextField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                  hintText: 'Type a message...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Attach button
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Material(
+                  color: AppTheme.orange.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  child: InkWell(
+                    onTap: _uploading ? null : _showAttachOptions,
+                    borderRadius: BorderRadius.circular(14),
+                    splashColor: AppTheme.orange.withValues(alpha: 0.2),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.attach_file_rounded,
+                        color: AppTheme.orange,
+                        size: 22,
+                      ),
+                    ),
                   ),
                 ),
-                textCapitalization: TextCapitalization.sentences,
-                minLines: 1,
-                maxLines: 5,
               ),
-            ),
-            const SizedBox(width: 8),
-            FloatingActionButton(
-              onPressed: _uploading ? null : _sendMessage,
-              mini: true,
-              child: const Icon(Icons.send),
-            ),
-          ],
+              const SizedBox(width: 8),
+              // Text field (clay pill)
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? AppTheme.darkCard : AppTheme.lightCard,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.07),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.3 : 0.07,
+                        ),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: 'Type a message...',
+                      hintStyle: TextStyle(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.35)
+                            : Colors.black.withValues(alpha: 0.35),
+                        fontSize: 14,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 12,
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                    ),
+                    textCapitalization: TextCapitalization.sentences,
+                    minLines: 1,
+                    maxLines: 5,
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Send button (clay circle)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: GestureDetector(
+                  onTap: _uploading ? null : _sendMessage,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppTheme.orangeLight, AppTheme.orangeDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.orangeDark.withValues(alpha: 0.45),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.10),
+                          blurRadius: 2,
+                          offset: const Offset(-1, -1),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.send_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -581,147 +795,194 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final isDark = theme.brightness == Brightness.dark;
+    final recvBg = isDark ? AppTheme.darkCard : AppTheme.pureWhite;
+    final recvBorder = isDark
+        ? Border.all(color: Colors.white.withValues(alpha: 0.07), width: 1)
+        : Border.all(color: Colors.black.withValues(alpha: 0.07), width: 1);
+
+    final sentShadows = AppTheme.clayShadowSent;
+    final recvShadows = isDark
+        ? AppTheme.clayShadowRecvDark
+        : AppTheme.clayShadowRecvLight;
+
+    final radius = BorderRadius.only(
+      topLeft: const Radius.circular(22),
+      topRight: const Radius.circular(22),
+      bottomLeft: isMe ? const Radius.circular(22) : const Radius.circular(4),
+      bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(22),
+    );
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isMe ? AppTheme.mountainOrange : theme.cardColor,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: isMe ? const Radius.circular(16) : Radius.zero,
-            bottomRight: isMe ? Radius.zero : const Radius.circular(16),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 2,
-              offset: const Offset(0, 1),
-            ),
-          ],
+        margin: EdgeInsets.only(
+          left: isMe ? 48 : 12,
+          right: isMe ? 12 : 48,
+          top: 4,
+          bottom: 4,
         ),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.78,
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Modified: Image tap now opens in full-screen viewer instead of url_launcher
-            if (message.type == MessageType.image && message.fileUrl != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: InkWell(
-                      onTap: () => onOpenImage(message.fileUrl!),
-                      child: Image.network(
-                        message.fileUrl!,
-                        width: 220,
-                        height: 180,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const SizedBox(
-                          width: 220,
-                          height: 120,
-                          child: Center(child: Icon(Icons.broken_image)),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Added: Download button for images
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.download,
-                        size: 20,
-                        color: isMe
-                            ? Colors.white70
-                            : theme.colorScheme.primary,
-                      ),
-                      onPressed: () => onDownloadFile(
-                        message.fileUrl!,
-                        message.fileName ?? 'image.jpg',
-                      ),
-                      tooltip: 'Download image',
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ),
-                ],
-              )
-            else if (message.type == MessageType.pdf && message.fileUrl != null)
-              InkWell(
-                onTap: () => onOpenUrl(message.fileUrl!),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+        decoration: BoxDecoration(
+          gradient: isMe
+              ? const LinearGradient(
+                  colors: [AppTheme.orangeLight, AppTheme.orangeDark],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: isMe ? null : recvBg,
+          borderRadius: radius,
+          border: isMe ? null : recvBorder,
+          boxShadow: isMe ? sentShadows : recvShadows,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image
+              if (message.type == MessageType.image && message.fileUrl != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.picture_as_pdf,
-                      color: isMe ? Colors.white : theme.colorScheme.primary,
-                      size: 32,
-                    ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        message.fileName ?? 'document.pdf',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isMe
-                              ? Colors.white
-                              : theme.textTheme.bodyMedium?.color,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: InkWell(
+                        onTap: () => onOpenImage(message.fileUrl!),
+                        child: Image.network(
+                          message.fileUrl!,
+                          width: 220,
+                          height: 180,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const SizedBox(
+                            width: 220,
+                            height: 120,
+                            child: Center(child: Icon(Icons.broken_image)),
+                          ),
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    // Modified: Download button for PDFs (replaces open_in_new icon)
-                    IconButton(
-                      icon: Icon(
-                        Icons.download,
-                        size: 18,
-                        color: isMe
-                            ? Colors.white70
-                            : theme.colorScheme.primary,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.download_rounded,
+                          size: 18,
+                          color: isMe ? Colors.white70 : AppTheme.orange,
+                        ),
+                        onPressed: () => onDownloadFile(
+                          message.fileUrl!,
+                          message.fileName ?? 'image.jpg',
+                        ),
+                        tooltip: 'Download image',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
-                      onPressed: () => onDownloadFile(
-                        message.fileUrl!,
-                        message.fileName ?? 'document.pdf',
-                      ),
-                      tooltip: 'Download PDF',
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
                     ),
                   ],
-                ),
-              )
-            else
-              Text(
-                message.content,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isMe
-                      ? Colors.white
-                      : theme.textTheme.bodyMedium?.color,
-                ),
-              ),
-            const SizedBox(height: 4),
-            // Modified: Use shared timestamp formatting, aligned to bottom right
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                formatMessageTimestamp(message.timestamp),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 10,
-                  color: isMe
-                      ? Colors.white70
-                      : theme.textTheme.bodySmall?.color?.withValues(
-                          alpha: 0.7,
+                )
+              // PDF
+              else if (message.type == MessageType.pdf &&
+                  message.fileUrl != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isMe
+                        ? Colors.white.withValues(alpha: 0.15)
+                        : AppTheme.orange.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    onTap: () => onOpenUrl(message.fileUrl!),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: isMe
+                                ? Colors.white.withValues(alpha: 0.2)
+                                : AppTheme.orange.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.picture_as_pdf_rounded,
+                            color: isMe ? Colors.white : AppTheme.orange,
+                            size: 24,
+                          ),
                         ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            message.fileName ?? 'document.pdf',
+                            style: TextStyle(
+                              color: isMe
+                                  ? Colors.white
+                                  : (isDark
+                                        ? Colors.white.withValues(alpha: 0.87)
+                                        : const Color(0xFF1A1A1A)),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          icon: Icon(
+                            Icons.download_rounded,
+                            size: 18,
+                            color: isMe ? Colors.white70 : AppTheme.orange,
+                          ),
+                          onPressed: () => onDownloadFile(
+                            message.fileUrl!,
+                            message.fileName ?? 'document.pdf',
+                          ),
+                          tooltip: 'Download PDF',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              // Text
+              else
+                Text(
+                  message.content,
+                  style: TextStyle(
+                    color: isMe
+                        ? Colors.white
+                        : (isDark
+                              ? Colors.white.withValues(alpha: 0.87)
+                              : const Color(0xFF1A1A1A)),
+                    fontSize: 14,
+                    height: 1.45,
+                  ),
+                ),
+              const SizedBox(height: 4),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Text(
+                  formatMessageTimestamp(message.timestamp),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isMe
+                        ? Colors.white.withValues(alpha: 0.65)
+                        : (isDark
+                              ? Colors.white.withValues(alpha: 0.40)
+                              : Colors.black.withValues(alpha: 0.38)),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

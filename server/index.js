@@ -42,11 +42,15 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const axios_1 = __importDefault(require("axios"));
 const admin = __importStar(require("firebase-admin"));
 const resend_1 = require("resend");
+const crypto_1 = __importDefault(require("crypto"));
 dotenv_1.default.config();
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID ?? '';
 const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY ?? '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY ?? '';
 const RESEND_FROM = process.env.RESEND_FROM ?? 'no-reply@example.com';
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME ?? '';
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY ?? '';
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET ?? '';
 function requireEnv(name) {
     if (!process.env[name]) {
         console.warn(`[WARN] Missing env var: ${name}`);
@@ -55,6 +59,26 @@ function requireEnv(name) {
 requireEnv('FIREBASE_SERVICE_ACCOUNT_JSON');
 requireEnv('ONESIGNAL_APP_ID');
 requireEnv('ONESIGNAL_REST_API_KEY');
+requireEnv('CLOUDINARY_CLOUD_NAME');
+requireEnv('CLOUDINARY_API_KEY');
+requireEnv('CLOUDINARY_API_SECRET');
+function assertAllowedFolder(folder) {
+    const allowedPrefixes = [
+        'chat_media/',
+        'community_content/',
+        'profile_images/',
+        'college_ids/',
+        'profile_banners/',
+    ];
+    if (!allowedPrefixes.some((p) => folder.startsWith(p))) {
+        throw new Error('folder_not_allowed');
+    }
+}
+function cloudinarySignature(params, apiSecret) {
+    const keys = Object.keys(params).sort();
+    const toSign = keys.map((k) => `${k}=${params[k]}`).join('&');
+    return crypto_1.default.createHash('sha1').update(toSign + apiSecret).digest('hex');
+}
 function initFirebaseAdmin() {
     const saJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
     if (!saJson)
@@ -399,6 +423,53 @@ async function main() {
         catch (e) {
             console.error('account-activity error', e);
             res.status(500).json({ error: 'failed to send activity email' });
+        }
+    });
+    // Cloudinary signed upload helper (requires Firebase ID token in Authorization header)
+    // Expects: { folder: string, publicId: string, timestamp: number, type?: "upload" }
+    app.post('/cloudinary/sign-upload', async (req, res) => {
+        try {
+            const authHeader = req.header('authorization') ?? req.header('Authorization');
+            if (!authHeader?.startsWith('Bearer ')) {
+                return res.status(401).json({ error: 'missing bearer token' });
+            }
+            const idToken = authHeader.substring('Bearer '.length);
+            await admin.auth().verifyIdToken(idToken);
+            if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+                return res.status(500).json({ error: 'cloudinary not configured' });
+            }
+            const { folder, publicId, timestamp, type } = req.body;
+            if (!folder || !publicId || !timestamp) {
+                return res.status(400).json({ error: 'folder, publicId, timestamp are required' });
+            }
+            assertAllowedFolder(folder);
+            // Reject very old timestamps (basic replay protection)
+            const now = Math.floor(Date.now() / 1000);
+            if (Math.abs(now - timestamp) > 5 * 60) {
+                return res.status(400).json({ error: 'timestamp out of range' });
+            }
+            const signedParams = {
+                folder,
+                public_id: publicId,
+                timestamp: String(timestamp),
+                type: type ?? 'upload',
+            };
+            const signature = cloudinarySignature(signedParams, CLOUDINARY_API_SECRET);
+            return res.json({
+                cloudName: CLOUDINARY_CLOUD_NAME,
+                apiKey: CLOUDINARY_API_KEY,
+                signature,
+                timestamp,
+                type: signedParams.type,
+            });
+        }
+        catch (e) {
+            const msg = e?.message ?? String(e);
+            if (msg === 'folder_not_allowed') {
+                return res.status(403).json({ error: 'folder not allowed' });
+            }
+            console.error('cloudinary sign-upload error', e);
+            return res.status(500).json({ error: 'failed to sign upload' });
         }
     });
     const port = Number(process.env.PORT ?? 3000);

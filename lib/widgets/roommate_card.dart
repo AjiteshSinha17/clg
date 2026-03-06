@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
-import '../config/theme.dart';
+
+// Soft orange-white gradient palette (muted/creamy, not harsh saturated)
+const _softOrange = Color(0xFFFF8C38);
+const _softOrangeLight = Color(0xFFFFB870);
 
 class RoommateCard extends StatelessWidget {
   final User profile;
@@ -20,51 +23,99 @@ class RoommateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: isDark ? const Color(0xFF1C1C1C) : const Color(0xFFFFF9F4),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : _softOrange.withValues(alpha: 0.15),
+            width: 1.2,
+          ),
           boxShadow: [
+            // Main depth shadow
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
+              color: Colors.black.withValues(alpha: isDark ? 0.40 : 0.10),
+              blurRadius: 20,
+              spreadRadius: 0,
+              offset: const Offset(0, 8),
+            ),
+            // Inner highlight (skeuomorphism)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.75),
+              blurRadius: 0,
+              spreadRadius: 0,
+              offset: const Offset(0, -2),
+            ),
+            // Orange tint glow
+            BoxShadow(
+              color: _softOrange.withValues(alpha: isDark ? 0.08 : 0.05),
+              blurRadius: 16,
+              spreadRadius: 4,
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 12),
-            // Profile Picture
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: isDark
-                  ? AppTheme.mountainGold
-                  : AppTheme.mountainOrange,
-              backgroundImage: profile.avatarUrl.isNotEmpty
-                  ? NetworkImage(profile.avatarUrl)
-                  : null,
-              child: profile.avatarUrl.isEmpty
-                  ? Text(
-                      profile.name.isNotEmpty
-                          ? profile.name[0].toUpperCase()
-                          : '?',
-                      style: const TextStyle(color: Colors.white, fontSize: 24),
-                    )
-                  : null,
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
-            // Name
+            // ── Avatar with clay ring ────────────────────────────────────────
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [_softOrangeLight, _softOrange],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: _softOrange.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: isDark
+                    ? const Color(0xFF1C1C1C)
+                    : Colors.white,
+                backgroundImage: profile.avatarUrl.isNotEmpty
+                    ? NetworkImage(profile.avatarUrl)
+                    : null,
+                child: profile.avatarUrl.isEmpty
+                    ? Text(
+                        profile.name.isNotEmpty
+                            ? profile.name[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ── Name ──────────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
                 profile.name,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   color: isDark ? Colors.white : Colors.black87,
+                  fontSize: 14,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -73,18 +124,25 @@ class RoommateCard extends StatelessWidget {
             if (profile.verificationStatus == 'verified')
               const Padding(
                 padding: EdgeInsets.only(top: 2),
-                child: Icon(Icons.verified, size: 14, color: Colors.blue),
+                child: Icon(
+                  Icons.verified_rounded,
+                  size: 13,
+                  color: Colors.blue,
+                ),
               ),
 
-            // College
+            // ── College ───────────────────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
               child: Text(
                 profile.college.isNotEmpty
                     ? profile.college
                     : 'Unknown College',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: isDark ? Colors.white54 : Colors.black54,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.45)
+                      : Colors.black.withValues(alpha: 0.45),
+                  fontSize: 12,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -93,60 +151,80 @@ class RoommateCard extends StatelessWidget {
 
             const Spacer(),
 
-            // Main Interest Tag
+            // ── Interest Tag ──────────────────────────────────────────────────
             if (profile.interestTags.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
-                  vertical: 4,
+                  vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? AppTheme.mountainGold.withValues(alpha: 0.2)
-                      : AppTheme.mountainOrange.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      _softOrangeLight.withValues(alpha: 0.25),
+                      _softOrange.withValues(alpha: 0.20),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: _softOrange.withValues(alpha: 0.35),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   profile.interestTags.first,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 10,
-                    color: isDark
-                        ? AppTheme.mountainGold
-                        : AppTheme.mountainOrange,
-                    fontWeight: FontWeight.bold,
+                    color: _softOrange,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
                   ),
                 ),
               ),
 
             const SizedBox(height: 8),
 
-            // View Profile Hint
+            // ── View Profile bar ──────────────────────────────────────────────
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 9),
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.black.withOpacity(0.05),
+                gradient: LinearGradient(
+                  colors: [
+                    _softOrangeLight.withValues(alpha: isDark ? 0.12 : 0.08),
+                    _softOrange.withValues(alpha: isDark ? 0.14 : 0.10),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(22),
+                  bottomRight: Radius.circular(22),
+                ),
+                border: Border(
+                  top: BorderSide(
+                    color: _softOrange.withValues(alpha: isDark ? 0.15 : 0.12),
+                    width: 0.8,
+                  ),
                 ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.visibility,
-                    size: 14,
-                    color: isDark ? Colors.white70 : Colors.black54,
+                    Icons.visibility_rounded,
+                    size: 13,
+                    color: _softOrange.withValues(alpha: 0.85),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     'View Profile',
                     style: TextStyle(
                       fontSize: 10,
-                      color: isDark ? Colors.white70 : Colors.black54,
+                      color: _softOrange.withValues(alpha: 0.85),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],

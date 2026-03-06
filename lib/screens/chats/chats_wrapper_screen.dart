@@ -51,13 +51,13 @@ class _ChatsWrapperScreenState extends State<ChatsWrapperScreen>
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.1),
+                ? Colors.white.withValues(alpha: 0.07)
+                : Colors.black.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.05),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.06),
             ),
           ),
           child: Stack(
@@ -72,19 +72,17 @@ class _ChatsWrapperScreenState extends State<ChatsWrapperScreen>
                   width: MediaQuery.of(context).size.width * 0.5 - 32,
                   margin: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? AppTheme.mountainGold
-                        : AppTheme.mountainOrange,
+                    gradient: const LinearGradient(
+                      colors: [AppTheme.orangeLight, AppTheme.orangeDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(21),
                     boxShadow: [
                       BoxShadow(
-                        color:
-                            (isDark
-                                    ? AppTheme.mountainGold
-                                    : AppTheme.mountainOrange)
-                                .withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: AppTheme.orangeDark.withValues(alpha: 0.40),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),

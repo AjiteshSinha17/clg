@@ -17,6 +17,48 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // ── Soft orange-white gradient (less saturated, cream-orange) ─────────────
+  static const _softOrange = Color(0xFFFF8C38); // muted warm orange
+  static const _softOrangeLight = Color(0xFFFFB870); // very light orange-cream
+  static const _softOrangeGlow = Color(0x33FF8C38); // soft glow
+
+  static const _editBtnGradient = LinearGradient(
+    colors: [_softOrangeLight, _softOrange],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Clay shadow stack for buttons
+  static List<BoxShadow> _clayBtnShadow() => [
+    BoxShadow(
+      color: _softOrange.withValues(alpha: 0.35),
+      blurRadius: 18,
+      spreadRadius: 0,
+      offset: const Offset(0, 6),
+    ),
+    const BoxShadow(
+      color: Colors.white,
+      blurRadius: 0,
+      spreadRadius: -2,
+      offset: Offset(0, -2),
+    ),
+  ];
+
+  static List<BoxShadow> _clayCardShadow(bool isDark) => [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.10),
+      blurRadius: 20,
+      spreadRadius: 0,
+      offset: const Offset(0, 8),
+    ),
+    BoxShadow(
+      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.80),
+      blurRadius: 0,
+      spreadRadius: 0,
+      offset: const Offset(0, -2),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -31,17 +73,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Header with Avatar
+          // ── Header with Avatar ─────────────────────────────────────────────
           Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.center,
             children: [
-              // Banner
+              // Banner with rounded bottom + gradient overlay
               Container(
-                height: 180,
+                height: 190,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : Colors.grey[300],
+                  color: isDark
+                      ? const Color(0xFF1A1A1A)
+                      : const Color(0xFFF0EDE8),
                   image: user.bannerUrl.isNotEmpty
                       ? DecorationImage(
                           image: NetworkImage(user.bannerUrl),
@@ -49,55 +93,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                       : null,
                   borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(30),
+                    bottom: Radius.circular(36),
+                  ),
+                ),
+                // Gradient overlay at bottom of banner
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(36),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        (isDark ? Colors.black : Colors.white).withValues(
+                          alpha: 0.5,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              // Avatar
+
+              // Clay avatar ring
               Positioned(
-                bottom: -50,
+                bottom: -58,
                 child: Stack(
                   children: [
+                    // Outer glow ring
                     Container(
+                      width: 132,
+                      height: 132,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          width: 4,
+                        gradient: const LinearGradient(
+                          colors: [_softOrangeLight, _softOrange],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _softOrangeGlow,
+                            blurRadius: 20,
+                            spreadRadius: 4,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Theme.of(
-                          context,
-                        ).scaffoldBackgroundColor,
-                        child: CircleAvatar(
-                          radius: 56,
-                          backgroundImage: user.avatarUrl.isNotEmpty
-                              ? NetworkImage(user.avatarUrl)
-                              : null,
-                          child: user.avatarUrl.isEmpty
-                              ? const Icon(Icons.person, size: 60)
-                              : null,
+                    ),
+                    // Inner white ring + avatar
+                    Positioned(
+                      left: 4,
+                      top: 4,
+                      child: Container(
+                        width: 124,
+                        height: 124,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isDark
+                              ? const Color(0xFF1A1A1A)
+                              : Colors.white,
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            width: 3,
+                          ),
+                        ),
+                        child: ClipOval(
+                          child: user.avatarUrl.isNotEmpty
+                              ? Image.network(user.avatarUrl, fit: BoxFit.cover)
+                              : Container(
+                                  color: isDark
+                                      ? const Color(0xFF2A2A2A)
+                                      : const Color(0xFFF5F0EB),
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: _softOrange,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
+                    // Edit badge
                     Positioned(
-                      bottom: 0,
-                      right: 0,
+                      bottom: 4,
+                      right: 4,
                       child: GestureDetector(
                         onTap: () => context.push('/shell/edit-profile'),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
+                            gradient: const LinearGradient(
+                              colors: [_softOrangeLight, _softOrange],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(color: Colors.white, width: 2.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _softOrange.withValues(alpha: 0.40),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                           child: const Icon(
-                            Icons.edit,
+                            Icons.edit_rounded,
                             color: Colors.white,
-                            size: 20,
+                            size: 18,
                           ),
                         ),
                       ),
@@ -108,14 +217,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
 
-          const SizedBox(height: 60),
+          const SizedBox(height: 72),
 
-          // User Info
+          // ── Name + Email ───────────────────────────────────────────────────
           Text(
             user.name,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -124,60 +234,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context,
             ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
 
-          // College Info Card
+          // ── College Info Card (clay glass) ─────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.1)
-                        : Colors.white.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      width: 1.5,
+            child: _ClayCard(
+              isDark: isDark,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    _buildInfoRow(
+                      context,
+                      isDark,
+                      Icons.school_rounded,
+                      'College',
+                      user.college,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        _buildInfoRow(
-                          context,
-                          Icons.school,
-                          'College',
-                          user.college,
-                        ),
-                        Divider(color: Colors.grey.withValues(alpha: 0.2)),
-                        _buildInfoRow(
-                          context,
-                          Icons.book,
-                          'Branch',
-                          user.branch,
-                        ),
-                        Divider(color: Colors.grey.withValues(alpha: 0.2)),
-                        _buildInfoRow(
-                          context,
-                          Icons.calendar_today,
-                          'Year',
-                          user.year,
-                        ),
-                      ],
+                    Divider(
+                      color: Colors.grey.withValues(alpha: isDark ? 0.15 : 0.2),
+                      height: 1,
                     ),
-                  ),
+                    _buildInfoRow(
+                      context,
+                      isDark,
+                      Icons.book_rounded,
+                      'Branch',
+                      user.branch,
+                    ),
+                    Divider(
+                      color: Colors.grey.withValues(alpha: isDark ? 0.15 : 0.2),
+                      height: 1,
+                    ),
+                    _buildInfoRow(
+                      context,
+                      isDark,
+                      Icons.calendar_month_rounded,
+                      'Year',
+                      user.year,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -185,23 +282,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Action Buttons
+          // ── Action Buttons ─────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                _buildActionButton(
+                _buildGradientButton(
                   context,
                   'Edit Profile',
-                  Icons.edit,
+                  Icons.edit_rounded,
                   () => context.push('/shell/edit-profile'),
-                  isPrimary: true,
                 ),
-                const SizedBox(height: 16),
-                _buildActionButton(
+                const SizedBox(height: 14),
+                _buildSecondaryButton(
                   context,
+                  isDark,
                   'Verify College ID',
-                  Icons.verified_user,
+                  Icons.verified_user_rounded,
                   () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -216,121 +313,125 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Settings
+          // ── Settings Clay Card ─────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.1)
-                        : Colors.white.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      width: 1.5,
+            child: _ClayCard(
+              isDark: isDark,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  isDark ? Icons.dark_mode : Icons.light_mode,
-                                  color: Theme.of(context).primaryColor,
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [_softOrangeLight, _softOrange],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                                const SizedBox(width: 16),
-                                const Text(
-                                  'Theme',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _softOrange.withValues(alpha: 0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                              child: Icon(
+                                isDark
+                                    ? Icons.dark_mode_rounded
+                                    : Icons.light_mode_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                             ),
-                            const ThemeToggleButton(),
+                            const SizedBox(width: 14),
+                            const Text(
+                              'Theme',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey.withValues(alpha: 0.2),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.logout, color: Colors.red),
-                        title: const Text(
-                          'Logout',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onTap: () async {
-                          await Provider.of<AuthProvider>(
-                            context,
-                            listen: false,
-                          ).signOut();
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey.withValues(alpha: 0.2),
-                      ),
-                      ListTile(
-                        leading: const Icon(
-                          Icons.cloud_sync,
-                          color: Colors.blue,
-                        ),
-                        title: const Text('Test Database Connection'),
-                        onTap: () async {
-                          try {
-                            final firestore = FirebaseFirestore.instance;
-                            await firestore.collection('test_connection').add({
-                              'timestamp': FieldValue.serverTimestamp(),
-                              'device': 'flutter_app',
-                              'status': 'working',
-                            });
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    '✅ Success! Database is connected and writable.',
-                                  ),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('❌ Error: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                      ),
-                    ],
+                        const ThemeToggleButton(),
+                      ],
+                    ),
                   ),
-                ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey.withValues(alpha: 0.15),
+                  ),
+                  _buildSettingTile(
+                    context,
+                    isDark,
+                    Icons.logout_rounded,
+                    'Logout',
+                    Colors.red,
+                    () async {
+                      await Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      ).signOut();
+                    },
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey.withValues(alpha: 0.15),
+                  ),
+                  _buildSettingTile(
+                    context,
+                    isDark,
+                    Icons.cloud_sync_rounded,
+                    'Test Database Connection',
+                    Colors.blue,
+                    () async {
+                      try {
+                        final firestore = FirebaseFirestore.instance;
+                        await firestore.collection('test_connection').add({
+                          'timestamp': FieldValue.serverTimestamp(),
+                          'device': 'flutter_app',
+                          'status': 'working',
+                        });
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                '✅ Success! Database is connected and writable.',
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('❌ Error: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
           ),
-          const SizedBox(height: 100), // Extra space for bottom nav
+
+          const SizedBox(height: 100),
         ],
       ),
     );
@@ -338,31 +439,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoRow(
     BuildContext context,
+    bool isDark,
     IconData icon,
     String label,
     String value,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              gradient: const LinearGradient(
+                colors: [_softOrangeLight, _softOrange],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: _softOrange.withValues(alpha: 0.30),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-            child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+            child: Icon(icon, size: 18, color: Colors.white),
           ),
-          const SizedBox(width: 16),
-          Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(width: 14),
+          Text(
+            '$label:',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               value.isNotEmpty ? value : 'Not set',
               style: TextStyle(
-                color: value.isNotEmpty ? null : Colors.grey,
+                color: value.isNotEmpty
+                    ? (isDark
+                          ? Colors.white.withValues(alpha: 0.85)
+                          : Colors.black87)
+                    : Colors.grey,
                 fontStyle: value.isNotEmpty ? null : FontStyle.italic,
+                fontSize: 14,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -372,46 +493,163 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildActionButton(
+  Widget _buildGradientButton(
     BuildContext context,
     String label,
     IconData icon,
-    VoidCallback onPressed, {
-    bool isPrimary = false,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isPrimary
-              ? Theme.of(context).primaryColor
-              : (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white),
-          foregroundColor: isPrimary
-              ? Colors.white
-              : (isDark ? Colors.white : Colors.black87),
-          elevation: isPrimary ? 4 : 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: isPrimary
-                ? BorderSide.none
-                : BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+    VoidCallback onPressed,
+  ) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: double.infinity,
+        height: 56,
+        decoration: BoxDecoration(
+          gradient: _editBtnGradient,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: _clayBtnShadow(),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon),
-            const SizedBox(width: 12),
+            Icon(icon, color: Colors.white, size: 20),
+            const SizedBox(width: 10),
             Text(
               label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSecondaryButton(
+    BuildContext context,
+    bool isDark,
+    String label,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: double.infinity,
+        height: 56,
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _softOrange.withValues(alpha: 0.35),
+            width: 1.5,
+          ),
+          boxShadow: _clayCardShadow(isDark),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: _softOrange, size: 20),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: TextStyle(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.85)
+                    : Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingTile(
+    BuildContext context,
+    bool isDark,
+    IconData icon,
+    String title,
+    Color iconColor,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 14),
+            Text(
+              title,
+              style: TextStyle(
+                color: iconColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Shared Clay Card widget ────────────────────────────────────────────────────
+class _ClayCard extends StatelessWidget {
+  final bool isDark;
+  final Widget child;
+  const _ClayCard({required this.isDark, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(26),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.07)
+                : Colors.white.withValues(alpha: 0.80),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : Colors.white.withValues(alpha: 0.90),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.30 : 0.08),
+                blurRadius: 24,
+                spreadRadius: 0,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.70),
+                blurRadius: 0,
+                spreadRadius: 0,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: child,
         ),
       ),
     );

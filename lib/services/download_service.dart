@@ -15,15 +15,19 @@ class DownloadService {
 
   final Dio _dio = Dio();
 
-  /// Some older PDFs might have been uploaded to Cloudinary as RAW files
-  /// but stored with an `/image/upload/` URL. For PDFs this can cause
-  /// invalid responses when downloading. This helper rewrites those
-  /// URLs to use `/raw/upload/` so the file can be fetched correctly.
+  /// PDFs are now uploaded as Cloudinary 'image' resource type so that their
+  /// delivery URLs are publicly accessible (res.cloudinary.com/image/upload/...).
+  ///
+  /// Some older PDFs may have been uploaded as 'raw' resource type which isn't
+  /// publicly served by default and causes ERR_INVALID_RESPONSE. This helper
+  /// rewrites those old /raw/upload/ URLs → /image/upload/ so they can be
+  /// fetched and displayed correctly.
   static String normalizeCloudinaryPdfUrl(String url) {
     final isPdf = url.toLowerCase().endsWith('.pdf');
-    final hasImagePath = url.contains('/image/upload/');
-    if (isPdf && hasImagePath) {
-      return url.replaceFirst('/image/upload/', '/raw/upload/');
+    final hasRawPath = url.contains('/raw/upload/');
+    if (isPdf && hasRawPath) {
+      // Old raw-type PDF → rewrite to image for public accessibility
+      return url.replaceFirst('/raw/upload/', '/image/upload/');
     }
     return url;
   }
@@ -46,9 +50,7 @@ class DownloadService {
       }
 
       final filePath = '${dir.path}/$fileName';
-      debugPrint(
-        '[DownloadService] Downloading $normalizedUrl to $filePath',
-      );
+      debugPrint('[DownloadService] Downloading $normalizedUrl to $filePath');
 
       await _dio.download(
         normalizedUrl,
