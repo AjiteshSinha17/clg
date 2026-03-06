@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/message.dart';
+import '../utils/timestamp_utils.dart';
 
 class ChatBubble extends StatelessWidget {
   final Message message;
@@ -79,18 +80,9 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
+  // Modified: Use shared timestamp formatting utility
+  // Shows time only for <24h, date+time for older messages
   String _formatTime(DateTime time) {
-    final now = DateTime.now();
-    final difference = now.difference(time);
-
-    if (difference.inDays > 0) {
-      return '${time.day}/${time.month}/${time.year}';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
-    } else {
-      return 'Just now';
-    }
+    return formatMessageTimestamp(time);
   }
 }

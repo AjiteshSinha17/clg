@@ -47,15 +47,15 @@ class AuthProvider with ChangeNotifier {
         email: email,
         password: password,
       );
-      
+
       // Update user immediately
       _user = userCredential.user;
-      
+
       // Update last login timestamp
       if (_user != null) {
         await _userService.updateLastLogin(_user!.uid);
       }
-      
+
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -97,7 +97,7 @@ class AuthProvider with ChangeNotifier {
           avatarUrl: _user!.photoURL,
         );
       }
-      
+
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -125,14 +125,13 @@ class AuthProvider with ChangeNotifier {
 
       if (kIsWeb) {
         // Force account picker on web
-        final googleProvider = GoogleAuthProvider()
-            .setCustomParameters({'prompt': 'select_account'});
+        final googleProvider = GoogleAuthProvider().setCustomParameters({
+          'prompt': 'select_account',
+        });
         userCredential = await _auth.signInWithPopup(googleProvider);
       } else {
         // Configure GoogleSignIn with proper scopes
-        final googleSignIn = GoogleSignIn(
-          scopes: ['email', 'profile'],
-        );
+        final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
         // Clear cached account to force account picker every time
         try {
           await googleSignIn.signOut();
@@ -149,14 +148,15 @@ class AuthProvider with ChangeNotifier {
         }
 
         final googleAuth = await googleUser.authentication;
-        
+
         if (googleAuth.idToken == null) {
           throw FirebaseAuthException(
             code: 'missing-id-token',
-            message: 'Failed to get ID token from Google Sign-In. Please check Firebase Console configuration.',
+            message:
+                'Failed to get ID token from Google Sign-In. Please check Firebase Console configuration.',
           );
         }
-        
+
         final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
@@ -174,7 +174,8 @@ class AuthProvider with ChangeNotifier {
         await _userService.createUserProfile(
           uid: _user!.uid,
           email: _user!.email ?? '',
-          name: _user!.displayName ?? (_user!.email?.split('@').first ?? 'User'),
+          name:
+              _user!.displayName ?? (_user!.email?.split('@').first ?? 'User'),
           avatarUrl: _user!.photoURL,
         );
       } else {

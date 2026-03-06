@@ -101,14 +101,20 @@ service cloud.firestore {
     match /community_media/{docId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
-      allow update, delete: if false;
+      allow update, delete: if isAuthenticated() && resource.data.senderId == request.auth.uid;
     }
 
     // Personal chat media (images/PDFs in 1:1 chat)
     match /chat_media/{docId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
-      allow update, delete: if false;
+      allow update, delete: if isAuthenticated() && resource.data.senderId == request.auth.uid;
+    }
+    
+    // Personal message notifications (trigger for Render server)
+    match /personal_message_notifications/{docId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
     }
 
     // Posts (for community feed)

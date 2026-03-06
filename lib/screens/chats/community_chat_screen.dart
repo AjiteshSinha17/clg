@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
@@ -9,9 +10,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../config/theme.dart';
 import '../../models/chat_media.dart';
 import '../../models/message.dart';
+import '../../models/user.dart';
+import '../../screens/roommates/roommate_detail_screen.dart';
 import '../../services/community_chat_service.dart';
+import '../../services/download_service.dart';
 import '../../services/storage_service.dart';
 import '../../utils/read_file_bytes.dart';
+import '../../utils/timestamp_utils.dart';
+import '../../widgets/full_screen_image_viewer.dart';
 
 class CommunityChatScreen extends StatefulWidget {
   const CommunityChatScreen({super.key});
@@ -229,9 +235,11 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         ),
                         title: Text(media.fileName),
                         subtitle: Text(media.senderName),
+                        // Modified: Use download service instead of url_launcher
                         trailing: IconButton(
                           icon: const Icon(Icons.download),
-                          onPressed: () => _openUrl(media.fileUrl),
+                          onPressed: () =>
+                              _downloadFile(media.fileUrl, media.fileName),
                         ),
                       );
                     },
@@ -245,6 +253,35 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     );
   }
 
+  // Modified: Download file using DownloadService instead of just opening URL
+  Future<void> _downloadFile(String url, String fileName) async {
+    if (url.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invalid file URL')));
+      }
+      return;
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Downloading...')));
+    }
+
+    final success = await DownloadService().downloadAndOpenFile(url, fileName);
+    if (!mounted) return;
+
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to download file. Please try again.'),
+        ),
+      );
+    }
+  }
+
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -254,6 +291,15 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Could not open link')));
     }
+  }
+
+  // Modified: Open image in full-screen viewer instead of url_launcher
+  void _openImage(String imageUrl) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FullScreenImageViewer(imageUrl: imageUrl),
+      ),
+    );
   }
 
   @override
@@ -304,6 +350,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       message: m,
                       isMe: isMe,
                       onOpenUrl: _openUrl,
+                      // Modified: Pass image viewer and download handlers
+                      onOpenImage: _openImage,
+                      onDownloadFile: _downloadFile,
+                      onTapSender: () => _openUserProfile(m.senderId),
                     );
                   },
                 );
@@ -314,6 +364,46 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _openUserProfile(String userId) async {
+    final currentUserId = auth.FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null || !mounted) return;
+
+    // If user taps on themselves, you can optionally navigate to their own profile tab.
+    if (userId == currentUserId) {
+      // Rely on your existing navigation (e.g. bottom nav) for own profile.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This is you. Open your profile tab to edit.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (!doc.exists) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('User profile not found')));
+        return;
+      }
+      final user = User.fromFirestore(doc);
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => RoommateDetailScreen(profile: user)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to open profile: $e')));
+    }
   }
 
   Widget _buildInput() {
@@ -371,117 +461,204 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   }
 }
 
+// Modified: Added onOpenImage, onDownloadFile callbacks, and timestamp display
 class _CommunityBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
   final Future<void> Function(String) onOpenUrl;
+  final void Function(String) onOpenImage;
+  final Future<void> Function(String url, String fileName) onDownloadFile;
+  final VoidCallback? onTapSender;
 
   const _CommunityBubble({
     required this.message,
     required this.isMe,
     required this.onOpenUrl,
+    required this.onOpenImage,
+    required this.onDownloadFile,
+    this.onTapSender,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: isMe ? AppTheme.mountainOrange : theme.cardColor,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: isMe ? const Radius.circular(16) : Radius.zero,
-            bottomRight: isMe ? Radius.zero : const Radius.circular(16),
+
+    final bubble = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isMe ? AppTheme.mountainOrange : theme.cardColor,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(16),
+          topRight: const Radius.circular(16),
+          bottomLeft: isMe ? const Radius.circular(16) : Radius.zero,
+          bottomRight: isMe ? Radius.zero : const Radius.circular(16),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.78,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!isMe)
-              Text(
-                message.senderName,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: theme.colorScheme.primary,
-                ),
+        ],
+      ),
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.78,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isMe)
+            InkWell(
+              onTap: onTapSender,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 12,
+                    backgroundImage: message.senderAvatarUrl.isNotEmpty
+                        ? NetworkImage(message.senderAvatarUrl)
+                        : null,
+                    child: message.senderAvatarUrl.isEmpty
+                        ? Text(
+                            message.senderName.isNotEmpty
+                                ? message.senderName[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(fontSize: 12),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    message.senderName,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ],
               ),
-            if (!isMe) const SizedBox(height: 4),
-            if (message.type == MessageType.image && message.fileUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: InkWell(
-                  onTap: () => onOpenUrl(message.fileUrl!),
-                  child: Image.network(
-                    message.fileUrl!,
-                    width: 220,
-                    height: 180,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox(
+            ),
+          if (!isMe) const SizedBox(height: 4),
+          // Modified: Image tap now opens in full-screen viewer
+          if (message.type == MessageType.image && message.fileUrl != null)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () => onOpenImage(message.fileUrl!),
+                    child: Image.network(
+                      message.fileUrl!,
                       width: 220,
-                      height: 120,
-                      child: Center(child: Icon(Icons.broken_image)),
+                      height: 180,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox(
+                        width: 220,
+                        height: 120,
+                        child: Center(child: Icon(Icons.broken_image)),
+                      ),
                     ),
                   ),
                 ),
-              )
-            else if (message.type == MessageType.pdf && message.fileUrl != null)
-              InkWell(
-                onTap: () => onOpenUrl(message.fileUrl!),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.picture_as_pdf,
-                      color: isMe ? Colors.white : theme.colorScheme.primary,
-                      size: 32,
+                // Added: Download button for images
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.download,
+                      size: 20,
+                      color: isMe ? Colors.white70 : theme.colorScheme.primary,
                     ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        message.fileName ?? 'document.pdf',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isMe
-                              ? Colors.white
-                              : theme.textTheme.bodyMedium?.color,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    onPressed: () => onDownloadFile(
+                      message.fileUrl!,
+                      message.fileName ?? 'image.jpg',
+                    ),
+                    tooltip: 'Download image',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+              ],
+            )
+          else if (message.type == MessageType.pdf && message.fileUrl != null)
+            InkWell(
+              onTap: () => onOpenUrl(message.fileUrl!),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.picture_as_pdf,
+                    color: isMe ? Colors.white : theme.colorScheme.primary,
+                    size: 32,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      message.fileName ?? 'document.pdf',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: isMe
+                            ? Colors.white
+                            : theme.textTheme.bodyMedium?.color,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    Icon(
-                      Icons.open_in_new,
+                  ),
+                  // Modified: Download button for PDFs
+                  IconButton(
+                    icon: Icon(
+                      Icons.download,
                       size: 18,
                       color: isMe ? Colors.white70 : theme.colorScheme.primary,
                     ),
-                  ],
-                ),
-              )
-            else
-              Text(
-                message.content,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isMe
-                      ? Colors.white
-                      : theme.textTheme.bodyMedium?.color,
-                ),
+                    onPressed: () => onDownloadFile(
+                      message.fileUrl!,
+                      message.fileName ?? 'document.pdf',
+                    ),
+                    tooltip: 'Download PDF',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
-          ],
-        ),
+            )
+          else
+            Text(
+              message.content,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: isMe ? Colors.white : theme.textTheme.bodyMedium?.color,
+              ),
+            ),
+          // Added: Timestamp display using shared formatter
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Text(
+              formatMessageTimestamp(message.timestamp),
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 10,
+                color: isMe
+                    ? Colors.white70
+                    : theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+
+    // Make the whole bubble tappable for other users to make it easier
+    if (!isMe && onTapSender != null) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: InkWell(onTap: onTapSender, child: bubble),
+      );
+    }
+
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: bubble,
     );
   }
 }

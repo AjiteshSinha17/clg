@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 /// OneSignal integration:
@@ -39,12 +40,20 @@ class OneSignalService {
     if (user == null) return;
 
     final id = OneSignal.User.pushSubscription.id;
-    if (id == null || id.isEmpty) return;
+    if (id == null || id.isEmpty) {
+      // [DEBUG] No OneSignal subscription ID available yet
+      debugPrint('[OneSignalService] No subscription ID for user=${user.uid}');
+      return;
+    }
 
     await _firestore.collection('users').doc(user.uid).set({
       'oneSignalId': id,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+
+    // [DEBUG] Confirm OneSignal ID saved
+    debugPrint(
+      '[OneSignalService] Saved OneSignal ID=$id for user=${user.uid}',
+    );
   }
 }
-

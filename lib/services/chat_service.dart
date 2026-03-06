@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/chat.dart';
 import '../models/chat_media.dart';
 import '../models/message.dart';
@@ -50,6 +51,9 @@ class ChatService {
     final chatData = chatSnap.data() ?? {};
     final participants = List<String>.from(chatData['participants'] ?? []);
     final otherParticipants = participants.where((id) => id != currentUserId);
+    final receiverId = otherParticipants.isNotEmpty
+        ? otherParticipants.first
+        : null;
 
     // Add message to subcollection
     await chatRef.collection('messages').add({
@@ -61,6 +65,7 @@ class ChatService {
       'timestamp': FieldValue.serverTimestamp(),
       'isRead': false,
       'type': 'text',
+      if (receiverId != null) 'receiverId': receiverId,
     });
 
     // Update chat document and increment unread counts for other participants
@@ -75,6 +80,20 @@ class ChatService {
       'lastMessageTime': FieldValue.serverTimestamp(),
       ...unreadUpdates,
     });
+
+    // Create notification document for backend / OneSignal trigger
+    if (receiverId != null) {
+      await _createPersonalMessageNotification(
+        chatId: chatId,
+        receiverId: receiverId,
+        preview: content,
+        type: 'text',
+      );
+      // [DEBUG] Confirm notification doc was created for personal message
+      debugPrint(
+        '[ChatService] Notification doc created for text message in chat=$chatId to receiver=$receiverId',
+      );
+    }
   }
 
   /// Mark this chat as read for current user (sets unread count to 0)
@@ -126,12 +145,18 @@ class ChatService {
   }) async {
     final currentUserId = _auth.currentUser?.uid;
     final user = _auth.currentUser;
-    if (currentUserId == null || user == null) throw Exception('User not logged in');
+    if (currentUserId == null || user == null)
+      throw Exception('User not logged in');
 
     final chatRef = _firestore.collection('chats').doc(chatId);
     final chatSnap = await chatRef.get();
-    final participants = List<String>.from(chatSnap.data()?['participants'] ?? []);
+    final participants = List<String>.from(
+      chatSnap.data()?['participants'] ?? [],
+    );
     final otherParticipants = participants.where((id) => id != currentUserId);
+    final receiverId = otherParticipants.isNotEmpty
+        ? otherParticipants.first
+        : null;
 
     final content = caption ?? (type == 'image' ? 'Image' : 'PDF');
     final msgRef = await chatRef.collection('messages').add({
@@ -145,6 +170,7 @@ class ChatService {
       'type': type,
       'fileUrl': fileUrl,
       'fileName': fileName ?? (type == 'pdf' ? 'document.pdf' : 'image.jpg'),
+      if (receiverId != null) 'receiverId': receiverId,
     });
 
     // Save to chat_media for download section (link + sender name/id)
@@ -169,6 +195,19 @@ class ChatService {
       'lastMessageTime': FieldValue.serverTimestamp(),
       ...unreadUpdates,
     });
+
+    if (receiverId != null) {
+      await _createPersonalMessageNotification(
+        chatId: chatId,
+        receiverId: receiverId,
+        preview: content,
+        type: type,
+      );
+      // [DEBUG] Confirm notification doc was created for media message
+      debugPrint(
+        '[ChatService] Notification doc created for $type message in chat=$chatId to receiver=$receiverId',
+      );
+    }
   }
 
   /// Stream of media (download section) for a personal chat
@@ -179,5 +218,25 @@ class ChatService {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((s) => s.docs.map((d) => ChatMedia.fromFirestore(d)).toList());
+  }
+
+  /// Write a notification document so the backend can send OneSignal push.
+  Future<void> _createPersonalMessageNotification({
+    required String chatId,
+    required String receiverId,
+    required String preview,
+    required String type,
+  }) async {
+    final sender = _auth.currentUser;
+    if (sender == null) return;
+
+    await _firestore.collection('personal_message_notifications').add({
+      'chatId': chatId,
+      'senderId': sender.uid,
+      'receiverId': receiverId,
+      'preview': preview,
+      'type': type,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 }

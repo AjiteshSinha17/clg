@@ -93,12 +93,12 @@ class AppDrawer extends StatelessWidget {
                     _buildDrawerItem(
                       context,
                       icon: Icons.chat_bubble_outline,
-                      title: 'Community Chat',
+                      // Modified: Renamed from 'Community Chat' to 'Chat'
+                      title: 'Chat',
                       onTap: () {
                         context.pop(); // Close drawer
-                        context.go(
-                          '/shell',
-                        ); // Navigate to main shell (Community is default)
+                        // Modified: Navigate to chats wrapper (Personal chat tab by default)
+                        context.go('/shell/chats');
                       },
                       isDark: isDark,
                     ),

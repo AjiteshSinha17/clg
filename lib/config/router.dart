@@ -13,6 +13,7 @@ import '../screens/roommates/roommate_detail_screen.dart';
 import '../screens/roommates/roommate_search_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/chats/chat_screen.dart';
+import '../screens/chats/chats_wrapper_screen.dart';
 import '../screens/notifications/notifications_screen.dart';
 import '../screens/connections/connection_requests_screen.dart';
 import '../models/user.dart';
@@ -70,6 +71,11 @@ final router = GoRouter(
               path: 'connection-requests',
               builder: (context, state) => const ConnectionRequestsScreen(),
             ),
+            // Added: Route for Chats wrapper (Personal + Community tabs)
+            GoRoute(
+              path: 'chats',
+              builder: (context, state) => const ChatsWrapperScreen(),
+            ),
           ],
         ),
         GoRoute(
@@ -86,12 +92,12 @@ final router = GoRouter(
 
   redirect: (context, state) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    
+
     // Wait for auth to initialize
     if (!authProvider.isInitialized) {
       return null; // Don't redirect while initializing
     }
-    
+
     final loggedIn = authProvider.user != null;
     final isLoginPage = state.matchedLocation == '/login';
     final isSignupPage = state.matchedLocation == '/signup';

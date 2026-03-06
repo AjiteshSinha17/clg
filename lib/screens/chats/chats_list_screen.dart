@@ -6,6 +6,7 @@ import '../../services/chat_service.dart';
 import '../../services/user_service.dart';
 import '../../models/chat.dart';
 import '../../models/user.dart';
+import '../../utils/timestamp_utils.dart';
 
 class ChatsListScreen extends StatelessWidget {
   const ChatsListScreen({super.key});
@@ -127,18 +128,8 @@ class _ChatListItem extends StatelessWidget {
     );
   }
 
+  // Modified: Use shared timestamp formatting utility
   String _formatTime(DateTime time) {
-    final now = DateTime.now();
-    final difference = now.difference(time);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays}d';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m';
-    } else {
-      return 'now';
-    }
+    return formatMessageTimestamp(time);
   }
 }

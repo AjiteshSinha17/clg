@@ -54,11 +54,7 @@ class StorageService {
       ..fields['upload_preset'] = _uploadPreset
       ..fields['folder'] = folder
       ..files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          bytes,
-          filename: fileName,
-        ),
+        http.MultipartFile.fromBytes('file', bytes, filename: fileName),
       );
 
     final streamed = await request.send();
@@ -75,7 +71,9 @@ class StorageService {
         jsonDecode(response.body) as Map<String, dynamic>;
     final url = data['secure_url'] as String?;
     if (url == null || url.isEmpty) {
-      throw Exception('Cloudinary response missing secure_url for $contextLabel');
+      throw Exception(
+        'Cloudinary response missing secure_url for $contextLabel',
+      );
     }
     return url;
   }
@@ -122,8 +120,11 @@ class StorageService {
   }
 
   /// Upload a PDF file for community content (stored as Cloudinary "raw" resource).
-  Future<String> uploadPDFBytes(String userId, Uint8List bytes,
-      {String? fileName}) async {
+  Future<String> uploadPDFBytes(
+    String userId,
+    Uint8List bytes, {
+    String? fileName,
+  }) async {
     final safeId = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final name = _sanitizePathSegment(fileName ?? 'document_$ts.pdf');
@@ -138,8 +139,11 @@ class StorageService {
   }
 
   /// Upload an image file for community content.
-  Future<String> uploadCommunityImageBytes(String userId, Uint8List bytes,
-      {String? fileName}) async {
+  Future<String> uploadCommunityImageBytes(
+    String userId,
+    Uint8List bytes, {
+    String? fileName,
+  }) async {
     final safeId = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final ext = (fileName?.split('.').last ?? 'jpg').toLowerCase();
@@ -155,8 +159,12 @@ class StorageService {
   }
 
   /// Upload any file type for community content (notes, documents, etc.).
-  Future<String> uploadCommunityFileBytes(String userId, Uint8List bytes,
-      {String? fileName, String? contentType}) async {
+  Future<String> uploadCommunityFileBytes(
+    String userId,
+    Uint8List bytes, {
+    String? fileName,
+    String? contentType,
+  }) async {
     final safeId = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final ext = (fileName?.split('.').last ?? 'file').toLowerCase();
@@ -174,12 +182,17 @@ class StorageService {
 
   /// Upload multiple files at once.
   Future<List<String>> uploadMultipleFileBytes(
-      String userId, List<Uint8List> filesBytes) async {
+    String userId,
+    List<Uint8List> filesBytes,
+  ) async {
     try {
       final List<String> urls = [];
       for (var bytes in filesBytes) {
-        final url =
-            await uploadCommunityFileBytes(userId, bytes, fileName: null);
+        final url = await uploadCommunityFileBytes(
+          userId,
+          bytes,
+          fileName: null,
+        );
         urls.add(url);
       }
       return urls;
@@ -198,8 +211,7 @@ class StorageService {
     final safeChat = _sanitizePathSegment(chatId);
     final safeUser = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
-    final name =
-        _sanitizePathSegment(fileName ?? 'image_${safeUser}_$ts.jpg');
+    final name = _sanitizePathSegment(fileName ?? 'image_${safeUser}_$ts.jpg');
     return _uploadBytes(
       bytes: bytes,
       fileName: name,
@@ -241,8 +253,7 @@ class StorageService {
     final safeRoom = _sanitizePathSegment(roomId);
     final safeUser = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
-    final name =
-        _sanitizePathSegment(fileName ?? 'image_${safeUser}_$ts.jpg');
+    final name = _sanitizePathSegment(fileName ?? 'image_${safeUser}_$ts.jpg');
     return _uploadBytes(
       bytes: bytes,
       fileName: name,
