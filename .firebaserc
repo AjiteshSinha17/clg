@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "clgjone"
+  },
   "targets": {},
   "etags": {}
 }

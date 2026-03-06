@@ -1,9 +1,66 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onConnectionRequestCreated = exports.onCommunityMessageCreated = exports.onChatMessageCreated = void 0;
+exports.onConnectionRequestCreated = exports.onCommunityMessageCreated = exports.onChatMessageCreated = exports.cloudinarySignUpload = void 0;
 const admin = require("firebase-admin");
 const firestore_1 = require("firebase-functions/v2/firestore");
+const https_1 = require("firebase-functions/v2/https");
+const params_1 = require("firebase-functions/params");
+const crypto = require("crypto");
 admin.initializeApp();
+const CLOUDINARY_CLOUD_NAME = (0, params_1.defineSecret)('CLOUDINARY_CLOUD_NAME');
+const CLOUDINARY_API_KEY = (0, params_1.defineSecret)('CLOUDINARY_API_KEY');
+const CLOUDINARY_API_SECRET = (0, params_1.defineSecret)('CLOUDINARY_API_SECRET');
+function assertAllowedFolder(folder) {
+    // Keep this tight: only allow folders your app uses.
+    const allowedPrefixes = [
+        'chat_media/',
+        'community_content/',
+        'profile_images/',
+        'college_ids/',
+        'profile_banners/',
+    ];
+    if (!allowedPrefixes.some((p) => folder.startsWith(p))) {
+        throw new https_1.HttpsError('permission-denied', 'Folder not allowed');
+    }
+}
+exports.cloudinarySignUpload = (0, https_1.onCall)({
+    secrets: [CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET],
+}, async (req) => {
+    if (!req.auth?.uid) {
+        throw new https_1.HttpsError('unauthenticated', 'Sign-in required');
+    }
+    const data = (req.data ?? {});
+    const folder = (data.folder ?? '');
+    const publicId = (data.publicId ?? '');
+    const timestamp = Number(data.timestamp);
+    const resourceType = (data.resourceType ?? '');
+    if (!folder || !publicId || !Number.isFinite(timestamp) || timestamp <= 0) {
+        throw new https_1.HttpsError('invalid-argument', 'Missing folder/publicId/timestamp');
+    }
+    if (resourceType !== 'image' && resourceType !== 'raw') {
+        throw new https_1.HttpsError('invalid-argument', 'Invalid resourceType');
+    }
+    assertAllowedFolder(folder);
+    const cloudName = CLOUDINARY_CLOUD_NAME.value();
+    const apiKey = CLOUDINARY_API_KEY.value();
+    const apiSecret = CLOUDINARY_API_SECRET.value();
+    if (!cloudName || !apiKey || !apiSecret) {
+        throw new https_1.HttpsError('failed-precondition', 'Cloudinary secrets not configured');
+    }
+    // Cloudinary signature: sha1(sorted_params + api_secret)
+    // We sign only the params we actually send from the client.
+    const toSign = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}`;
+    const signature = crypto
+        .createHash('sha1')
+        .update(toSign + apiSecret)
+        .digest('hex');
+    return {
+        cloudName,
+        apiKey,
+        signature,
+        timestamp,
+    };
+});
 // Helper function to check if user wants notifications for personal chat
 async function shouldNotifyPersonalChat(uid) {
     const userSnap = await admin.firestore().collection('users').doc(uid).get();

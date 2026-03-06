@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
+import '../config/backend_config.dart';
 import '../config/cloudinary_config.dart';
 
 /// StorageService now uses **Cloudinary** instead of Firebase Storage.
@@ -28,6 +30,154 @@ class StorageService {
     return Uri.parse(
       'https://api.cloudinary.com/v1_1/$_cloudName/$resourceType/upload',
     );
+  }
+
+  static String _stripExtension(String fileName) {
+    return fileName.replaceFirst(RegExp(r'\.[^.]+$'), '');
+  }
+
+  /// Returns null if signer is not configured or returns an error (e.g. 404).
+  /// Caller can fall back to unsigned upload.
+  Future<Map<String, dynamic>?> _getSignedUploadParams({
+    required String folder,
+    required String publicId,
+    required int timestamp,
+  }) async {
+    final baseUrl = BackendConfig.baseUrl.trim().replaceFirst(RegExp(r'/$'), '');
+    if (baseUrl.isEmpty) {
+      return null;
+    }
+
+    final user = auth.FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+
+    try {
+      final idToken = await user.getIdToken();
+      final uri = Uri.parse('$baseUrl/cloudinary/sign-upload');
+      final resp = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({
+          'folder': folder,
+          'publicId': publicId,
+          'timestamp': timestamp,
+          'type': 'upload',
+        }),
+      );
+
+      if (resp.statusCode != 200) {
+        debugPrint('[StorageService] Signer returned ${resp.statusCode}: ${resp.body}');
+        return null;
+      }
+
+      final decoded = jsonDecode(resp.body);
+      if (decoded is! Map) return null;
+      return decoded.cast<String, dynamic>();
+    } catch (e) {
+      debugPrint('[StorageService] Signer error: $e');
+      return null;
+    }
+  }
+
+  Future<String> _uploadBytesSigned({
+    required Uint8List bytes,
+    required String fileName,
+    required String folder,
+    required String resourceType,
+    required int maxBytes,
+    required String contextLabel,
+  }) async {
+    if (_cloudName.isEmpty) {
+      throw Exception(
+        'Cloudinary is not configured. Set cloudName in CloudinaryConfig.',
+      );
+    }
+
+    if (bytes.lengthInBytes > maxBytes) {
+      final mb = (maxBytes / (1024 * 1024)).toStringAsFixed(0);
+      throw Exception('File too large for $contextLabel. Max $mb MB.');
+    }
+
+    final ts = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final publicId = _sanitizePathSegment(_stripExtension(fileName));
+
+    final sign = await _getSignedUploadParams(
+      folder: folder,
+      publicId: publicId,
+      timestamp: ts,
+    );
+
+    if (sign == null) {
+      // Signer not available (e.g., not deployed yet / wrong URL). Fall back to
+      // unsigned upload so the app can still function.
+      return _uploadBytes(
+        bytes: bytes,
+        fileName: fileName,
+        folder: folder,
+        resourceType: resourceType,
+        maxBytes: maxBytes,
+        contextLabel: contextLabel,
+      );
+    }
+
+    final signature = sign['signature'] as String?;
+    final apiKey = sign['apiKey'] as String?;
+    final cloudName = sign['cloudName'] as String?;
+    final timestamp = sign['timestamp'];
+    final type = (sign['type'] as String?) ?? 'upload';
+
+    final tsStr = (timestamp is num) ? timestamp.toInt().toString() : '$timestamp';
+    if (signature == null ||
+        signature.isEmpty ||
+        apiKey == null ||
+        apiKey.isEmpty ||
+        cloudName == null ||
+        cloudName.isEmpty ||
+        tsStr.isEmpty) {
+      throw Exception('Signer response missing fields');
+    }
+
+    final uri = Uri.parse(
+      'https://api.cloudinary.com/v1_1/$cloudName/$resourceType/upload',
+    );
+
+    final request = http.MultipartRequest('POST', uri)
+      ..fields['api_key'] = apiKey
+      ..fields['timestamp'] = tsStr
+      ..fields['signature'] = signature
+      ..fields['folder'] = folder
+      ..fields['public_id'] = publicId
+      ..fields['type'] = type
+      ..files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          bytes,
+          filename: fileName,
+        ),
+      );
+
+    final streamed = await request.send();
+    final response = await http.Response.fromStream(streamed);
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(
+        'Cloudinary upload failed for $contextLabel: '
+        '${response.statusCode} ${response.body}',
+      );
+    }
+
+    final Map<String, dynamic> data =
+        jsonDecode(response.body) as Map<String, dynamic>;
+    final url = data['secure_url'] as String?;
+    if (url == null || url.isEmpty) {
+      throw Exception(
+        'Cloudinary response missing secure_url for $contextLabel',
+      );
+    }
+    return url;
   }
 
   Future<String> _uploadBytes({
@@ -212,7 +362,7 @@ class StorageService {
     final safeUser = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final name = _sanitizePathSegment(fileName ?? 'image_${safeUser}_$ts.jpg');
-    return _uploadBytes(
+    return _uploadBytesSigned(
       bytes: bytes,
       fileName: name,
       folder: 'chat_media/personal/$safeChat',
@@ -233,7 +383,7 @@ class StorageService {
     final safeUser = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final name = _sanitizePathSegment(fileName ?? 'doc_${safeUser}_$ts.pdf');
-    return _uploadBytes(
+    return _uploadBytesSigned(
       bytes: bytes,
       fileName: name,
       folder: 'chat_media/personal/$safeChat',
@@ -254,7 +404,7 @@ class StorageService {
     final safeUser = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final name = _sanitizePathSegment(fileName ?? 'image_${safeUser}_$ts.jpg');
-    return _uploadBytes(
+    return _uploadBytesSigned(
       bytes: bytes,
       fileName: name,
       folder: 'chat_media/community/$safeRoom',
@@ -275,7 +425,7 @@ class StorageService {
     final safeUser = _sanitizePathSegment(userId);
     final ts = DateTime.now().millisecondsSinceEpoch;
     final name = _sanitizePathSegment(fileName ?? 'doc_${safeUser}_$ts.pdf');
-    return _uploadBytes(
+    return _uploadBytesSigned(
       bytes: bytes,
       fileName: name,
       folder: 'chat_media/community/$safeRoom',
