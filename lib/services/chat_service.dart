@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'onesignal_service.dart';
 import '../models/chat.dart';
 import '../models/chat_media.dart';
 import '../models/message.dart';
@@ -238,5 +239,23 @@ class ChatService {
       'type': type,
       'createdAt': FieldValue.serverTimestamp(),
     });
+
+    // Try sending push notification using OneSignal REST API
+    try {
+      final userDoc = await _firestore.collection('users').doc(receiverId).get();
+      if (userDoc.exists) {
+        final oneSignalId = userDoc.data()?['oneSignalId'] as String?;
+        if (oneSignalId != null && oneSignalId.isNotEmpty) {
+          final senderName = sender.displayName ?? 'Someone';
+          await OneSignalService().sendPushNotification(
+            targetOneSignalIds: [oneSignalId],
+            title: senderName,
+            message: preview,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('[ChatService] Error sending push notification: $e');
+    }
   }
 }

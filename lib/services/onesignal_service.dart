@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +18,12 @@ class OneSignalService {
   /// Set this to your OneSignal App ID.
   static const String oneSignalAppId = String.fromEnvironment(
     'ONESIGNAL_APP_ID',
+    defaultValue: '5c22329e-e3ff-4be7-9d03-76f7773bf8cb',
+  );
+
+  /// REST API Key set securely for development use.
+  static const String _oneSignalRestApiKey = String.fromEnvironment(
+    'ONESIGNAL_REST_API_KEY',
     defaultValue: '',
   );
 
@@ -56,4 +64,43 @@ class OneSignalService {
       '[OneSignalService] Saved OneSignal ID=$id for user=${user.uid}',
     );
   }
+
+  /// Send a push notification using OneSignal REST API.
+  Future<void> sendPushNotification({
+    required List<String> targetOneSignalIds,
+    required String title,
+    required String message,
+  }) async {
+    if (oneSignalAppId.isEmpty || _oneSignalRestApiKey.isEmpty) {
+      debugPrint('[OneSignalService] Missing App ID or API Key. Push cancelled.');
+      return;
+    }
+    
+    if (targetOneSignalIds.isEmpty) return;
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://onesignal.com/api/v1/notifications'),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': 'Basic $_oneSignalRestApiKey',
+        },
+        body: jsonEncode({
+          'app_id': oneSignalAppId,
+          'include_player_ids': targetOneSignalIds,
+          'headings': {'en': title},
+          'contents': {'en': message},
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('[OneSignalService] Push sent successfully: ${response.body}');
+      } else {
+        debugPrint('[OneSignalService] Push failed: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('[OneSignalService] Error sending push notification: $e');
+    }
+  }
 }
+

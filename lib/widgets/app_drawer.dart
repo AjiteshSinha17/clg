@@ -53,15 +53,7 @@ class AppDrawer extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                     children: [
-                      _DrawerItem(
-                        icon: Icons.chat_bubble_rounded,
-                        title: 'Chat',
-                        isDark: isDark,
-                        onTap: () {
-                          context.pop();
-                          context.go('/shell/chats');
-                        },
-                      ),
+
                       _DrawerItem(
                         icon: Icons.person_search_rounded,
                         title: 'Search People',

@@ -14,6 +14,8 @@ import '../screens/roommates/roommate_search_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/chats/chat_screen.dart';
 import '../screens/chats/chats_wrapper_screen.dart';
+import '../screens/ai/flux_chat_screen.dart';
+
 import '../screens/notifications/notifications_screen.dart';
 import '../screens/connections/connection_requests_screen.dart';
 import '../models/user.dart';
@@ -75,6 +77,10 @@ final router = GoRouter(
             GoRoute(
               path: 'chats',
               builder: (context, state) => const ChatsWrapperScreen(),
+            ),
+            GoRoute(
+              path: 'flux',
+              builder: (context, state) => const FluxChatScreen(),
             ),
           ],
         ),

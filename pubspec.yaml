@@ -49,11 +49,14 @@ dependencies:
   lottie: ^3.3.1
   url_launcher: ^6.3.1
   onesignal_flutter: ^5.3.0
-  http: ^1.2.0
+  http: ^1.6.0
   intl: ^0.20.2
   dio: ^5.9.2
   path_provider: ^2.1.5
   open_filex: ^4.7.0
+  google_generative_ai: ^0.4.7
+  flutter_markdown: ^0.7.4
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:

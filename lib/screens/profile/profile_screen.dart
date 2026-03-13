@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:ui';
 
 import '../../state/auth_provider.dart';
@@ -384,46 +383,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         context,
                         listen: false,
                       ).signOut();
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey.withValues(alpha: 0.15),
-                  ),
-                  _buildSettingTile(
-                    context,
-                    isDark,
-                    Icons.cloud_sync_rounded,
-                    'Test Database Connection',
-                    Colors.blue,
-                    () async {
-                      try {
-                        final firestore = FirebaseFirestore.instance;
-                        await firestore.collection('test_connection').add({
-                          'timestamp': FieldValue.serverTimestamp(),
-                          'device': 'flutter_app',
-                          'status': 'working',
-                        });
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                '✅ Success! Database is connected and writable.',
-                              ),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('❌ Error: $e'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
                     },
                   ),
                 ],

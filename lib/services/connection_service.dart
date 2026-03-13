@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:flutter/foundation.dart';
+
 import '../models/connection_request.dart';
 import 'chat_service.dart';
+import 'onesignal_service.dart';
 
 /// Connection flow: send request -> accept/reject -> on accept create chat.
 /// Firestore: connection_requests { fromUserId, toUserId, status, createdAt, updatedAt }.
@@ -35,6 +38,25 @@ class ConnectionService {
       'status': 'pending',
       'createdAt': FieldValue.serverTimestamp(),
     });
+
+    // Try sending push notification using OneSignal REST API
+    try {
+      final userDoc = await _firestore.collection('users').doc(toUserId).get();
+      if (userDoc.exists) {
+        final oneSignalId = userDoc.data()?['oneSignalId'] as String?;
+        if (oneSignalId != null && oneSignalId.isNotEmpty) {
+          final senderDoc = await _firestore.collection('users').doc(from).get();
+          final senderName = senderDoc.data()?['name'] ?? 'Someone';
+          await OneSignalService().sendPushNotification(
+            targetOneSignalIds: [oneSignalId],
+            title: 'New Connection Request',
+            message: '$senderName wants to connect with you.',
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('[ConnectionService] Error sending push notification: $e');
+    }
   }
 
   /// Accept a request. Creates a chat and returns chatId so UI can navigate.

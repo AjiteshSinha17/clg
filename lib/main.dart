@@ -6,6 +6,7 @@ import 'config/router.dart';
 import 'config/theme.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
+import 'services/in_app_notification_service.dart';
 import 'services/onesignal_service.dart';
 import 'state/auth_provider.dart';
 import 'state/chat_provider.dart';
@@ -56,6 +57,9 @@ class MyApp extends StatelessWidget {
                 final ns = NotificationService();
                 ns.init();
                 ns.listenForeground(scaffoldMessengerKey);
+
+                // Initialize in-app real-time notifications
+                InAppNotificationService().init(scaffoldMessengerKey);
 
                 // OneSignal init with your app id (OneSignal dashboard)
                 OneSignalService().init(

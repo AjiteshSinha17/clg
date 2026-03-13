@@ -42,114 +42,120 @@ class _ChatsWrapperScreenState extends State<ChatsWrapperScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
 
-    return Column(
-      children: [
-        // Custom Toggle / Tab Bar
-        // Custom Bubble Switch
-        Container(
-          height: 50,
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.07)
-                : Colors.black.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(
+    return SafeArea(
+      child: Column(
+        children: [
+          // Custom Toggle / Tab Bar
+          // Custom Bubble Switch
+          Container(
+            height: 50,
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.06),
+                  ? Colors.white.withValues(alpha: 0.07)
+                  : Colors.black.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.06),
+              ),
             ),
-          ),
-          child: Stack(
-            children: [
-              AnimatedAlign(
-                alignment: _index == 0
-                    ? Alignment.centerLeft
-                    : Alignment.centerRight,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5 - 32,
-                  margin: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppTheme.orangeLight, AppTheme.orangeDark],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(21),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.orangeDark.withValues(alpha: 0.40),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
+            child: Stack(
+              children: [
+                AnimatedAlign(
+                  alignment: _index == 0
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.5 - 32,
+                    margin: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppTheme.orangeLight, AppTheme.orangeDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ],
+                      borderRadius: BorderRadius.circular(21),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.orangeDark.withValues(alpha: 0.40),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        _tabController.animateTo(0);
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Personal',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: _index == 0
-                                ? Colors.white
-                                : (isDark ? Colors.white70 : Colors.black54),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          _tabController.animateTo(0);
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Personal',
+                            style: TextStyle(
+                              fontSize: 15,
+                              letterSpacing: 0.2,
+                              fontWeight: FontWeight.bold,
+                              color: _index == 0
+                                  ? Colors.white
+                                  : (isDark ? Colors.white70 : Colors.black54),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        _tabController.animateTo(1);
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Community',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: _index == 1
-                                ? Colors.white
-                                : (isDark ? Colors.white70 : Colors.black54),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          _tabController.animateTo(1);
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Community',
+                            style: TextStyle(
+                              fontSize: 15,
+                              letterSpacing: 0.2,
+                              fontWeight: FontWeight.bold,
+                              color: _index == 1
+                                  ? Colors.white
+                                  : (isDark ? Colors.white70 : Colors.black54),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-
-        // Tab Content
-        Expanded(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            switchInCurve: Curves.easeOut,
-            switchOutCurve: Curves.easeIn,
-            child: _index == 0
-                ? const ChatsListScreen(key: ValueKey('personal'))
-                : const CommunityChatScreen(key: ValueKey('community')),
+  
+          // Tab Content
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
+              child: _index == 0
+                  ? const ChatsListScreen(key: ValueKey('personal'))
+                  : const CommunityChatScreen(key: ValueKey('community')),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

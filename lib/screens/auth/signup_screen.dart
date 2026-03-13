@@ -121,7 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
     // Background Image Logic - match app light theme wallpaper
     final String bgImage = isDark
         ? 'assets/images/theme_dark.jpg'
-        : 'assets/images/ik.jpg';
+        : 'assets/images/theme_light.jpg';
 
     return Scaffold(
       extendBodyBehindAppBar: true,
