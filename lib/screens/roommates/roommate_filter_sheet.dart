@@ -161,7 +161,7 @@ class _RoommateFilterSheetState extends State<RoommateFilterSheet> {
                           'College',
                           isDark,
                           DropdownButtonFormField<String>(
-                            value: _selectedCollege,
+                            initialValue: _selectedCollege,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: isDark
@@ -191,7 +191,7 @@ class _RoommateFilterSheetState extends State<RoommateFilterSheet> {
                           'Year',
                           isDark,
                           DropdownButtonFormField<String>(
-                            value: _selectedYear,
+                            initialValue: _selectedYear,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: isDark
@@ -221,7 +221,7 @@ class _RoommateFilterSheetState extends State<RoommateFilterSheet> {
                           'Gender',
                           isDark,
                           DropdownButtonFormField<String>(
-                            value: _selectedGender,
+                            initialValue: _selectedGender,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: isDark

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../state/auth_provider.dart';
 import '../../state/theme_provider.dart';
 import '../../config/theme.dart';
@@ -41,190 +42,216 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final primaryColor = isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(
+          'Settings',
+          style: TextStyle(
+            color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: context.canPop()
+            ? IconButton(
+                icon: Icon(
+                  Icons.arrow_back_rounded,
+                  color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                ),
+                onPressed: () => context.pop(),
+              )
+            : null,
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // Background
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(
-                  isDark
-                      ? 'assets/images/theme_dark.jpg'
-                      : 'assets/images/theme_light_new.jpg',
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildSectionHeader('Appearance', isDark),
+            Container(
+              decoration: AppTheme.liquidGlassDecoration(
+                isDark: isDark,
+                radius: 20,
+              ),
+              child: SwitchListTile(
+                title: Text(
+                  'Dark Mode',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                  ),
                 ),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withValues(
-                    alpha: 0.6,
-                  ), // Darken background for readability
-                  BlendMode.darken,
+                subtitle: Text(
+                  'Enable dark theme',
+                  style: TextStyle(
+                    color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                    fontSize: 12,
+                  ),
                 ),
+                value: isDark,
+                onChanged: (value) => themeProvider.toggleTheme(),
+                secondary: Icon(
+                  isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                  color: primaryColor,
+                ),
+                activeTrackColor: primaryColor,
               ),
             ),
-          ),
 
-          // Content
-          SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildSectionHeader(context, 'Appearance', isDark),
-                Card(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : Colors.white.withValues(alpha: 0.8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: SwitchListTile(
-                    title: const Text('Dark Mode'),
-                    subtitle: const Text('Enable dark theme'),
-                    value: isDark,
-                    onChanged: (value) => themeProvider.toggleTheme(),
-                    secondary: Icon(
-                      isDark ? Icons.dark_mode : Icons.light_mode,
-                      color: isDark
-                          ? AppTheme.mountainGold
-                          : AppTheme.mountainOrange,
-                    ),
-                    activeColor: AppTheme.mountainGold,
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-                _buildSectionHeader(context, 'Notifications', isDark),
-                StreamBuilder<NotificationPreferences>(
-                  stream: _prefsStream,
-                  builder: (context, snapshot) {
-                    final prefs = snapshot.data ?? NotificationPreferences.defaults();
-                    return Card(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : Colors.white.withValues(alpha: 0.8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          SwitchListTile(
-                            title: const Text('Personal Chat Notifications'),
-                            subtitle: const Text('Receive notifications for personal messages'),
-                            value: prefs.personalChatEnabled,
-                            onChanged: (value) => _updatePreference(
-                              personalChat: true,
-                              value: value,
-                            ),
-                            secondary: Icon(
-                              Icons.chat_bubble,
-                              color: isDark
-                                  ? AppTheme.mountainGold
-                                  : AppTheme.mountainOrange,
-                            ),
-                            activeColor: AppTheme.mountainGold,
-                          ),
-                          const Divider(height: 1),
-                          SwitchListTile(
-                            title: const Text('Community Chat Notifications'),
-                            subtitle: const Text('Receive notifications for community messages'),
-                            value: prefs.communityChatEnabled,
-                            onChanged: (value) => _updatePreference(
-                              communityChat: true,
-                              value: value,
-                            ),
-                            secondary: Icon(
-                              Icons.forum,
-                              color: isDark
-                                  ? AppTheme.mountainGold
-                                  : AppTheme.mountainOrange,
-                            ),
-                            activeColor: AppTheme.mountainGold,
-                          ),
-                          const Divider(height: 1),
-                          SwitchListTile(
-                            title: const Text('Roommate Request Alerts'),
-                            subtitle: const Text('Get notified when someone sends a connection request'),
-                            value: prefs.roommateRequestEnabled,
-                            onChanged: (value) => _updatePreference(
-                              roommateRequest: true,
-                              value: value,
-                            ),
-                            secondary: Icon(
-                              Icons.handshake,
-                              color: isDark
-                                  ? AppTheme.mountainGold
-                                  : AppTheme.mountainOrange,
-                            ),
-                            activeColor: AppTheme.mountainGold,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 24),
-                _buildSectionHeader(context, 'Account', isDark),
-                Card(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : Colors.white.withValues(alpha: 0.8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+            const SizedBox(height: 24),
+            _buildSectionHeader('Notifications', isDark),
+            StreamBuilder<NotificationPreferences>(
+              stream: _prefsStream,
+              builder: (context, snapshot) {
+                final prefs = snapshot.data ?? NotificationPreferences.defaults();
+                return Container(
+                  decoration: AppTheme.liquidGlassDecoration(
+                    isDark: isDark,
+                    radius: 20,
                   ),
                   child: Column(
                     children: [
-                      ListTile(
-                        leading: const Icon(Icons.logout, color: Colors.red),
-                        title: const Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.red),
+                      SwitchListTile(
+                        title: Text(
+                          'Personal Chat Notifications',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                          ),
                         ),
-                        onTap: () async {
-                          await Provider.of<AuthProvider>(
-                            context,
-                            listen: false,
-                          ).signOut();
-                          // Router will handle redirection
-                        },
+                        subtitle: Text(
+                          'Receive notifications for personal messages',
+                          style: TextStyle(
+                            color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                        value: prefs.personalChatEnabled,
+                        onChanged: (value) => _updatePreference(
+                          personalChat: true,
+                          value: value,
+                        ),
+                        secondary: Icon(Icons.chat_bubble_rounded, color: primaryColor),
+                        activeTrackColor: primaryColor,
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDark
+                            ? AppTheme.darkOutline.withValues(alpha: 0.15)
+                            : AppTheme.lightOutline.withValues(alpha: 0.15),
+                      ),
+                      SwitchListTile(
+                        title: Text(
+                          'Community Chat Notifications',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Receive notifications for community messages',
+                          style: TextStyle(
+                            color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                        value: prefs.communityChatEnabled,
+                        onChanged: (value) => _updatePreference(
+                          communityChat: true,
+                          value: value,
+                        ),
+                        secondary: Icon(Icons.forum_rounded, color: primaryColor),
+                        activeTrackColor: primaryColor,
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDark
+                            ? AppTheme.darkOutline.withValues(alpha: 0.15)
+                            : AppTheme.lightOutline.withValues(alpha: 0.15),
+                      ),
+                      SwitchListTile(
+                        title: Text(
+                          'Roommate Request Alerts',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Get notified when someone sends a connection request',
+                          style: TextStyle(
+                            color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                        value: prefs.roommateRequestEnabled,
+                        onChanged: (value) => _updatePreference(
+                          roommateRequest: true,
+                          value: value,
+                        ),
+                        secondary: Icon(Icons.handshake_rounded, color: primaryColor),
+                        activeTrackColor: primaryColor,
                       ),
                     ],
                   ),
-                ),
+                );
+              },
+            ),
 
-                const SizedBox(height: 24),
-                Center(
-                  child: Text(
-                    'ClgJone v1.0.0',
-                    style: TextStyle(
-                      color: isDark ? Colors.white54 : Colors.white70,
-                    ),
+            const SizedBox(height: 24),
+            _buildSectionHeader('Account', isDark),
+            Container(
+              decoration: AppTheme.liquidGlassDecoration(
+                isDark: isDark,
+                radius: 20,
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.logout_rounded, color: Color(0xFFFF5252)),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(
+                    color: Color(0xFFFF5252),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
+                onTap: () async {
+                  await Provider.of<AuthProvider>(
+                    context,
+                    listen: false,
+                  ).signOut();
+                },
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 32),
+            Center(
+              child: Text(
+                'ClgJone v1.0.0 • Aquatic Nebula',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, bool isDark) {
+  Widget _buildSectionHeader(String title, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 8),
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
-        title,
+        title.toUpperCase(),
         style: TextStyle(
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: isDark ? AppTheme.mountainGold : Colors.white,
+          color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
           letterSpacing: 1.2,
         ),
       ),

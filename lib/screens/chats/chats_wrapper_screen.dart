@@ -73,15 +73,17 @@ class _ChatsWrapperScreenState extends State<ChatsWrapperScreen>
                     width: MediaQuery.of(context).size.width * 0.5 - 32,
                     margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.orangeLight, AppTheme.orangeDark],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: isDark
+                          ? AppTheme.darkAquaticBg
+                          : AppTheme.lightPrimaryContainer,
                       borderRadius: BorderRadius.circular(21),
+                      border: isDark
+                          ? Border.all(color: AppTheme.goldenBorder, width: 1.5)
+                          : null,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.orangeDark.withValues(alpha: 0.40),
+                          color: (isDark ? AppTheme.goldenBorder : AppTheme.aquaGlow)
+                              .withValues(alpha: isDark ? 0.35 : 0.20),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -107,8 +109,8 @@ class _ChatsWrapperScreenState extends State<ChatsWrapperScreen>
                               letterSpacing: 0.2,
                               fontWeight: FontWeight.bold,
                               color: _index == 0
-                                  ? Colors.white
-                                  : (isDark ? Colors.white70 : Colors.black54),
+                                  ? (isDark ? AppTheme.softBeige : Colors.white)
+                                  : (isDark ? AppTheme.darkOnSurfaceVariant : Colors.black54),
                             ),
                           ),
                         ),
@@ -130,8 +132,8 @@ class _ChatsWrapperScreenState extends State<ChatsWrapperScreen>
                               letterSpacing: 0.2,
                               fontWeight: FontWeight.bold,
                               color: _index == 1
-                                  ? Colors.white
-                                  : (isDark ? Colors.white70 : Colors.black54),
+                                  ? (isDark ? AppTheme.softBeige : Colors.white)
+                                  : (isDark ? AppTheme.darkOnSurfaceVariant : Colors.black54),
                             ),
                           ),
                         ),

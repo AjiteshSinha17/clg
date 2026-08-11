@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 8),
-                      if (post.imageUrl != null) Image.network(post.imageUrl!),
+                      if (post.imageUrl.isNotEmpty) Image.network(post.imageUrl),
                       const SizedBox(height: 8),
                       Text(post.content),
                     ],

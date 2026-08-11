@@ -201,10 +201,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
-    final textColor = isDark ? Colors.white : const Color(0xFF372F37);
-    final subtextColor = isDark ? Colors.white70 : Colors.black54;
-    final surfaceColor = isDark ? AppTheme.paletteCharcoal : AppTheme.paletteCream;
-    final cardColor = isDark ? Colors.grey[850]! : Colors.white;
+    final textColor = isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface;
+    final subtextColor = isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant;
+    final surfaceColor = isDark ? AppTheme.darkSurface : AppTheme.lightSurface;
+    final cardColor = isDark ? AppTheme.darkContainer : AppTheme.lightContainer;
 
     return Scaffold(
       backgroundColor: surfaceColor,
@@ -219,6 +219,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         backgroundColor: surfaceColor,
         iconTheme: IconThemeData(color: textColor),
+        elevation: 0,
         actions: [
           if (_isLoading)
             const Padding(
@@ -231,7 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             )
           else
             IconButton(
-              icon: Icon(Icons.check, color: AppTheme.paletteViolet),
+              icon: Icon(Icons.check, color: isDark ? AppTheme.softBeige : AppTheme.lightPrimary),
               onPressed: _submit,
             ),
         ],
@@ -466,7 +467,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         value: _isLookingForRoommate,
                         onChanged: (val) =>
                             setState(() => _isLookingForRoommate = val),
-                        activeColor: AppTheme.paletteViolet,
+                        activeTrackColor: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
                       ),
                     ),
 
@@ -661,7 +662,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           value: _livesAlone,
                           onChanged: (v) => setState(() => _livesAlone = v),
-                          activeColor: AppTheme.paletteViolet,
+                          activeTrackColor: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
                         ),
                       ),
 
@@ -757,25 +758,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }) {
     final labelColor = subtextColor ?? Colors.black54;
     final fill = cardColor ?? Theme.of(context).cardColor;
-    final borderColor = isDark ? Colors.white24 : Colors.black26;
+    final borderColor = isDark
+        ? AppTheme.goldenBorder.withValues(alpha: 0.3)
+        : Colors.black26;
+    final accentIcon = isDark ? AppTheme.softBeige : AppTheme.lightPrimary;
 
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      style: TextStyle(color: textColor ?? const Color(0xFF372F37), fontSize: 16),
+      style: TextStyle(color: textColor ?? (isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface), fontSize: 15),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: labelColor, fontWeight: FontWeight.w500),
-        prefixIcon: Icon(icon, size: 22, color: AppTheme.paletteViolet),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        labelStyle: TextStyle(color: labelColor, fontWeight: FontWeight.w500, fontSize: 13),
+        prefixIcon: Icon(icon, size: 20, color: accentIcon),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppTheme.paletteViolet, width: 2),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: isDark ? AppTheme.goldenBorder : AppTheme.lightPrimary, width: 1.5),
         ),
         filled: true,
         fillColor: fill,
@@ -807,7 +811,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         dropdownColor: fill,
         style: TextStyle(color: textColor ?? const Color(0xFF372F37), fontSize: 16),
         decoration: InputDecoration(

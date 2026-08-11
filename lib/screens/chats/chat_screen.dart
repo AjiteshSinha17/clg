@@ -5,10 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../state/theme_provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/chat_media.dart';
@@ -406,30 +403,147 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void _showMessageOptions(Message message) {
+    if (message.isDeleted) return;
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (message.type == MessageType.text)
+              ListTile(
+                leading: const Icon(Icons.edit_rounded),
+                title: const Text('Edit message'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showEditMessageDialog(message);
+                },
+              ),
+            ListTile(
+              leading: const Icon(Icons.delete_forever_rounded, color: Colors.redAccent),
+              title: const Text(
+                'Delete for everyone',
+                style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _deleteMessageConfirm(message);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditMessageDialog(Message message) {
+    final editController = TextEditingController(text: message.content);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit message'),
+        content: TextField(
+          controller: editController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Enter new content',
+          ),
+          minLines: 1,
+          maxLines: 4,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newContent = editController.text.trim();
+              if (newContent.isNotEmpty && newContent != message.content) {
+                Navigator.pop(context);
+                try {
+                  await _chatService.editMessage(
+                    widget.chatId,
+                    message.id,
+                    newContent,
+                  );
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to edit message: $e')),
+                    );
+                  }
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteMessageConfirm(Message message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete for everyone?'),
+        content: const Text(
+          'This message will be deleted for everyone in this chat.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await _chatService.deleteMessageForEveryone(
+                  widget.chatId,
+                  message.id,
+                );
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete message: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUserId = auth.FirebaseAuth.instance.currentUser?.uid;
-    // Added: Theme-aware wallpaper background
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.themeMode == ThemeMode.dark;
-    final bgImage = isDark
-        ? 'assets/images/chat_dark_wallpaper.png'
-        : 'assets/images/chat_light_wallpaper.png';
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      // ── AppBar ────────────────────────────────────────────────────────
+      backgroundColor: colorScheme.surface,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(64),
         child: Container(
           decoration: BoxDecoration(
-            color: isDark ? AppTheme.darkSurface : AppTheme.pureWhite,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
+            color: colorScheme.surface,
+            border: Border(
+              bottom: BorderSide(
+                color: colorScheme.outline.withValues(alpha: 0.15),
               ),
-            ],
+            ),
           ),
           child: SafeArea(
             bottom: false,
@@ -437,38 +551,36 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 children: [
-                  // Back button
                   IconButton(
                     icon: Icon(
                       Icons.arrow_back_ios_new_rounded,
                       size: 20,
-                      color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                      color: colorScheme.onSurface,
                     ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  // Avatar
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppTheme.orange.withValues(alpha: 0.6),
-                        width: 2,
+                        color: colorScheme.primary.withValues(alpha: 0.6),
+                        width: 1.5,
                       ),
                     ),
                     child: CircleAvatar(
                       radius: 20,
-                      backgroundColor: AppTheme.darkCard,
+                      backgroundColor: colorScheme.surfaceContainer,
                       backgroundImage: widget.otherUser.avatarUrl.isNotEmpty
                           ? NetworkImage(widget.otherUser.avatarUrl)
-                                as ImageProvider
+                              as ImageProvider
                           : null,
                       child: widget.otherUser.avatarUrl.isEmpty
                           ? Text(
                               widget.otherUser.name.isNotEmpty
                                   ? widget.otherUser.name[0].toUpperCase()
                                   : '?',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -477,7 +589,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Name + status
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -486,11 +597,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           widget.otherUser.name,
                           style: TextStyle(
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             fontSize: 16,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF1A1A1A),
+                            color: colorScheme.onSurface,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -498,24 +607,23 @@ class _ChatScreenState extends State<ChatScreen> {
                           'Online',
                           style: TextStyle(
                             fontSize: 11,
-                            color: AppTheme.orange.withValues(alpha: 0.85),
+                            color: colorScheme.secondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Downloads action
                   IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppTheme.orange.withValues(alpha: 0.12),
+                        color: colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.folder_open_rounded,
-                        color: AppTheme.orange,
+                        color: colorScheme.primary,
                         size: 18,
                       ),
                     ),
@@ -528,260 +636,209 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
-      // ── Body ──────────────────────────────────────────────────────────
-      body: Stack(
+      body: Column(
         children: [
-          // Wallpaper background image
-          Positioned.fill(child: Image.asset(bgImage, fit: BoxFit.cover)),
-          // Overlay
-          Positioned.fill(
-            child: Container(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.45)
-                  : Colors.white.withValues(alpha: 0.10),
+          if (_uploading)
+            LinearProgressIndicator(
+              backgroundColor: colorScheme.primary.withValues(alpha: 0.15),
+              color: colorScheme.primary,
             ),
-          ),
-          // Chat content
-          Column(
-            children: [
-              if (_uploading)
-                LinearProgressIndicator(
-                  backgroundColor: AppTheme.orange.withValues(alpha: 0.15),
-                  color: AppTheme.orange,
-                ),
-              Expanded(
-                child: StreamBuilder<List<Message>>(
-                  stream: _chatService.getMessagesStream(widget.chatId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: AppTheme.orange,
-                          strokeWidth: 2.5,
-                        ),
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: \${snapshot.error}'));
-                    }
-                    final messages = snapshot.data ?? [];
-                    if (messages.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? AppTheme.darkCard.withValues(alpha: 0.8)
-                                    : AppTheme.pureWhite.withValues(
-                                        alpha: 0.85,
-                                      ),
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: isDark
-                                    ? AppTheme.clayShadowRecvDark
-                                    : AppTheme.clayShadowRecvLight,
-                              ),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.chat_bubble_outline_rounded,
-                                    size: 48,
-                                    color: AppTheme.orange.withValues(
-                                      alpha: 0.6,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    'Say hi to \${widget.otherUser.name}!',
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
+          Expanded(
+            child: StreamBuilder<List<Message>>(
+              stream: _chatService.getMessagesStream(widget.chatId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: colorScheme.primary,
+                      strokeWidth: 2.5,
+                    ),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                final messages = snapshot.data ?? [];
+                if (messages.isEmpty) {
+                  return Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainer,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline_rounded,
+                            size: 48,
+                            color: colorScheme.primary.withValues(alpha: 0.6),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Say hi to ${widget.otherUser.name}!',
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
                             ),
-                          ],
-                        ),
-                      );
-                    }
-                    return ListView.builder(
-                      controller: _scrollController,
-                      reverse: true,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        final message = messages[index];
-                        final isMe = message.senderId == currentUserId;
-                        return _MessageBubble(
-                          message: message,
-                          isMe: isMe,
-                          onOpenUrl: _openUrl,
-                          onOpenImage: _openImage,
-                          onDownloadFile: _downloadFile,
-                        );
-                      },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  controller: _scrollController,
+                  reverse: true,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    final isMe = message.senderId == currentUserId;
+                    return _MessageBubble(
+                      message: message,
+                      isMe: isMe,
+                      onOpenUrl: _openUrl,
+                      onOpenImage: _openImage,
+                      onDownloadFile: _downloadFile,
+                      onLongPress: () => _showMessageOptions(message),
                     );
                   },
-                ),
-              ),
-              _buildMessageInput(),
-            ],
+                );
+              },
+            ),
           ),
+          _buildMessageInput(),
         ],
       ),
     );
   }
 
   Widget _buildMessageInput() {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.pureWhite,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.40 : 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, -3),
-          ),
-        ],
+        color: isDark
+            ? AppTheme.darkSurface
+            : colorScheme.surfaceContainer,
       ),
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // Attach button
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Material(
-                  color: AppTheme.orange.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
-                  child: InkWell(
-                    onTap: _uploading ? null : _showAttachOptions,
-                    borderRadius: BorderRadius.circular(14),
-                    splashColor: AppTheme.orange.withValues(alpha: 0.2),
-                    child: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Icon(
-                        Icons.attach_file_rounded,
-                        color: AppTheme.orange,
-                        size: 22,
-                      ),
-                    ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Attachment Button
+            GestureDetector(
+              onTap: _uploading ? null : _showAttachOptions,
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: isDark ? AppTheme.darkAquaticBg : colorScheme.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDark ? AppTheme.goldenBorder : colorScheme.primary,
+                    width: 1.2,
                   ),
                 ),
+                child: Icon(
+                  Icons.attach_file_rounded,
+                  color: isDark ? AppTheme.softBeige : colorScheme.primary,
+                  size: 20,
+                ),
               ),
-              const SizedBox(width: 8),
-              // Text field (clay pill)
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? AppTheme.darkCard : AppTheme.lightCard,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
+            ),
+            const SizedBox(width: 8),
+
+            // Text Field Container
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isDark ? AppTheme.darkContainerHigh : colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isDark
+                        ? AppTheme.goldenBorder.withValues(alpha: 0.2)
+                        : colorScheme.outline.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: 'Type a message...',
+                    hintStyle: TextStyle(
                       color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.07),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(
-                          alpha: isDark ? 0.3 : 0.07,
-                        ),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: TextStyle(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.35)
-                            : Colors.black.withValues(alpha: 0.35),
-                        fontSize: 14,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 12,
-                      ),
-                    ),
-                    style: TextStyle(
+                          ? AppTheme.darkOnSurfaceVariant
+                          : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontSize: 14,
-                      color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                     ),
-                    textCapitalization: TextCapitalization.sentences,
-                    minLines: 1,
-                    maxLines: 5,
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Send button (clay circle)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: GestureDetector(
-                  onTap: _uploading ? null : _sendMessage,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.orangeLight, AppTheme.orangeDark],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.orangeDark.withValues(alpha: 0.45),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                        BoxShadow(
-                          color: Colors.white.withValues(alpha: 0.10),
-                          blurRadius: 2,
-                          offset: const Offset(-1, -1),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.send_rounded,
-                      color: Colors.white,
-                      size: 20,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 11,
                     ),
                   ),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? AppTheme.softBeige : colorScheme.onSurface,
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                  minLines: 1,
+                  maxLines: 5,
+                  onSubmitted: (_) => _sendMessage(),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+
+            // Send Button
+            GestureDetector(
+              onTap: _uploading ? null : _sendMessage,
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: isDark ? AppTheme.darkAquaticBg : colorScheme.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDark ? AppTheme.goldenBorder : Colors.transparent,
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: (isDark ? AppTheme.goldenBorder : colorScheme.primary)
+                          .withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.send_rounded,
+                  color: isDark ? AppTheme.softBeige : colorScheme.onPrimary,
+                  size: 18,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// Modified: Added onOpenImage and onDownloadFile callbacks, updated timestamp formatting
 class _MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
   final Future<void> Function(String) onOpenUrl;
   final void Function(String) onOpenImage;
   final Future<void> Function(String url, String fileName) onDownloadFile;
+  final VoidCallback onLongPress;
 
   const _MessageBubble({
     required this.message,
@@ -789,199 +846,211 @@ class _MessageBubble extends StatelessWidget {
     required this.onOpenUrl,
     required this.onOpenImage,
     required this.onDownloadFile,
+    required this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final isDark = theme.brightness == Brightness.dark;
-    final recvBg = isDark ? AppTheme.darkCard : AppTheme.pureWhite;
-    final recvBorder = isDark
-        ? Border.all(color: Colors.white.withValues(alpha: 0.07), width: 1)
-        : Border.all(color: Colors.black.withValues(alpha: 0.07), width: 1);
+    final bubbleColor = isMe
+        ? (isDark ? colorScheme.primaryContainer : colorScheme.primary)
+        : colorScheme.surfaceContainerHigh;
 
-    final sentShadows = AppTheme.clayShadowSent;
-    final recvShadows = isDark
-        ? AppTheme.clayShadowRecvDark
-        : AppTheme.clayShadowRecvLight;
+    final textColor = isMe
+        ? (isDark ? colorScheme.onPrimaryContainer : colorScheme.onPrimary)
+        : colorScheme.onSurface;
 
     final radius = BorderRadius.only(
-      topLeft: const Radius.circular(22),
-      topRight: const Radius.circular(22),
-      bottomLeft: isMe ? const Radius.circular(22) : const Radius.circular(4),
-      bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(22),
+      topLeft: const Radius.circular(16),
+      topRight: const Radius.circular(16),
+      bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
+      bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
     );
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(
-          left: isMe ? 48 : 12,
-          right: isMe ? 12 : 48,
-          top: 4,
-          bottom: 4,
-        ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        decoration: BoxDecoration(
-          gradient: isMe
-              ? const LinearGradient(
-                  colors: [AppTheme.orangeLight, AppTheme.orangeDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          color: isMe ? null : recvBg,
-          borderRadius: radius,
-          border: isMe ? null : recvBorder,
-          boxShadow: isMe ? sentShadows : recvShadows,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image
-              if (message.type == MessageType.image && message.fileUrl != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: InkWell(
-                        onTap: () => onOpenImage(message.fileUrl!),
-                        child: Image.network(
-                          message.fileUrl!,
-                          width: 220,
-                          height: 180,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const SizedBox(
-                            width: 220,
-                            height: 120,
-                            child: Center(child: Icon(Icons.broken_image)),
-                          ),
+      child: GestureDetector(
+        onLongPress: onLongPress,
+        child: Container(
+          margin: EdgeInsets.only(
+            left: isMe ? 48 : 12,
+            right: isMe ? 12 : 48,
+            top: 4,
+            bottom: 4,
+          ),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
+          ),
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius: radius,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (message.isDeleted)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.block_rounded,
+                        size: 14,
+                        color: textColor.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'This message was deleted',
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.6),
+                          fontSize: 13,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
+                    ],
+                  )
+                else ...[
+                  // Image
+                  if (message.type == MessageType.image && message.fileUrl != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            onTap: () => onOpenImage(message.fileUrl!),
+                            child: Image.network(
+                              message.fileUrl!,
+                              width: 220,
+                              height: 180,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const SizedBox(
+                                width: 220,
+                                height: 120,
+                                child: Center(child: Icon(Icons.broken_image)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.download_rounded,
+                              size: 18,
+                              color: textColor.withValues(alpha: 0.7),
+                            ),
+                            onPressed: () => onDownloadFile(
+                              message.fileUrl!,
+                              message.fileName ?? 'image.jpg',
+                            ),
+                            tooltip: 'Download image',
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                      ],
+                    )
+                  // PDF
+                  else if (message.type == MessageType.pdf &&
+                      message.fileUrl != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: textColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: InkWell(
+                        onTap: () => onOpenUrl(message.fileUrl!),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.picture_as_pdf_rounded,
+                              color: textColor,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                message.fileName ?? 'document.pdf',
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            IconButton(
+                              icon: Icon(
+                                Icons.download_rounded,
+                                size: 18,
+                                color: textColor.withValues(alpha: 0.7),
+                              ),
+                              onPressed: () => onDownloadFile(
+                                message.fileUrl!,
+                                message.fileName ?? 'document.pdf',
+                              ),
+                              tooltip: 'Download PDF',
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  // Text
+                  else
+                    Text(
+                      message.content,
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.download_rounded,
-                          size: 18,
-                          color: isMe ? Colors.white70 : AppTheme.orange,
+                ],
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (message.isEdited && !message.isDeleted) ...[
+                      Text(
+                        '(edited) ',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontStyle: FontStyle.italic,
+                          color: textColor.withValues(alpha: 0.55),
                         ),
-                        onPressed: () => onDownloadFile(
-                          message.fileUrl!,
-                          message.fileName ?? 'image.jpg',
-                        ),
-                        tooltip: 'Download image',
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                    Text(
+                      formatMessageTimestamp(message.timestamp),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: textColor.withValues(alpha: 0.55),
                       ),
                     ),
                   ],
-                )
-              // PDF
-              else if (message.type == MessageType.pdf &&
-                  message.fileUrl != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isMe
-                        ? Colors.white.withValues(alpha: 0.15)
-                        : AppTheme.orange.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: InkWell(
-                    onTap: () => onOpenUrl(message.fileUrl!),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: isMe
-                                ? Colors.white.withValues(alpha: 0.2)
-                                : AppTheme.orange.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.picture_as_pdf_rounded,
-                            color: isMe ? Colors.white : AppTheme.orange,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            message.fileName ?? 'document.pdf',
-                            style: TextStyle(
-                              color: isMe
-                                  ? Colors.white
-                                  : (isDark
-                                        ? Colors.white.withValues(alpha: 0.87)
-                                        : const Color(0xFF1A1A1A)),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          icon: Icon(
-                            Icons.download_rounded,
-                            size: 18,
-                            color: isMe ? Colors.white70 : AppTheme.orange,
-                          ),
-                          onPressed: () => onDownloadFile(
-                            message.fileUrl!,
-                            message.fileName ?? 'document.pdf',
-                          ),
-                          tooltip: 'Download PDF',
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              // Text
-              else
-                Text(
-                  message.content,
-                  style: TextStyle(
-                    color: isMe
-                        ? Colors.white
-                        : (isDark
-                              ? Colors.white.withValues(alpha: 0.87)
-                              : const Color(0xFF1A1A1A)),
-                    fontSize: 14,
-                    height: 1.45,
-                  ),
                 ),
-              const SizedBox(height: 4),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  formatMessageTimestamp(message.timestamp),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: isMe
-                        ? Colors.white.withValues(alpha: 0.65)
-                        : (isDark
-                              ? Colors.white.withValues(alpha: 0.40)
-                              : Colors.black.withValues(alpha: 0.38)),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

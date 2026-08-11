@@ -1,0 +1,217 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ClgJone - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#e1c19f",
+                        "on-primary-fixed": "#1d1c10",
+                        "inverse-surface": "#e2e2e2",
+                        "background": "#131313",
+                        "secondary-fixed": "#ffddb9",
+                        "on-secondary-fixed": "#291803",
+                        "secondary": "#e1c19f",
+                        "on-error": "#690005",
+                        "surface-container": "#1f1f1f",
+                        "surface-variant": "#353535",
+                        "outline-variant": "#49473f",
+                        "on-primary": "#333124",
+                        "surface-tint": "#cbc7b4",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#edd8c9",
+                        "on-tertiary-container": "#6c5d51",
+                        "on-surface": "#e2e2e2",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-container": "#d3b392",
+                        "on-tertiary-fixed-variant": "#524439",
+                        "tertiary": "#fff7f2",
+                        "secondary-container": "#5b452b",
+                        "tertiary-fixed": "#f3dfcf",
+                        "on-secondary": "#402c14",
+                        "on-tertiary-fixed": "#241910",
+                        "surface-container-low": "#1b1b1b",
+                        "on-secondary-fixed-variant": "#594329",
+                        "primary": "#fef8e5",
+                        "surface-dim": "#131313",
+                        "surface-container-highest": "#353535",
+                        "surface-bright": "#393939",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed-dim": "#d7c3b4",
+                        "outline": "#949187",
+                        "primary-fixed-dim": "#cbc7b4",
+                        "surface": "#131313",
+                        "primary-container": "#e1dcc9",
+                        "inverse-on-surface": "#303030",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#494739",
+                        "on-surface-variant": "#cac6bb",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#636151",
+                        "inverse-primary": "#615f50",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed": "#e8e3cf",
+                        "on-tertiary": "#3a2e24",
+                        // Custom palette based on prompt
+                        "deep-espresso": "#1F150C",
+                        "rich-brown": "#412D15",
+                        "soft-cream": "#E1DCC9",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "container-max-width": "1280px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px"
+                    },
+                    fontFamily: {
+                        "display-lg": ["Lexend", "sans-serif"],
+                        "body-lg": ["Lexend", "sans-serif"],
+                        "body-md": ["Lexend", "sans-serif"],
+                        "headline-lg": ["Lexend", "sans-serif"],
+                        "label-md": ["Lexend", "sans-serif"],
+                        "label-sm": ["Lexend", "sans-serif"],
+                        "title-md": ["Lexend", "sans-serif"],
+                        "headline-lg-mobile": ["Lexend", "sans-serif"]
+                    },
+                    fontSize: {
+                        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "500" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.03em", fontWeight: "500" }],
+                        "title-md": ["20px", { lineHeight: "28px", fontWeight: "500" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "500" }]
+                    },
+                    boxShadow: {
+                        'neomorphic-inset': 'inset 2px 2px 5px rgba(0,0,0,0.4), inset -2px -2px 5px rgba(255,255,255,0.05)',
+                        'neomorphic-raised': '4px 4px 10px rgba(0,0,0,0.4), -1px -1px 2px rgba(225, 220, 201, 0.05)',
+                        'neomorphic-pressed': 'inset 4px 4px 10px rgba(0,0,0,0.4), inset -1px -1px 2px rgba(225, 220, 201, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e2e2e2;
+        }
+        .glass-panel {
+            background: rgba(65, 45, 21, 0.6); /* rich-brown with opacity */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(225, 220, 201, 0.15); /* soft-cream */
+            border-left: 1px solid rgba(225, 220, 201, 0.05);
+        }
+        .input-recessed {
+            background: rgba(31, 21, 12, 0.8); /* deep-espresso */
+            box-shadow: inset 2px 2px 6px rgba(0,0,0,0.6), inset -1px -1px 4px rgba(225, 220, 201, 0.05);
+            border: 1px solid rgba(65, 45, 21, 0.5);
+            color: #E1DCC9; /* soft-cream text */
+        }
+        .input-recessed:focus {
+            outline: none;
+            border-color: rgba(225, 220, 201, 0.3);
+        }
+        .input-recessed::placeholder {
+            color: rgba(225, 220, 201, 0.4);
+        }
+        .btn-primary {
+            background-color: #E1DCC9; /* soft-cream */
+            color: #1F150C; /* deep-espresso text */
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.3), -1px -1px 2px rgba(255,255,255,0.8);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:active {
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.5);
+            transform: translateY(2px);
+        }
+        .btn-ghost {
+            background: rgba(225, 220, 201, 0.05);
+            border: 1px solid rgba(225, 220, 201, 0.2);
+            backdrop-filter: blur(4px);
+            color: #E1DCC9;
+            transition: all 0.2s ease;
+        }
+        .btn-ghost:hover {
+            background: rgba(225, 220, 201, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex items-center justify-center relative overflow-hidden">
+<!-- Background Image / Immersive University Setting -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-40 mix-blend-luminosity" data-alt="A cinematic, wide-angle view of a prestigious university campus library at twilight. The scene is bathed in warm, glowing lights emanating from the large arched windows, contrasting with the deep, moody blues of the evening sky. The architecture is a mix of classic stonework and modern glass, reflecting a sophisticated, organic futurism style. The overall mood is calm, studious, and premium, utilizing a dark, rich color palette." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAoj6BmYHmW4DyrgiUjyadS_7L9e2BgDOqsIi5KtXyt-XE-agHxWTbn5VsqrJMC9r6okwVhmJh1dYCcD_lc5pJLXoM-JpklBdp64kXAInP4we4WRo0MsU6aOyVbsuct6ai7ycZgUnMtEjpt3FF0TgdlS4mZvJqC_hzk4E9ceXWH7N_QhrFjx8ElX-qSfZHZ2clfMpIcTjKmcI6hhrtycpEfgQg3jdopbLuyGGFj71HbtWqBcl9DNwWL6Q')"></div>
+<!-- Gradient Overlay to deepen the background and focus on center -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background"></div>
+</div>
+<!-- Main Content Container -->
+<main class="relative z-10 w-full max-w-md px-margin-mobile md:px-0">
+<!-- Glassmorphic Login Panel -->
+<div class="glass-panel rounded-3xl p-8 md:p-10 shadow-2xl flex flex-col items-center">
+<!-- Brand Logo / Header -->
+<div class="mb-8 text-center">
+<h1 class="font-display-lg text-primary tracking-tight mb-2">ClgJone</h1>
+<p class="font-body-md text-on-surface-variant">Access your academic sanctuary</p>
+</div>
+<!-- Login Form -->
+<form class="w-full space-y-6">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block font-label-md text-primary-container ml-1" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="input-recessed w-full py-3 pl-12 pr-4 rounded-xl font-body-md transition-colors" id="email" name="email" placeholder="student@university.edu" required="" type="email">
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="block font-label-md text-primary-container" for="password">Password</label>
+<a class="font-label-sm text-secondary hover:text-primary transition-colors" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="input-recessed w-full py-3 pl-12 pr-12 rounded-xl font-body-md transition-colors" id="password" name="password" placeholder="••••••••" required="" type="password">
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-4 space-y-4">
+<button class="btn-primary w-full py-3 rounded-xl font-label-md flex justify-center items-center gap-2" type="submit">
+                        Sign In
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<button class="btn-ghost w-full py-3 rounded-xl font-label-md flex justify-center items-center gap-2" type="button">
+<span class="material-symbols-outlined text-sm">fingerprint</span>
+                        Biometric Login
+                    </button>
+</div>
+</form>
+<!-- Footer Links -->
+<div class="mt-8 text-center font-body-sm text-on-surface-variant">
+<p>New to ClgJone? <a class="text-secondary font-label-md hover:text-primary transition-colors" href="#">Request Access</a></p>
+</div>
+</div>
+</main>
+</body></html>

@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../config/theme.dart';
+import '../../../state/theme_provider.dart';
 import '../../../state/post_provider.dart';
 import '../../../core/widgets/app_text_field.dart';
-import '../../../core/widgets/primary_button.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -50,52 +52,134 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final primaryColor = isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary;
     final postProvider = Provider.of<PostProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Post')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              AppTextField(
-                controller: _titleController,
-                labelText: 'Title',
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text(
+          'Create Post',
+          style: TextStyle(
+            color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: context.canPop()
+            ? IconButton(
+                icon: Icon(
+                  Icons.arrow_back_rounded,
+                  color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                ),
+                onPressed: () => context.pop(),
+              )
+            : null,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: AppTheme.liquidGlassDecoration(
+              isDark: isDark,
+              radius: 24,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppTextField(
+                    controller: _titleController,
+                    labelText: 'Title',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: _contentController,
+                    labelText: 'Content',
+                    maxLines: 5,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter content';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _image == null
+                      ? OutlinedButton.icon(
+                          onPressed: _pickImage,
+                          icon: Icon(Icons.add_photo_alternate_rounded, color: primaryColor),
+                          label: Text(
+                            'Add Cover Image',
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: primaryColor.withValues(alpha: 0.5)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.file(
+                            File(_image!.path),
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                  if (postProvider.isLoading)
+                    Center(child: CircularProgressIndicator(color: primaryColor))
+                  else
+                    GestureDetector(
+                      onTap: _submit,
+                      child: Container(
+                        width: double.infinity,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.primaryGradient(isDark),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.aquaGlow.withValues(
+                                alpha: isDark ? 0.35 : 0.2,
+                              ),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Publish Post',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: 16),
-              AppTextField(
-                controller: _contentController,
-                labelText: 'Content',
-                maxLines: 5,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter content';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              _image == null
-                  ? TextButton.icon(
-                      onPressed: _pickImage,
-                      icon: const Icon(Icons.image),
-                      label: const Text('Add Image'),
-                    )
-                  : Image.file(File(_image!.path)),
-              const SizedBox(height: 32),
-              if (postProvider.isLoading)
-                const CircularProgressIndicator()
-              else
-                PrimaryButton(onPressed: _submit, text: 'Create Post'),
-            ],
+            ),
           ),
         ),
       ),

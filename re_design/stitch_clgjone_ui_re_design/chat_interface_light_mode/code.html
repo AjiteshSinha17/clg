@@ -1,0 +1,265 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Chat with Sarah Jenkins</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#eae7e7",
+                    "outline-variant": "#d1c4b9",
+                    "secondary-fixed-dim": "#b2d26b",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#494739",
+                    "secondary": "#4c6706",
+                    "secondary-container": "#cdef84",
+                    "surface-container": "#f0eded",
+                    "surface": "#fcf9f8",
+                    "on-error-container": "#93000a",
+                    "on-background": "#1b1b1b",
+                    "inverse-primary": "#e1c19f",
+                    "on-surface-variant": "#4e453d",
+                    "tertiary-container": "#333124",
+                    "on-secondary-fixed-variant": "#384e00",
+                    "on-primary-fixed": "#291803",
+                    "tertiary": "#1e1c10",
+                    "on-secondary-fixed": "#141f00",
+                    "secondary-fixed": "#cdef84",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed": "#1d1c10",
+                    "background": "#fcf9f8",
+                    "on-primary": "#ffffff",
+                    "surface-container-low": "#f6f3f2",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1b1b1b",
+                    "surface-bright": "#fcf9f8",
+                    "surface-dim": "#dcd9d9",
+                    "outline": "#80756b",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-primary-container": "#b19474",
+                    "primary-container": "#412d15",
+                    "inverse-surface": "#313030",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e5e2e1",
+                    "tertiary-fixed": "#e8e3cf",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#e1c19f",
+                    "inverse-on-surface": "#f3f0ef",
+                    "primary": "#2a1804",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#594329",
+                    "primary-fixed": "#ffddb9",
+                    "tertiary-fixed-dim": "#cbc7b4",
+                    "on-secondary-container": "#526d0f",
+                    "surface-tint": "#735a3e",
+                    "on-tertiary-container": "#9d9988"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "80px",
+                    "xs": "4px",
+                    "margin-mobile": "16px",
+                    "sm": "12px",
+                    "margin-desktop": "64px",
+                    "md": "24px",
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "container-margin": "64px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Lexend"
+                    ],
+                    "headline-lg-mobile": [
+                            "Lexend"
+                    ],
+                    "body-lg": [
+                            "Lexend"
+                    ],
+                    "label-md": [
+                            "Lexend"
+                    ],
+                    "title-md": [
+                            "Lexend"
+                    ],
+                    "display-lg": [
+                            "Lexend"
+                    ],
+                    "label-sm": [
+                            "Lexend"
+                    ],
+                    "body-md": [
+                            "Lexend"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "300"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg": [
+                            "56px",
+                            {
+                                    "lineHeight": "64px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.08em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "300"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .neumorphic-light {
+            box-shadow: -4px -4px 12px #ffffff, 4px 4px 12px rgba(209, 196, 185, 0.5);
+        }
+        .neumorphic-inset {
+            box-shadow: inset -4px -4px 8px #ffffff, inset 4px 4px 8px rgba(209, 196, 185, 0.5);
+        }
+        .neumorphic-dark {
+            box-shadow: -4px -4px 12px rgba(255, 255, 255, 0.1), 4px 4px 12px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-screen flex flex-col overflow-hidden font-body-md text-body-md antialiased">
+<!-- TopAppBar -->
+<header class="bg-surface-lowest/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b-0 shadow-[0_4px_24px_-4px_rgba(209,196,185,0.3)] flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 md:h-24 transition-all">
+<div class="flex items-center gap-sm">
+<button class="md:hidden text-on-surface-variant hover:opacity-80 transition-opacity p-xs">
+<span class="material-symbols-outlined" data-icon="arrow_back" data-weight="regular">arrow_back</span>
+</button>
+<div class="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden neumorphic-light border-2 border-surface">
+<img alt="Sarah Jenkins Avatar" class="w-full h-full object-cover" data-alt="A close up portrait of Sarah Jenkins, a professional woman with a warm smile, wearing a sustainable beige linen blazer, standing in a brightly lit modern office with natural light pouring in. The setting embodies a luxury earth futurist aesthetic with neutral clay tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9C65kuJH_sUc2jRUQqm5ELXqFo9EfFXZd_RGEf2H32PvlUCj7Ug9dK8J3l3dG-4_E88FOzU18EyC6p6rHDDuCHvFc4RIBDHlGtptRpHJi1CIklEODM0qWgPmiL3rgEZi_C6Fo_bkoUGkPbMTcJ5W1mNqL6kOK3pN6XLGelcXVsRfxPIxvTXMLHEyfstTOZY2Nl5mnD61qhBZI9dyXUHs4-pwdF_ri_tdBLMdv-NBzCSaUMF1XEPkg3Q">
+</div>
+<div class="flex flex-col justify-center">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">Sarah Jenkins</h1>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Active Now</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity p-xs neumorphic-light rounded-full w-10 h-10 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="more_vert" data-weight="regular">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Chat Canvas -->
+<main class="flex-1 overflow-y-auto pt-24 md:pt-32 pb-28 md:pb-32 px-margin-mobile md:px-margin-desktop flex flex-col gap-md">
+<!-- Date Divider -->
+<div class="flex justify-center my-xs">
+<span class="bg-surface-container font-label-sm text-label-sm text-on-surface-variant px-sm py-xs rounded-full shadow-sm">Today</span>
+</div>
+<!-- Received Message -->
+<div class="flex items-end gap-sm self-start max-w-[85%] md:max-w-[70%]">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 shadow-sm hidden md:block">
+<img alt="Sarah Jenkins Avatar Small" class="w-full h-full object-cover" data-alt="A close up portrait of Sarah Jenkins, a professional woman with a warm smile, wearing a sustainable beige linen blazer, standing in a brightly lit modern office with natural light pouring in. The setting embodies a luxury earth futurist aesthetic with neutral clay tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoynN6Eeofk-AB1VzYyHPslO_5aR7ReIXCUgg1kGEznmO8apTs8UzqfyeXfYNgTyF9azBOfLQ-0Yid6KSOkTu_ETyM3IZLa09XILYdMzdJUVPVcxYESoPpCTbzzqBuV_tfqL7eFiT8oFefy4Y9ooACED3gfhxesJeuGe40QW_BR4QI0-HW8JawGHpQiRJVovZfbkA74U5VJfyNmhu04wfFcl3ap7QglGm1LUYYC9kSBRb-3hWneNwuaQ">
+</div>
+<div class="bg-surface-container-lowest text-on-surface p-sm md:p-md rounded-2xl rounded-bl-sm neumorphic-light font-body-md text-body-md">
+                Hi there! I was wondering if we could discuss the new architectural proposals for the sustainable villa project?
+            </div>
+</div>
+<!-- Sent Message -->
+<div class="flex items-end gap-sm self-end max-w-[85%] md:max-w-[70%] flex-row-reverse">
+<div class="bg-primary-container text-on-primary p-sm md:p-md rounded-2xl rounded-br-sm neumorphic-dark font-body-md text-body-md shadow-lg shadow-primary-container/20">
+                Absolutely. I've reviewed the blueprints, and the integration of neomorphic elements in the clay structures looks incredible.
+            </div>
+</div>
+<!-- Received Message (Multiple) -->
+<div class="flex items-end gap-sm self-start max-w-[85%] md:max-w-[70%] mt-xs">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 shadow-sm hidden md:block">
+<img alt="Sarah Jenkins Avatar Small" class="w-full h-full object-cover" data-alt="A close up portrait of Sarah Jenkins, a professional woman with a warm smile, wearing a sustainable beige linen blazer, standing in a brightly lit modern office with natural light pouring in. The setting embodies a luxury earth futurist aesthetic with neutral clay tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNe6rv9F7XP34WLCwpYNtfrM7uk0AN37Diai7SLrioOmLRFC8rWUj861MWA9zcmaXOvcrnAijzMhsGm4k-FfECIP_G_3hSjMKWlYsWQxdFxWAfF3a0x6InArJrNM20u6og0lwch229CTjVd4mQeaCFPIrTeHJdcKvumR5vGkHbqNQmDl0Of7OizJnDmXVwX7Jnzg6YKS1cgZAKPwJtK4_9-sETsU08dlHMoIWD83qQcwAlORqtYeZTeQ">
+</div>
+<div class="flex flex-col gap-xs">
+<div class="bg-surface-container-lowest text-on-surface p-sm md:p-md rounded-2xl neumorphic-light font-body-md text-body-md">
+                    Great! The client is particularly interested in the lighting design.
+                </div>
+<div class="bg-surface-container-lowest text-on-surface p-sm md:p-md rounded-2xl rounded-bl-sm neumorphic-light font-body-md text-body-md">
+                    Should we schedule a video call to go over the frosted glass overlays in the atrium?
+                </div>
+</div>
+</div>
+<!-- Sent Message -->
+<div class="flex items-end gap-sm self-end max-w-[85%] md:max-w-[70%] flex-row-reverse mt-sm">
+<div class="bg-primary-container text-on-primary p-sm md:p-md rounded-2xl rounded-br-sm neumorphic-dark font-body-md text-body-md shadow-lg shadow-primary-container/20">
+                Yes, let's aim for tomorrow at 10 AM. I'll send over the 3D renders beforehand.
+            </div>
+</div>
+</main>
+<!-- Message Input Area -->
+<footer class="fixed bottom-0 w-full bg-surface-container/60 backdrop-blur-2xl border-t-0 p-margin-mobile md:px-margin-desktop md:py-md shadow-[0_-8px_32px_0_rgba(209,196,185,0.4)] z-40">
+<div class="max-w-4xl mx-auto flex items-center gap-sm md:gap-md bg-surface-container-lowest rounded-full p-xs md:p-sm neumorphic-inset">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-sm rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="add_circle" data-weight="regular">add_circle</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline font-label-md text-label-md px-xs" placeholder="Type your message..." type="text">
+<button class="bg-primary-container text-on-primary hover:opacity-90 transition-opacity p-sm rounded-full flex items-center justify-center shrink-0 shadow-md">
+<span class="material-symbols-outlined" data-icon="send" data-weight="fill" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</footer>
+</body></html>

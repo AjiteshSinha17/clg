@@ -1,0 +1,280 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Chat with Sarah Jenkins</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed": "#e8e3cf",
+                      "tertiary-fixed-dim": "#d7c3b4",
+                      "surface-variant": "#353535",
+                      "error": "#ffb4ab",
+                      "primary-fixed-dim": "#cbc7b4",
+                      "on-primary-fixed-variant": "#494739",
+                      "inverse-surface": "#e2e2e2",
+                      "surface": "#131313",
+                      "on-primary-fixed": "#1d1c10",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#f3dfcf",
+                      "surface-container-highest": "#353535",
+                      "surface-container-low": "#1b1b1b",
+                      "inverse-on-surface": "#303030",
+                      "surface-dim": "#131313",
+                      "surface-tint": "#cbc7b4",
+                      "secondary": "#e1c19f",
+                      "primary-container": "#e1dcc9",
+                      "on-secondary-container": "#d3b392",
+                      "on-tertiary": "#3a2e24",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-secondary-fixed-variant": "#594329",
+                      "on-tertiary-fixed": "#241910",
+                      "surface-container-high": "#2a2a2a",
+                      "on-surface": "#e2e2e2",
+                      "on-error": "#690005",
+                      "on-primary-container": "#636151",
+                      "on-background": "#e2e2e2",
+                      "tertiary-container": "#edd8c9",
+                      "outline-variant": "#49473f",
+                      "on-surface-variant": "#cac6bb",
+                      "on-tertiary-fixed-variant": "#524439",
+                      "outline": "#949187",
+                      "background": "#131313",
+                      "on-primary": "#333124",
+                      "on-tertiary-container": "#6c5d51",
+                      "on-secondary-fixed": "#291803",
+                      "tertiary": "#fff7f2",
+                      "on-secondary": "#402c14",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#393939",
+                      "secondary-fixed-dim": "#e1c19f",
+                      "secondary-fixed": "#ffddb9",
+                      "inverse-primary": "#615f50",
+                      "primary": "#fef8e5",
+                      "secondary-container": "#5b452b",
+                      "surface-container": "#1f1f1f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "64px",
+                      "container-max-width": "1280px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "unit": "8px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Lexend"
+                      ],
+                      "headline-lg-mobile": [
+                              "Lexend"
+                      ],
+                      "display-lg": [
+                              "Lexend"
+                      ],
+                      "title-md": [
+                              "Lexend"
+                      ],
+                      "label-md": [
+                              "Lexend"
+                      ],
+                      "body-md": [
+                              "Lexend"
+                      ],
+                      "headline-lg": [
+                              "Lexend"
+                      ],
+                      "label-sm": [
+                              "Lexend"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.03em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          }
+        }
+      </script>
+<style>
+        /* Neomorphic and Glassmorphic utility classes */
+        .neumorphic-recessed {
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+        }
+        
+        .neumorphic-raised-dark {
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), -2px -2px 8px rgba(255, 255, 255, 0.05);
+        }
+
+        .neumorphic-raised-light {
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3), -2px -2px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-overlay {
+            backdrop-filter: blur(20px);
+            background-color: rgba(243, 223, 207, 0.05); /* Soft tertiary tint */
+        }
+
+        /* Message Bubbles */
+        .msg-received {
+            background-color: #f3dfcf; /* Soft Cream / Tertiary Fixed */
+            color: #131313; /* Deep Espresso / Background */
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-sent {
+            background-color: #412D15; /* Rich Brown */
+            color: #f3dfcf; /* Soft Cream */
+            border-bottom-right-radius: 4px;
+            border-top: 1px solid rgba(243, 223, 207, 0.2);
+        }
+
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen flex flex-col font-body-md no-scrollbar">
+<!-- Top App Bar (Modified to act as Chat Header, navigating back usually implies leaving global nav context, so Bottom Nav is suppressed as per guidelines) -->
+<header class="flex justify-between items-center px-container-margin h-16 bg-surface-sapphire/80 dark:bg-abyss/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-abyss/40 fixed top-0 w-full z-50">
+<div class="flex items-center space-x-4">
+<button aria-label="Go back" class="text-on-surface-variant hover:opacity-80 transition-opacity Active: scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex items-center space-x-3">
+<div class="relative w-10 h-10 rounded-full overflow-hidden border border-white/20">
+<img alt="Sarah Jenkins" class="object-cover w-full h-full" data-alt="A sophisticated close-up portrait of a woman named Sarah Jenkins in a dimly lit, high-end environment with warm amber lighting and deep espresso shadows. She wears elegant, minimalist attire, reflecting a luxury organic futurism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD530HdwowkhEjfoyr35P8eGAD8YamuV_ayldPueXzSBbgIfdXKDhgZZjxESHS-izXIiP90RQdezR9izRXMqG-cqXWT7Qb1LeN5ZRoBAwu9pQH-B3l6MJo2jYcQlCjRsjnE0R8XxAv2A2Qo8Em30MY5MWPYs_9YoBR2itPidl8o29VEnyJdJ0IIts2C6TaYUn6N55Woca3s5SgPmWpZckJC5H2RutXf0NxN4OYdLCkbLwOB7Vc3TA72DA">
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface">Sarah Jenkins</span>
+<div class="flex items-center space-x-1">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Active Now</span>
+</div>
+</div>
+</div>
+</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity Active: scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</header>
+<!-- Main Chat Canvas -->
+<main class="flex-1 overflow-y-auto mt-16 mb-24 px-margin-mobile md:px-margin-desktop py-8 flex flex-col space-y-6 no-scrollbar">
+<!-- Date Divider -->
+<div class="flex justify-center">
+<span class="px-4 py-1 rounded-full glass-overlay font-label-sm text-label-sm text-on-surface-variant">Today</span>
+</div>
+<!-- Received Message -->
+<div class="flex items-end space-x-2 max-w-[85%] md:max-w-md">
+<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+<img alt="Sarah Jenkins" class="object-cover w-full h-full" data-alt="A sophisticated close-up portrait of a woman named Sarah Jenkins in a dimly lit, high-end environment with warm amber lighting and deep espresso shadows. She wears elegant, minimalist attire, reflecting a luxury organic futurism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABH9o3fkTMaEdd4FEV709kKd1Bi34KatXiMbhFZUHAOLywdz7qpmwz1w_ZkA-OtG19IAk8_dngijE_KP7c9RAw3dpP5HG2QD2eQXG3La1JgHbvSqFopvvWBvHnwo8_uta_PbkTd-GjoGEuJ5-s5ApAcJ5EHrgHdetGpa4-sLWQolT8j_aom5F-oKxvwVqAIWqZcdTf8S33xS2PAIdAnRAf-yWok7qn8138zqWrADfwoAdUmKxvHNUf7Q">
+</div>
+<div class="msg-received neumorphic-raised-light px-4 py-3 rounded-2xl rounded-bl-sm">
+<p class="font-body-md text-body-md text-surface">The new geological samples arrived this morning. The resonance patterns are exactly as we predicted.</p>
+<span class="block text-right mt-1 opacity-70 font-label-sm text-label-sm">10:42 AM</span>
+</div>
+</div>
+<!-- Sent Message -->
+<div class="flex items-end justify-end space-x-2 w-full">
+<div class="msg-sent neumorphic-raised-dark px-4 py-3 rounded-2xl rounded-br-sm max-w-[85%] md:max-w-md">
+<p class="font-body-md text-body-md text-primary">Excellent. Have you started the deep-scan on the quartz matrix yet?</p>
+<span class="block text-right mt-1 opacity-70 font-label-sm text-label-sm text-primary">10:45 AM</span>
+</div>
+</div>
+<!-- Received Message -->
+<div class="flex items-end space-x-2 max-w-[85%] md:max-w-md">
+<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+<img alt="Sarah Jenkins" class="object-cover w-full h-full" data-alt="A sophisticated close-up portrait of a woman named Sarah Jenkins in a dimly lit, high-end environment with warm amber lighting and deep espresso shadows. She wears elegant, minimalist attire, reflecting a luxury organic futurism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJNtubsc0eNys6GPYjQUz3qEOcg0qvwCy_75Boow2-HYVhQXLqts9ugxFHCPU-opkeCl4UXj_eWBUkQsymy0JiMvfrfR0gkw6VA0GTS1QGXFoULEFWmPxiPH3TV-JzpG27Y0BnWpKbgnBnGfBjSru48n2SG_8bLHEvln5ILuL_tghQ3psjQOfC9Kfvra2A5PatbRBj5OVFfIMlOrEPlxkpR7V2pxkOmM3vMfM4IQl05VgPpvzp6KKRow">
+</div>
+<div class="msg-received neumorphic-raised-light px-4 py-3 rounded-2xl rounded-bl-sm">
+<p class="font-body-md text-body-md text-surface">Initiating now. The structural integrity looks flawless under the first pass. I'll forward the initial telemetry data shortly.</p>
+<span class="block text-right mt-1 opacity-70 font-label-sm text-label-sm">10:48 AM</span>
+</div>
+</div>
+</main>
+<!-- Message Input Area (Floating) -->
+<div class="fixed bottom-0 left-0 w-full px-margin-mobile md:px-margin-desktop pb-6 pt-4 bg-gradient-to-t from-background via-background to-transparent z-40 pointer-events-none">
+<div class="w-full max-w-4xl mx-auto flex items-center space-x-3 bg-surface-container/80 backdrop-blur-xl p-2 rounded-full border border-white/10 neumorphic-raised-dark pointer-events-auto">
+<button aria-label="Attach file" class="p-2 text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<input class="flex-1 bg-surface-container-low border-none focus:ring-0 text-on-surface font-body-md text-body-md placeholder-on-surface-variant/50 px-4 py-3 rounded-full neumorphic-recessed" placeholder="Type a message..." type="text">
+<button aria-label="Send message" class="w-10 h-10 flex items-center justify-center bg-tertiary-fixed text-surface rounded-full flex-shrink-0 hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(243,223,207,0.3)]">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</body></html>

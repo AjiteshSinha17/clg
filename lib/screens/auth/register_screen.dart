@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../services/user_service.dart'; // Note the path change
+import '../../services/user_service.dart';
 import '../../state/theme_provider.dart';
 import '../../config/theme.dart';
 import '../../widgets/theme_toggle_button.dart';
@@ -20,30 +20,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  final _userService = UserService(); // Using the new service
+  final _userService = UserService();
+  bool _isLoading = false;
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      return;
-    }
+    if (!isValid) return;
 
     _formKey.currentState!.save();
+    setState(() => _isLoading = true);
 
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
-      // Create user profile in Firestore
       await _userService.createUserProfile(
         uid: userCredential.user!.uid,
-        email: _emailController.text,
-        name: '', // Will be collected in the next step
+        email: _emailController.text.trim(),
+        name: '',
       );
 
-      // Navigate to complete profile after registration
       if (!mounted) return;
       context.go('/complete-profile');
     } on FirebaseAuthException catch (e) {
@@ -51,6 +49,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message ?? 'Registration failed.')),
       );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -59,18 +59,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
 
-    // Background Image Logic
     final String bgImage = isDark
-        ? 'assets/images/mountain_dark.jpg'
-        : 'assets/images/mountain_light.jpg';
+        ? 'assets/images/theme_dark.jpg'
+        : 'assets/images/light.jpg';
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          const Padding(
+        actions: const [
+          Padding(
             padding: EdgeInsets.only(right: 16.0),
             child: ThemeToggleButton(),
           ),
@@ -78,37 +77,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: Stack(
         children: [
-          // 1. Background Image
-          Positioned.fill(child: Image.asset(bgImage, fit: BoxFit.cover)),
+          // Background Image
+          Positioned.fill(
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                isDark
+                    ? const Color(0xFF021429).withValues(alpha: 0.85)
+                    : const Color(0xFFF3FBFA).withValues(alpha: 0.65),
+                isDark ? BlendMode.darken : BlendMode.lighten,
+              ),
+              child: Image.asset(bgImage, fit: BoxFit.cover),
+            ),
+          ),
 
-          // 2. Glassmorphic Overlay
+          // Glassmorphic Auth Form
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(32),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
                     padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: 0.6)
-                          : Colors.white.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
+                    decoration: AppTheme.liquidGlassDecoration(
+                      isDark: isDark,
+                      radius: 32,
                     ),
                     child: Form(
                       key: _formKey,
@@ -119,37 +113,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Text(
                             "Create Account",
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.displayLarge
-                                ?.copyWith(
-                                  fontSize: 32,
-                                  color: isDark
-                                      ? Colors.white
-                                      : AppTheme.mountainOrange,
-                                ),
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              color: isDark
+                                  ? AppTheme.darkOnSurface
+                                  : AppTheme.lightPrimary,
+                              shadows: isDark
+                                  ? [
+                                      Shadow(
+                                        color: AppTheme.aquaGlow.withValues(alpha: 0.6),
+                                        blurRadius: 10,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
                           Text(
-                            'Join the community',
+                            'Join the student community',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: isDark
-                                      ? Colors.white70
-                                      : Colors.black54,
-                                ),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isDark
+                                  ? AppTheme.darkOnSurfaceVariant
+                                  : AppTheme.lightOnSurfaceVariant,
+                            ),
                           ),
                           const SizedBox(height: 32),
 
                           // Email Field
                           TextFormField(
                             controller: _emailController,
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppTheme.darkOnSurface
+                                  : AppTheme.lightOnSurface,
+                            ),
                             decoration: InputDecoration(
                               labelText: 'Email Address',
-                              prefixIcon: const Icon(Icons.email_outlined),
-                              filled: true,
-                              fillColor: isDark
-                                  ? Colors.white.withValues(alpha: 0.1)
-                                  : Colors.white.withValues(alpha: 0.8),
+                              prefixIcon: Icon(
+                                Icons.email_outlined,
+                                color: isDark
+                                    ? AppTheme.darkPrimary
+                                    : AppTheme.lightPrimary,
+                              ),
                             ),
                             validator: (value) {
                               if (value == null || !value.contains('@')) {
@@ -164,13 +172,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppTheme.darkOnSurface
+                                  : AppTheme.lightOnSurface,
+                            ),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              filled: true,
-                              fillColor: isDark
-                                  ? Colors.white.withValues(alpha: 0.1)
-                                  : Colors.white.withValues(alpha: 0.8),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: isDark
+                                    ? AppTheme.darkPrimary
+                                    : AppTheme.lightPrimary,
+                              ),
                             ),
                             validator: (value) {
                               if (value == null || value.length < 6) {
@@ -179,18 +193,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 28),
 
                           // Sign Up Button
-                          ElevatedButton(
-                            onPressed: _submit,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          GestureDetector(
+                            onTap: _isLoading ? null : _submit,
+                            child: Container(
+                              height: 52,
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.primaryGradient(isDark),
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.aquaGlow.withValues(
+                                      alpha: isDark ? 0.4 : 0.25,
+                                    ),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        height: 22,
+                                        width: 22,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Sign Up',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
                             ),
-                            child: const Text('Sign Up'),
                           ),
                           const SizedBox(height: 24),
 
@@ -199,11 +241,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'I already have an account',
+                                'I already have an account ',
                                 style: TextStyle(
+                                  fontSize: 13,
                                   color: isDark
-                                      ? Colors.white70
-                                      : Colors.black54,
+                                      ? AppTheme.darkOnSurfaceVariant
+                                      : AppTheme.lightOnSurfaceVariant,
                                 ),
                               ),
                               TextButton(
@@ -214,9 +257,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   'Login',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 14,
                                     color: isDark
-                                        ? AppTheme.mountainGold
-                                        : AppTheme.mountainOrange,
+                                        ? AppTheme.darkPrimary
+                                        : AppTheme.lightPrimary,
                                   ),
                                 ),
                               ),
@@ -235,3 +279,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+

@@ -1,0 +1,235 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Chat List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed-variant": "#524439",
+                        "tertiary": "#fff7f2",
+                        "outline-variant": "#49473f",
+                        "surface-container-highest": "#353535",
+                        "secondary": "#e1c19f",
+                        "surface-tint": "#cbc7b4",
+                        "inverse-on-surface": "#303030",
+                        "tertiary-fixed-dim": "#d7c3b4",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#e8e3cf",
+                        "surface-dim": "#131313",
+                        "tertiary-container": "#edd8c9",
+                        "surface": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "primary": "#fef8e5",
+                        "on-primary-container": "#636151",
+                        "surface-container": "#1f1f1f",
+                        "on-tertiary": "#3a2e24",
+                        "secondary-fixed": "#ffddb9",
+                        "inverse-surface": "#e2e2e2",
+                        "outline": "#949187",
+                        "on-secondary-fixed-variant": "#594329",
+                        "inverse-primary": "#615f50",
+                        "on-tertiary-fixed": "#241910",
+                        "on-background": "#e2e2e2",
+                        "on-secondary-fixed": "#291803",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#494739",
+                        "on-primary": "#333124",
+                        "on-secondary": "#402c14",
+                        "on-surface": "#e2e2e2",
+                        "background": "#131313",
+                        "on-primary-fixed": "#1d1c10",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#d3b392",
+                        "primary-fixed-dim": "#cbc7b4",
+                        "surface-variant": "#353535",
+                        "tertiary-fixed": "#f3dfcf",
+                        "secondary-fixed-dim": "#e1c19f",
+                        "on-tertiary-container": "#6c5d51",
+                        "surface-container-low": "#1b1b1b",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#cac6bb",
+                        "primary-container": "#e1dcc9",
+                        "secondary-container": "#5b452b"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "container-max-width": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "title-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "body-md": ["Lexend"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "500" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "500" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "title-md": ["20px", { lineHeight: "28px", fontWeight: "500" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.03em", fontWeight: "500" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #1F150C; /* Deep Espresso */
+            color: #e2e2e2;
+        }
+        .neo-surface {
+            background-color: #412D15; /* Rich Brown */
+            box-shadow: -4px -4px 10px rgba(255, 247, 242, 0.05), 4px 4px 10px rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(255, 247, 242, 0.1);
+        }
+        .neo-input {
+            background-color: #352511;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255, 247, 242, 0.05);
+        }
+        .glass-overlay {
+            background: rgba(255, 247, 242, 0.05);
+            backdrop-filter: blur(20px);
+        }
+        /* Mobile vs Desktop */
+        .md-hidden { display: none; }
+        @media (max-width: 767px) {
+            .md-hidden { display: flex; }
+            .md-block { display: none; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md text-body-md">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-outline-variant/10 shadow-[4px_4px_10px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] bg-surface/80 dark:bg-surface-dim/80">
+<div class="flex justify-between items-center px-margin-mobile h-16 max-w-container-max-width mx-auto">
+<!-- Leading Avatar -->
+<button class="transition-all duration-300 active:scale-95 hover:opacity-80">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant/30" data-alt="A sophisticated close-up portrait of an elegant user avatar, cinematic lighting, dark luxury earth tones, soft focus background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjFUGH_L0MW4_ESL8KyPZD3DwKFCm3hPEJyYeZUYL19HktQfx6FvIz-FcZHoYnDJFSqDSmbWGUzdl7qk4FbSbjniCeWWsf-7y8OscZ-7fq3FGTRaGbsKLXURVH9MSwcxC7QLpiPO2cKoCsF4277IF-SeM73vV7b0Vjwq9QBnQui-eB_bg8sBFLrcQJGcmszuBq1VNd86BwaZrTZMElLEjdBQksZQimQpj5lr_mLiGA7WxaqQb7JHdFhg">
+</button>
+<!-- Headline -->
+<h1 class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary">ClgJone</h1>
+<!-- Trailing Icon -->
+<button class="transition-all duration-300 active:scale-95 hover:opacity-80 text-primary dark:text-primary-fixed">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto w-full">
+<!-- Search Bar -->
+<div class="mb-8">
+<div class="neo-input rounded-full flex items-center px-4 py-3">
+<span class="material-symbols-outlined text-outline mr-3">search</span>
+<input class="bg-transparent border-none outline-none text-primary-fixed placeholder-outline w-full font-body-md text-body-md" placeholder="Search conversations..." type="text">
+</div>
+</div>
+<!-- Chat List -->
+<div class="flex flex-col gap-4">
+<!-- Chat Item 1 (Unread) -->
+<div class="neo-surface rounded-xl p-4 flex items-center gap-4 transition-all duration-300 active:scale-[0.98] cursor-pointer hover:bg-opacity-90">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Professional headshot of a woman named Sarah Jenkins, warm ambient lighting, elegant dark background, organic futuristic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9Xh84Tf-KQkypw3kKLHvmX6siZiVw8eRs_LTkfxaFHVumJnRcqJ2DwPRxISUouLMkDSPuNTQSAVJBji3NUZnhGDg2CH8d41sZQn6tYoccLFQ38_0lMnxagIO2OTJSocQQykD7JVGGcjFMx0YrX5LuZ-vxiP5YHn3kcjTPYq7t2vwktxQ6mq8z_A2c9ASn7aSEZZyoy14cbM1Z4jbzgqiU8n-Cusk08SfHQi8ccym85HgK5LEc4v6SsQ">
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-[#412D15] rounded-full"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h2 class="font-title-md text-title-md text-primary truncate">Sarah Jenkins</h2>
+<span class="font-label-sm text-label-sm text-primary">10:42 AM</span>
+</div>
+<p class="font-body-md text-body-md text-outline truncate">Are we still on for the design review later?</p>
+</div>
+<div class="flex-shrink-0 flex flex-col items-end gap-1">
+<div class="bg-primary text-on-primary font-label-sm text-label-sm rounded-full w-6 h-6 flex items-center justify-center">3</div>
+</div>
+</div>
+<!-- Chat Item 2 -->
+<div class="neo-surface rounded-xl p-4 flex items-center gap-4 transition-all duration-300 active:scale-[0.98] cursor-pointer hover:bg-opacity-90">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Artistic portrait of a man named Mike R, moody dramatic lighting, deep espresso background, neomorphic visual aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCUpwPFpwpIeD-9GHujORdHWD4sZkHS9jvVvvKV7KYW7ru24NPNPY1QO0mfGkCNyt_WUf0AWamIj0MFK01Do51cS1SgYjvX57EG_VVT3EL1_Npp-5uhOZIzLz9axj-laxEzUzluLoGDHVINrkL6tWFEViKvmMJiy4LWbboF3wd9dOBLRFdNQBGzu99jA0HOXzIyvuRdw5UB7BOwfZ1lCLDriXOYfkKc7OihC9H7huQkFKR1f4iiszaMA">
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-outline border-2 border-[#412D15] rounded-full"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h2 class="font-title-md text-title-md text-on-surface-variant truncate">Mike R.</h2>
+<span class="font-label-sm text-label-sm text-outline">Yesterday</span>
+</div>
+<p class="font-body-md text-body-md text-outline truncate">Sent the files over. Let me know if you need anything else.</p>
+</div>
+</div>
+<!-- Chat Item 3 -->
+<div class="neo-surface rounded-xl p-4 flex items-center gap-4 transition-all duration-300 active:scale-[0.98] cursor-pointer hover:bg-opacity-90">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Abstract organic 3D shape acting as an avatar for a team channel, smooth resin texture, soft light leaks, earthy luxury palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVjdJNK8NZnOEmX9O8AmtgJF0NhdmljLinG2cqxU9xGDEozNBwc8OYyN9YcMccPcF9w-1Xd9odYGm6xNVfyegpF7GrChOFwocP_DIWG0tP3_5cnoOUNOwcyUBbwRsyz7DpcUAdIBaRvqwMeXVSpwlEObIUjQgKmHlnYZzfllD4vjAoltOcdyCRCBsVoT0KSRYkiOdHKboAiZDySiWrcJNcsFr11_cAs95JpQJJRstff3Rfacwtj6YHpQ">
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-[#412D15] rounded-full"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h2 class="font-title-md text-title-md text-on-surface-variant truncate">Project Genesis</h2>
+<span class="font-label-sm text-label-sm text-outline">Mon</span>
+</div>
+<p class="font-body-md text-body-md text-outline truncate">Alice: The new neomorphic shadows look incredible.</p>
+</div>
+</div>
+<!-- Chat Item 4 -->
+<div class="neo-surface rounded-xl p-4 flex items-center gap-4 transition-all duration-300 active:scale-[0.98] cursor-pointer hover:bg-opacity-90">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Cinematic portrait of an elegant individual, subtle glassmorphic elements in the frame, rich dark brown tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZZ-HnIAvfwr_CtvIankWai21LXO0UsJO8xVuMDoiMfYA8-CLZAqfDk1M3NfModwAER9TbrcKBAiguDPk6SWqLJ6QfCVS26-fE6qYaae-dfM1xUpSSOesTx22MH-XjoesscThEp9Wp-e_vMbIIIOp944XgehxjnChCs_QvoZtQcINmCjp6-uhFIUWbYHaDM8CtVHBzbwj1PJJBOaZbEND3cOrAIFH2dOS2YLRQARpGaThm__PWavSjzQ">
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-outline border-2 border-[#412D15] rounded-full"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-1">
+<h2 class="font-title-md text-title-md text-on-surface-variant truncate">Elena Vance</h2>
+<span class="font-label-sm text-label-sm text-outline">Nov 12</span>
+</div>
+<p class="font-body-md text-body-md text-outline truncate">Thanks for the update!</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md-hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] rounded-full backdrop-blur-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] bg-tertiary/10 dark:bg-surface-container/20 z-50">
+<div class="flex justify-around items-center py-2 px-4 font-label-sm text-label-sm text-secondary">
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</button>
+<!-- Active Nav Item: Chat -->
+<button class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 shadow-inner active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="chat" style="font-variation-settings: 'FILL' 1;">chat</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+</div>
+</nav>
+</body></html>

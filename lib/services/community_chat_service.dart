@@ -146,4 +146,48 @@ class CommunityChatService {
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
+
+  /// Edit a message in community chat
+  Future<void> editMessage(
+    String messageId,
+    String newContent, {
+    String roomId = globalRoomId,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('User not logged in');
+
+    final msgRef = _firestore
+        .collection('community_rooms')
+        .doc(roomId)
+        .collection('messages')
+        .doc(messageId);
+
+    await msgRef.update({
+      'content': newContent,
+      'isEdited': true,
+    });
+  }
+
+  /// Delete a message for everyone in community chat
+  Future<void> deleteMessageForEveryone(
+    String messageId, {
+    String roomId = globalRoomId,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('User not logged in');
+
+    final msgRef = _firestore
+        .collection('community_rooms')
+        .doc(roomId)
+        .collection('messages')
+        .doc(messageId);
+
+    await msgRef.update({
+      'content': 'This message was deleted',
+      'isDeleted': true,
+      'fileUrl': FieldValue.delete(),
+      'imageUrl': FieldValue.delete(),
+      'fileName': FieldValue.delete(),
+    });
+  }
 }

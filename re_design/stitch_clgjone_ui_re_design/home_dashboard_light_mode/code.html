@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ClgJone - Home Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#1d1c10",
+                      "surface-variant": "#e5e2e1",
+                      "surface-bright": "#fcf9f8",
+                      "surface-dim": "#dcd9d9",
+                      "surface-container": "#f0eded",
+                      "on-surface-variant": "#4e453d",
+                      "surface-tint": "#735a3e",
+                      "on-surface": "#1b1b1b",
+                      "primary": "#2a1804",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#e8e3cf",
+                      "background": "#fcf9f8",
+                      "on-primary-fixed": "#291803",
+                      "surface": "#fcf9f8",
+                      "on-secondary-fixed": "#141f00",
+                      "outline": "#80756b",
+                      "on-error": "#ffffff",
+                      "on-secondary-container": "#526d0f",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#ffddb9",
+                      "on-secondary-fixed-variant": "#384e00",
+                      "primary-container": "#412d15",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#eae7e7",
+                      "surface-container-low": "#f6f3f2",
+                      "tertiary": "#1e1c10",
+                      "on-tertiary-container": "#9d9988",
+                      "tertiary-container": "#333124",
+                      "outline-variant": "#d1c4b9",
+                      "on-secondary": "#ffffff",
+                      "secondary": "#4c6706",
+                      "secondary-fixed-dim": "#b2d26b",
+                      "on-background": "#1b1b1b",
+                      "primary-fixed-dim": "#e1c19f",
+                      "inverse-primary": "#e1c19f",
+                      "on-primary-container": "#b19474",
+                      "on-primary-fixed-variant": "#594329",
+                      "on-tertiary-fixed-variant": "#494739",
+                      "secondary-container": "#cdef84",
+                      "inverse-on-surface": "#f3f0ef",
+                      "tertiary-fixed-dim": "#cbc7b4",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#cdef84",
+                      "inverse-surface": "#313030"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "xs": "4px",
+                      "xl": "80px",
+                      "margin-desktop": "64px",
+                      "lg": "48px",
+                      "sm": "12px",
+                      "md": "24px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Lexend"
+                      ],
+                      "body-md": [
+                              "Lexend"
+                      ],
+                      "body-lg": [
+                              "Lexend"
+                      ],
+                      "title-md": [
+                              "Lexend"
+                      ],
+                      "label-md": [
+                              "Lexend"
+                      ],
+                      "label-sm": [
+                              "Lexend"
+                      ],
+                      "display-lg": [
+                              "Lexend"
+                      ],
+                      "headline-lg-mobile": [
+                              "Lexend"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "300"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "300"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.08em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "56px",
+                              {
+                                      "lineHeight": "64px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-panel {
+            background: rgba(252, 249, 248, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .neumorphic-card {
+            background: #f0eded;
+            box-shadow: -8px -8px 16px #ffffff, 8px 8px 16px rgba(219, 212, 206, 0.6);
+            transition: all 0.3s ease;
+        }
+        .neumorphic-card:hover {
+            box-shadow: -4px -4px 8px #ffffff, 4px 4px 8px rgba(219, 212, 206, 0.6);
+            transform: translateY(2px);
+        }
+        .neumorphic-inset {
+            background: #f0eded;
+            box-shadow: inset -4px -4px 8px #ffffff, inset 4px 4px 8px rgba(219, 212, 206, 0.6);
+        }
+      </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen relative overflow-x-hidden font-body-md">
+<!-- Background Image -->
+<div class="fixed inset-0 z-[-1]" data-alt="A soft-lit, futuristic yet organic college campus scene bathed in warm morning sunlight. The architecture features smooth, sweeping curves made of light stone and curved glass, seamlessly integrated with lush greenery. The atmosphere is calm, academic, and premium, embodying a 'Terra Lux Futura' aesthetic in light mode with subtle beige and sage tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDeYuOtTLSiIc7dL_RaHiJp0twk_gUy99wsQTSaTHbIVpqxAgVOx6AIAYtZ1db5L3smOhYTNscKcJmpyXa0qvyoOMi-M9L2lRlpACFloPt7mfWeVzyj9N0zU5RzvWS0YODhqTWNWSgQj3mwFgMQf9Bg1Iib7sBfjWT1hU4XD23yp8lvCOqhqjh6zfOtDuYNpfgXiIrFYFHKcpywVS6fkrqC5ufVt9sJdWt9hdsy090pPBTYf14zJl3zcg')"></div>
+<!-- Main Container -->
+<main class="max-w-7xl mx-auto min-h-screen pt-4 pb-32 px-margin-mobile md:px-margin-desktop md:pt-margin-desktop relative z-10 flex flex-col items-center">
+<!-- Frosted Glass Panel Wrapper -->
+<div class="glass-panel w-full max-w-4xl rounded-3xl p-6 md:p-12 flex flex-col gap-8 shadow-2xl relative overflow-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full bg-transparent text-primary dark:text-primary backdrop-blur-xl bg-surface/10 shadow-none">
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary p-2 rounded-full hover:bg-surface-variant/50 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-display-lg text-display-lg tracking-tighter text-primary">ClgJone</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary p-2 rounded-full hover:bg-surface-variant/50 flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<img alt="Student Profile Avatar" class="w-12 h-12 rounded-full object-cover border-2 border-surface-container-highest shadow-sm" data-alt="A highly detailed, professional headshot portrait of a young adult college student smiling warmly. The lighting is soft and bright, fitting a premium, light-mode design system. The background is a subtle, out-of-focus earth-toned abstract shape." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6xXITcsFvJXm1btKxFM2c89b4fOGcX_8hjp5XLLG3EfNH4DXaJ-LhgO5DWfl3H7SJKCz_AzrkGoX9rxaCNiCXKZGVMeocNAeQiNd9d4MXa5DczCsn9Ghsv1Fre3CokNHYGwwL6Bvqdwc7shc9mhW0bw8XHDHPTAEXbNWktkiiCormmJQNcptonyj-WzofADiqBe5apCdClHqJNDpXvpLtc3zxRWC4PB-yOK3Uj-0nBBjF1IIDcfiy8w">
+</div>
+</header>
+<!-- Greeting Section -->
+<section class="flex flex-col gap-2 mt-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Good morning, Ajitesh 👋</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Here's what's happening on campus today.</p>
+</section>
+<!-- Quick Actions Bento Grid -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-6">
+<!-- Action 1: Roommates -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Roommates</span>
+</a>
+<!-- Action 2: Community -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="hub" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Community</span>
+</a>
+<!-- Action 3: Chat -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="forum" style="font-variation-settings: 'FILL' 1;">forum</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Chat</span>
+</a>
+<!-- Action 4: Events -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-tint text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="event_available" style="font-variation-settings: 'FILL' 1;">event_available</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Events</span>
+</a>
+</section>
+<!-- Upcoming Highlight Card (Example of asymmetric content) -->
+<section class="mt-8">
+<div class="neumorphic-inset rounded-3xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center">
+<div class="flex-1 flex flex-col gap-4">
+<span class="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary font-label-sm text-label-sm w-max">Featured Event</span>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Architecture Symposium '24</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Join industry leaders in the main hall for a discussion on sustainable organic structures.</p>
+<button class="mt-2 bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-xl w-max hover:opacity-90 transition-opacity shadow-md">RSVP Now</button>
+</div>
+<div class="w-full md:w-1/3 aspect-video md:aspect-square rounded-2xl overflow-hidden shadow-lg relative">
+<img class="object-cover w-full h-full" data-alt="A highly detailed, architectural rendering of a modern symposium hall featuring vast curved glass windows looking out onto a bright, green campus. Inside, natural light floods a stage area with sleek, organic wooden seating. The mood is inspiring and forward-thinking, fitting a luxury earth futurist design aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJCLFjlobS_chbPsSmvFK3L3h3JUoQCHUkBALFKkekOX_5OY97gW9_sO8mXvO2lU4TnxX3tFHL56ZP4ErLcYAmUEL0bQ2YSwoaneytVQh5swC4RH3TtkqQUosDFAeTOehDrLSZdsTAZccdlq4sZYVb_GCDhFxIDjZLgv_7SvTkTIPnbuxhQVCcBJVQTXBkkSkHF7g5_KkL6F_92JierLdnRD6glJTd3XmR0FqamUy_VqDX_agC8kv0tA">
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only as per guidelines) -->
+<nav class="md:hidden bg-surface-container/30 text-primary font-label-sm text-label-sm font-display-lg text-display-lg text-primary fixed bottom-4 left-4 right-4 rounded-full overflow-hidden backdrop-blur-2xl border-t border-primary/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex justify-around items-center py-2 px-4">
+<button class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm">Rooms</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm">Feed</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="event_available">event_available</span>
+<span class="font-label-sm text-label-sm">Events</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-sm text-label-sm">Flux</span>
+</button>
+</nav>
+</body></html>

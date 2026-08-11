@@ -258,4 +258,48 @@ class ChatService {
       debugPrint('[ChatService] Error sending push notification: $e');
     }
   }
+
+  /// Edit a sent message
+  Future<void> editMessage(
+    String chatId,
+    String messageId,
+    String newContent,
+  ) async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) throw Exception('User not logged in');
+
+    final msgRef = _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+
+    await msgRef.update({
+      'content': newContent,
+      'isEdited': true,
+    });
+  }
+
+  /// Delete a message for everyone in the chat
+  Future<void> deleteMessageForEveryone(
+    String chatId,
+    String messageId,
+  ) async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) throw Exception('User not logged in');
+
+    final msgRef = _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+
+    await msgRef.update({
+      'content': 'This message was deleted',
+      'isDeleted': true,
+      'fileUrl': FieldValue.delete(),
+      'imageUrl': FieldValue.delete(),
+      'fileName': FieldValue.delete(),
+    });
+  }
 }

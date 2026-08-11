@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:provider/provider.dart';
 import '../../services/chat_service.dart';
 import '../../services/user_service.dart';
 import '../../models/chat.dart';
 import '../../models/user.dart';
 import '../../utils/timestamp_utils.dart';
-
-// Soft orange-white gradient palette
-const _softOrange = Color(0xFFFF8C38);
-const _softOrangeLight = Color(0xFFFFB870);
+import '../../config/theme.dart';
+import '../../state/theme_provider.dart';
 
 class ChatsListScreen extends StatelessWidget {
   const ChatsListScreen({super.key});
@@ -19,7 +17,8 @@ class ChatsListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatService = ChatService();
     final currentUserId = auth.FirebaseAuth.instance.currentUser?.uid;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
 
     if (currentUserId == null) {
       return const Center(child: Text('Please login to view chats'));
@@ -33,13 +32,20 @@ class ChatsListScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: const AlwaysStoppedAnimation<Color>(_softOrange),
+                color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
               ),
             );
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: TextStyle(
+                  color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                ),
+              ),
+            );
           }
 
           final chats = snapshot.data ?? [];
@@ -53,40 +59,37 @@ class ChatsListScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          _softOrangeLight.withValues(alpha: 0.15),
-                          _softOrange.withValues(alpha: 0.10),
-                        ],
+                      color: isDark
+                          ? AppTheme.darkPrimaryContainer.withValues(alpha: 0.15)
+                          : const Color(0xFF006A66).withValues(alpha: 0.08),
+                      border: Border.all(
+                        color: isDark
+                            ? AppTheme.darkPrimaryContainer.withValues(alpha: 0.4)
+                            : const Color(0xFF18D8D0).withValues(alpha: 0.4),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _softOrange.withValues(alpha: 0.20),
-                          blurRadius: 20,
-                          spreadRadius: 4,
-                        ),
-                      ],
                     ),
                     child: Icon(
                       Icons.chat_bubble_outline_rounded,
-                      size: 52,
-                      color: _softOrange.withValues(alpha: 0.70),
+                      size: 48,
+                      color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
                   Text(
                     'No chats yet',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white70 : Colors.black54,
+                      color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     'Connect with others to start chatting!',
                     style: TextStyle(
-                      color: isDark ? Colors.white38 : Colors.black38,
+                      color: isDark
+                          ? AppTheme.darkOnSurfaceVariant
+                          : AppTheme.lightOnSurfaceVariant,
                       fontSize: 13,
                     ),
                   ),
@@ -96,7 +99,7 @@ class ChatsListScreen extends StatelessWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             itemCount: chats.length,
             itemBuilder: (context, index) {
               final chat = chats[index];
@@ -140,19 +143,20 @@ class _ChatListItem extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-            child: _buildClayTile(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: _buildTile(
               context,
               leading: Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark
-                      ? const Color(0xFF2A2A2A)
-                      : const Color(0xFFF0EDE8),
+                  color: isDark ? AppTheme.darkContainer : Colors.white,
                 ),
-                child: const Icon(Icons.person_rounded, color: _softOrange),
+                child: Icon(
+                  Icons.person_rounded,
+                  color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
+                ),
               ),
               title: const Text('Loading...'),
               subtitle: const SizedBox.shrink(),
@@ -166,41 +170,32 @@ class _ChatListItem extends StatelessWidget {
         final lastMessageTime = formatMessageTimestamp(chat.lastMessageTime);
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-          child: _buildClayTile(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: _buildTile(
             context,
             leading: Container(
-              padding: const EdgeInsets.all(2.5),
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [_softOrangeLight, _softOrange],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                border: Border.all(
+                  color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
+                  width: 1.5,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: _softOrange.withValues(alpha: 0.30),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: CircleAvatar(
-                radius: 23,
-                backgroundColor: isDark
-                    ? const Color(0xFF1C1C1C)
-                    : Colors.white,
+                radius: 22,
+                backgroundColor: isDark ? AppTheme.darkContainer : Colors.white,
                 backgroundImage: user.avatarUrl.isNotEmpty
                     ? NetworkImage(user.avatarUrl)
                     : null,
                 child: user.avatarUrl.isEmpty
                     ? Text(
                         user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: _softOrange,
+                          color: isDark
+                              ? AppTheme.darkOnSurface
+                              : AppTheme.lightOnSurface,
                           fontSize: 16,
                         ),
                       )
@@ -210,9 +205,9 @@ class _ChatListItem extends StatelessWidget {
             title: Text(
               user.name,
               style: TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 fontSize: 15,
-                color: isDark ? Colors.white : Colors.black87,
+                color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
               ),
             ),
             subtitle: Text(
@@ -220,10 +215,10 @@ class _ChatListItem extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.40)
-                    : Colors.black.withValues(alpha: 0.40),
+                    ? AppTheme.darkOnSurfaceVariant
+                    : AppTheme.lightOnSurfaceVariant,
               ),
             ),
             trailing: Column(
@@ -234,7 +229,7 @@ class _ChatListItem extends StatelessWidget {
                   lastMessageTime,
                   style: TextStyle(
                     fontSize: 11,
-                    color: _softOrange.withValues(alpha: 0.75),
+                    color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -247,7 +242,7 @@ class _ChatListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildClayTile(
+  Widget _buildTile(
     BuildContext context, {
     required Widget leading,
     required Widget title,
@@ -259,28 +254,9 @@ class _ChatListItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C1C1C) : const Color(0xFFFFF9F4),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.07)
-                : _softOrange.withValues(alpha: 0.12),
-            width: 1.2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.07),
-              blurRadius: 16,
-              spreadRadius: 0,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.80),
-              blurRadius: 0,
-              offset: const Offset(0, -1),
-            ),
-          ],
+        decoration: AppTheme.liquidGlassDecoration(
+          isDark: isDark,
+          radius: 20,
         ),
         child: Row(
           children: [

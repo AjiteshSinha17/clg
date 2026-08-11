@@ -3,8 +3,7 @@ import '../models/message.dart';
 import '../utils/timestamp_utils.dart';
 import '../config/theme.dart';
 
-/// Claymorphism + Skeuomorphism chat bubble for the community chat widget.
-/// (Used in community_chat_screen.dart — the shared ChatBubble widget)
+/// Aquatic Nebula Neumorphism + Liquid Glass chat bubble for community and direct chats.
 class ChatBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
@@ -16,20 +15,27 @@ class ChatBubble extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // ── Colors ───────────────────────────────────────────────────────────
-    final sentGradient = const LinearGradient(
-      colors: [AppTheme.orange, AppTheme.orangeDark],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
+    final sentGradient = AppTheme.primaryGradient(isDark);
+    final recvColor = isDark
+        ? AppTheme.darkContainer.withValues(alpha: 0.85)
+        : Colors.white.withValues(alpha: 0.90);
+    final recvBorder = Border.all(
+      color: isDark
+          ? AppTheme.darkPrimary.withValues(alpha: 0.25)
+          : const Color(0xFF18D8D0).withValues(alpha: 0.35),
+      width: 1,
     );
-    final recvColor = isDark ? AppTheme.darkCard : AppTheme.lightCard;
-    final recvBorder = isDark
-        ? Border.all(color: Colors.white.withValues(alpha: 0.07), width: 1)
-        : Border.all(color: Colors.black.withValues(alpha: 0.06), width: 1);
 
     // ── Shadows ───────────────────────────────────────────────────────────
     final shadows = isMe
-        ? AppTheme.clayShadowSent
-        : (isDark ? AppTheme.clayShadowRecvDark : AppTheme.clayShadowRecvLight);
+        ? [
+            BoxShadow(
+              color: AppTheme.aquaGlow.withValues(alpha: isDark ? 0.35 : 0.25),
+              blurRadius: 10,
+              offset: const Offset(2, 4),
+            ),
+          ]
+        : AppTheme.neumorphicShadows(isDark);
 
     // ── Border radius ─────────────────────────────────────────────────────
     final radius = BorderRadius.only(
@@ -44,13 +50,19 @@ class ChatBubble extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.72,
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          gradient: isMe ? sentGradient : null,
-          color: isMe ? null : recvColor,
+          color: isMe
+              ? (isDark ? AppTheme.darkAquaticBg : null)
+              : recvColor,
+          gradient: isMe
+              ? (isDark ? null : sentGradient)
+              : null,
           borderRadius: radius,
-          border: isMe ? null : recvBorder,
+          border: isMe
+              ? (isDark ? Border.all(color: AppTheme.goldenBorder, width: 1.2) : null)
+              : recvBorder,
           boxShadow: shadows,
         ),
         child: Padding(
@@ -66,16 +78,18 @@ class ChatBubble extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.orange,
+                      color: isDark
+                          ? AppTheme.softBeige
+                          : AppTheme.lightPrimary,
                       letterSpacing: 0.3,
                     ),
                   ),
                 ),
-              if (message.imageUrl != null)
+              if (message.imageUrl != null && message.imageUrl!.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     child: Image.network(message.imageUrl!, fit: BoxFit.cover),
                   ),
                 ),
@@ -83,10 +97,10 @@ class ChatBubble extends StatelessWidget {
                 message.content,
                 style: TextStyle(
                   color: isMe
-                      ? Colors.white
+                      ? (isDark ? AppTheme.softBeige : Colors.white)
                       : (isDark
-                            ? Colors.white.withValues(alpha: 0.87)
-                            : const Color(0xFF1A1A1A)),
+                            ? AppTheme.darkOnSurface
+                            : AppTheme.lightOnSurface),
                   fontSize: 14,
                   height: 1.4,
                 ),
@@ -99,10 +113,10 @@ class ChatBubble extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10,
                     color: isMe
-                        ? Colors.white.withValues(alpha: 0.65)
+                        ? (isDark ? AppTheme.softBeige.withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.75))
                         : (isDark
-                              ? Colors.white.withValues(alpha: 0.45)
-                              : Colors.black.withValues(alpha: 0.40)),
+                              ? AppTheme.darkOnSurfaceVariant
+                              : AppTheme.lightOnSurfaceVariant),
                   ),
                 ),
               ),
@@ -115,3 +129,4 @@ class ChatBubble extends StatelessWidget {
 
   String _formatTime(DateTime time) => formatMessageTimestamp(time);
 }
+

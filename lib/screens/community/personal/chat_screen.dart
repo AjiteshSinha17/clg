@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../state/theme_provider.dart';
+import '../../../config/theme.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
@@ -90,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildInputArea(bool isDark) {
     return Container(
       padding: const EdgeInsets.all(8),
-      color: isDark ? Colors.black54 : Colors.white54,
+      color: isDark ? AppTheme.darkSurface : Colors.white54,
       child: Row(
         children: [
           Expanded(

@@ -1,0 +1,270 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Settings - ClgJone</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-surface-variant": "#4e453d",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#1d1c10",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#d1c4b9",
+                        "on-tertiary-fixed-variant": "#494739",
+                        "secondary": "#4c6706",
+                        "background": "#fcf9f8",
+                        "inverse-primary": "#e1c19f",
+                        "on-secondary-fixed-variant": "#384e00",
+                        "on-primary": "#ffffff",
+                        "outline": "#80756b",
+                        "on-primary-container": "#b19474",
+                        "on-surface": "#1b1b1b",
+                        "on-secondary-container": "#526d0f",
+                        "tertiary": "#1e1c10",
+                        "secondary-fixed": "#cdef84",
+                        "on-secondary-fixed": "#141f00",
+                        "primary": "#2a1804",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "surface-container-high": "#eae7e7",
+                        "tertiary-fixed": "#e8e3cf",
+                        "secondary-container": "#cdef84",
+                        "surface-tint": "#735a3e",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-fixed-variant": "#594329",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#412d15",
+                        "tertiary-container": "#333124",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffddb9",
+                        "on-tertiary-container": "#9d9988",
+                        "secondary-fixed-dim": "#b2d26b",
+                        "surface-bright": "#fcf9f8",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#291803",
+                        "tertiary-fixed-dim": "#cbc7b4",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#e1c19f",
+                        "on-background": "#1b1b1b",
+                        "surface-dim": "#dcd9d9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "margin-mobile": "16px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "margin-desktop": "64px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "headline-lg": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "body-md": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "300" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "300" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .neumorphic-soft {
+            background: theme('colors.surface-container-low');
+            box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.05), -4px -4px 12px rgba(255, 255, 255, 0.8);
+        }
+        
+        .neumorphic-inset {
+            background: theme('colors.surface-container-low');
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+        }
+        
+        .glass-overlay {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-xl pt-24 md:pl-80 flex flex-col items-center">
+<!-- Mobile Top App Bar / Desktop Suppressed Nav (Settings is a destination, but Navigation Drawer takes over on Desktop) -->
+<header class="md:hidden fixed top-0 w-full z-50 backdrop-blur-xl bg-surface/80 shadow-[4px_4px_10px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] border-b border-outline-variant/10">
+<div class="flex justify-between items-center px-margin-mobile h-16">
+<div class="flex items-center gap-sm cursor-pointer hover:opacity-80 transition-all duration-300 active:scale-95">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A detailed headshot of a professional user, suitable for an avatar, soft lighting, Terra Lux Futura aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsroM6mUfcdf5f4wR2FUf1i4YtRYsce-qh39ZZPdCr6d9LNKQSzeTa-nR8LwM3NkNaNRMsBGoqNyt0HasbZGQHYNAOoLKElKyJcQPkKS_IjQWCHIMPEBBns5bDJwkOOsniUao-zNC4oARt5jEXL2r6E6GOaiWu-nharcXX7gZumjJIEDzPKfJ1yFrhqRDTPorSN5u1fXE0iq7oZ99h2zfhUzwhghV-VPs09kkztqNnL1f5aZquET9NDQ">
+</div>
+<div class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary">ClgJone</div>
+<div class="text-on-surface-variant cursor-pointer hover:opacity-80 transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</div>
+</div>
+</header>
+<!-- Navigation Drawer (Desktop) -->
+<aside class="hidden md:flex fixed top-0 left-0 h-full w-80 rounded-r-xl bg-surface-container-low shadow-2xl divide-y divide-outline-variant/20 flex-col py-8 z-40">
+<div class="px-md mb-8 flex flex-col gap-sm">
+<div class="font-headline-lg text-primary mb-md">ClgJone</div>
+<div class="flex items-center gap-md">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="A professional headshot avatar of a student, soft natural lighting, Terra Lux Futura style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4Wt7xFvokyNh7xLtyxdlnoBhQ877Cod5hSzStkQx1eih6J8CrgIhbbJB40YzVFIV_062stga8gCcUvj0E95waBaRiqqg1mQmkIxodwMtzEK1ecIG2XNiqMIQ_8w7skEnMUadwepQOf_TB-VLXa2NSU5JeOja_X-vm7bm8IrH4zQBw_r9lFm-puIYdW8kD2bAppM3xUzSAanabN-c1mgSOxxuD5hBHJjwqk0V_nQ2W0m5rdpI5WA4vjw">
+<div>
+<div class="font-title-md text-title-md text-on-surface">Alex Sterling</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Senior • Architecture</div>
+</div>
+</div>
+<div class="font-label-sm text-label-sm text-secondary bg-secondary-container/30 w-fit px-2 py-1 rounded-full mt-xs">Verified Student</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-md">
+<ul class="flex flex-col gap-xs font-body-md text-body-md">
+<li>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant mx-2 hover:bg-surface-variant transition-transform duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span>
+                        Campus Events
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant mx-2 hover:bg-surface-variant transition-transform duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+                        Verification
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant mx-2 hover:bg-surface-variant transition-transform duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">hub</span>
+                        Connections
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant mx-2 hover:bg-surface-variant transition-transform duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">search</span>
+                        Search
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant mx-2 hover:bg-surface-variant transition-transform duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+                        Academic Assistant
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg mx-2 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+                        Settings
+                    </a>
+</li>
+</ul>
+</nav>
+</aside>
+<main class="w-full max-w-3xl px-margin-mobile md:px-margin-desktop flex flex-col gap-lg">
+<!-- Page Header -->
+<div class="mb-md">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-xs">Settings</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your account preferences and app configurations.</p>
+</div>
+<!-- Account Section -->
+<section class="flex flex-col gap-md">
+<h2 class="font-label-md text-label-md text-outline uppercase tracking-wider pl-xs">Account</h2>
+<div class="flex flex-col gap-sm">
+<div class="neumorphic-soft rounded-xl p-4 flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<div class="font-title-md text-title-md text-on-surface">Personal Information</div>
+<div class="font-body-md text-body-md text-on-surface-variant text-sm">Update your name, email, and details</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<div class="neumorphic-soft rounded-xl p-4 flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div>
+<div class="font-title-md text-title-md text-on-surface">Security &amp; Password</div>
+<div class="font-body-md text-body-md text-on-surface-variant text-sm">Manage two-factor authentication</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Destructive Action -->
+<section class="mt-lg flex justify-center">
+<button class="neumorphic-soft px-xl py-md rounded-full font-label-md text-label-md text-error flex items-center gap-sm hover:bg-error-container/20 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">logout</span>
+                Log Out
+            </button>
+</section>
+</main>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] rounded-full backdrop-blur-2xl border border-white/10 bg-tertiary/10 bg-gradient-to-br from-white/10 to-transparent shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] z-50">
+<ul class="flex justify-around items-center py-2 px-4 font-label-sm text-label-sm text-secondary">
+<li>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">chat</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 shadow-inner active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+</a>
+</li>
+</ul>
+</nav>
+</body></html>

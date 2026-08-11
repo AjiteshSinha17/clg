@@ -1,0 +1,339 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ClgJone - Flux AI Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient glowing background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% -20%, #412D15 0%, #1F150C 40%, #131313 100%);
+            z-index: -1;
+        }
+
+        /* Neomorphic elements */
+        .neo-surface {
+            background-color: #1F150C;
+            box-shadow: -4px -4px 10px rgba(255, 247, 242, 0.05), 4px 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .neo-inset {
+            background-color: #1F150C;
+            box-shadow: inset -4px -4px 10px rgba(255, 247, 242, 0.05), inset 4px 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Glassmorphic elements */
+        .glass-panel {
+            background-color: rgba(255, 247, 242, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 247, 242, 0.05);
+        }
+
+        .glass-card {
+            background-color: #412D15;
+            border-top: 1px solid rgba(255, 247, 242, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        /* Animations */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .pulsing-node::before {
+            content: '';
+            position: absolute;
+            left: -10%; top: -10%;
+            width: 120%; height: 120%;
+            border-radius: 50%;
+            border: 1px solid #e1c19f;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        .wave-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 120px;
+            gap: 12px;
+        }
+        
+        .wave-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e1c19f 0%, #5b452b 100%);
+            box-shadow: 0 4px 12px rgba(225, 193, 159, 0.3);
+            animation: wave 1.5s ease-in-out infinite;
+        }
+        
+        .wave-dot:nth-child(2) { animation-delay: 0.2s; }
+        .wave-dot:nth-child(3) { animation-delay: 0.4s; }
+        .wave-dot:nth-child(4) { animation-delay: 0.6s; }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 1; box-shadow: 0 8px 24px rgba(225, 193, 159, 0.6); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353535;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#291803",
+                        "on-tertiary-fixed": "#241910",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-highest": "#353535",
+                        "on-tertiary-fixed-variant": "#524439",
+                        "on-secondary-fixed-variant": "#594329",
+                        "primary-fixed": "#e8e3cf",
+                        "surface-container": "#1f1f1f",
+                        "surface-tint": "#cbc7b4",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#494739",
+                        "secondary-fixed-dim": "#e1c19f",
+                        "secondary-container": "#5b452b",
+                        "background": "#131313",
+                        "surface-variant": "#353535",
+                        "on-surface": "#e2e2e2",
+                        "on-surface-variant": "#cac6bb",
+                        "on-background": "#e2e2e2",
+                        "on-primary-fixed": "#1d1c10",
+                        "on-primary": "#333124",
+                        "surface-dim": "#131313",
+                        "secondary-fixed": "#ffddb9",
+                        "primary-container": "#e1dcc9",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-bright": "#393939",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#636151",
+                        "tertiary-fixed-dim": "#d7c3b4",
+                        "inverse-on-surface": "#303030",
+                        "tertiary": "#fff7f2",
+                        "inverse-primary": "#615f50",
+                        "error": "#ffb4ab",
+                        "surface": "#131313",
+                        "on-secondary-container": "#d3b392",
+                        "tertiary-container": "#edd8c9",
+                        "on-secondary": "#402c14",
+                        "secondary": "#e1c19f",
+                        "primary": "#fef8e5",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#49473f",
+                        "primary-fixed-dim": "#cbc7b4",
+                        "outline": "#949187",
+                        "on-tertiary": "#3a2e24",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#f3dfcf",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#6c5d51"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max-width": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "headline-lg": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "title-md": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-x-hidden selection:bg-secondary-container selection:text-on-secondary-container">
+<div class="ambient-bg"></div>
+<!-- Main Content Wrapper -->
+<div class="max-w-md mx-auto min-h-screen flex flex-col relative pb-32">
+<!-- TopAppBar (Web) / Mobile Header -->
+<header class="w-full top-0 sticky backdrop-blur-xl bg-surface/10 shadow-none z-40 flex justify-between items-center px-margin-mobile py-4 transition-transform">
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-2 rounded-full glass-panel">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-lg-mobile md:text-headline-lg tracking-tighter text-primary">ClgJone</h1>
+<button class="hover:opacity-80 transition-opacity active:scale-95 rounded-full overflow-hidden w-10 h-10 border border-outline-variant/30 neo-surface">
+<img alt="Student Profile Avatar" class="w-full h-full object-cover" data-alt="A small, stylized avatar portrait of a modern university student, glowing softly against a dark espresso background. The lighting is subtle neomorphic, emphasizing organic textures and calm earth tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn9IyC5NtuNsNpl0qPkT1ivjtWeu1VeTRyR5JPYBOQzWmQpRiKBnsvGPXR-eTBd2YdeAIH-oUo1-1W3v0eQAKGkhvBx4wOc_yTZrx55TVzD70dO9mf0vOz3e9D3fjPcAkcDhWNbJm2f2xvGhiMNvygMKVbYvLMSHD1u6Xu1crXXOC2ovgnMU6lctVH8mWycawDarwBV1trlV2XNJ-e2QGtMy5FQEx84wT_hjCBNItQ1Bk1CgVziOvkaw">
+</button>
+</header>
+<!-- Main Workspace -->
+<main class="flex-1 px-margin-mobile py-8 flex flex-col gap-8 z-10">
+<!-- AI 'Thinking' Visualization -->
+<section class="flex flex-col items-center justify-center py-6">
+<div class="wave-container">
+<div class="wave-dot"></div>
+<div class="wave-dot"></div>
+<div class="wave-dot"></div>
+<div class="wave-dot"></div>
+</div>
+<h2 class="font-title-md text-title-md text-secondary mt-4 text-center tracking-wide">Flux is processing your context...</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 text-center max-w-[280px]">Synthesizing recent lectures and roadmap progress.</p>
+</section>
+<!-- Quick Action Grid (Bento Style) -->
+<section class="grid grid-cols-2 gap-4">
+<button class="glass-card rounded-xl p-4 flex flex-col items-start justify-between h-32 hover:opacity-90 active:scale-95 transition-all group">
+<div class="p-2 rounded-lg bg-surface-container/50 text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface mt-auto text-left">Find Notes<br><span class="text-on-surface-variant font-normal">Quantum Mechanics</span></span>
+</button>
+<button class="glass-card rounded-xl p-4 flex flex-col items-start justify-between h-32 hover:opacity-90 active:scale-95 transition-all group">
+<div class="p-2 rounded-lg bg-surface-container/50 text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface mt-auto text-left">View Roadmap<br><span class="text-on-surface-variant font-normal">Week 4 Tasks</span></span>
+</button>
+<button class="glass-card rounded-xl p-4 flex flex-col items-start justify-between h-32 col-span-2 hover:opacity-90 active:scale-95 transition-all group neo-surface">
+<div class="flex w-full justify-between items-center">
+<div class="p-2 rounded-lg bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="neurology">psychology</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-container/20 px-3 py-1 rounded-full">Suggested</span>
+</div>
+<span class="font-label-md text-label-md text-primary mt-auto text-left w-full truncate">"Explain Schrödinger's equation simply"</span>
+</button>
+</section>
+<!-- Learning Roadmap Snippet -->
+<section class="mt-4">
+<div class="flex justify-between items-end mb-6">
+<h3 class="font-title-md text-title-md text-on-surface">Active Pathway</h3>
+<button class="text-secondary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<div class="relative pl-6 py-2">
+<!-- Vertical Line -->
+<div class="absolute left-[11px] top-0 bottom-0 w-[2px] bg-outline-variant/30 rounded-full">
+<div class="w-full bg-secondary h-[45%] rounded-full shadow-[0_0_10px_rgba(225,193,159,0.5)]"></div>
+</div>
+<!-- Nodes -->
+<div class="relative mb-8 flex items-start group cursor-pointer">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-secondary shadow-[0_0_8px_rgba(225,193,159,0.8)] z-10"></div>
+<div class="glass-card w-full rounded-xl p-4 ml-4 transition-transform group-active:scale-95 border-l-4 border-l-secondary">
+<h4 class="font-label-md text-label-md text-on-surface">Wave Functions</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Completed • 2 days ago</p>
+</div>
+</div>
+<div class="relative mb-8 flex items-start group cursor-pointer">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-surface border-2 border-secondary z-10 pulsing-node"></div>
+<div class="glass-panel w-full rounded-xl p-4 ml-4 transition-transform group-active:scale-95 bg-surface-container/40">
+<h4 class="font-label-md text-label-md text-primary">Probability Density</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">In Progress • 45% mastery</p>
+<div class="w-full h-1 bg-surface-container-highest rounded-full mt-3 overflow-hidden">
+<div class="h-full bg-primary w-[45%] rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="relative flex items-start opacity-50">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-surface-container-highest border-2 border-outline-variant z-10"></div>
+<div class="w-full rounded-xl p-4 ml-4">
+<h4 class="font-label-md text-label-md text-on-surface">Quantum Tunneling</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Locked • Requires previous node</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Glassmorphic Chat Input -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-40">
+<div class="glass-panel rounded-full p-2 flex items-center gap-2 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border-t border-primary/10 bg-surface/40">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full neo-surface active:scale-95">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<input class="flex-1 bg-transparent border-none text-on-surface font-body-md placeholder:text-on-surface-variant/50 focus:ring-0 px-2 h-10 neo-inset rounded-full" placeholder="Ask Flux anything..." type="text">
+<button class="p-2 bg-secondary text-on-secondary rounded-full hover:bg-secondary-fixed-dim transition-colors shadow-[0_0_15px_rgba(225,193,159,0.3)] active:scale-95">
+<span class="material-symbols-outlined" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex justify-around items-center py-2 px-4 backdrop-blur-2xl bg-surface-container/30 rounded-full overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] md:hidden">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Rooms -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm mt-1">Rooms</span>
+</a>
+<!-- Feed -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm mt-1">Feed</span>
+</a>
+<!-- Events -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-sm text-label-sm mt-1">Events</span>
+</a>
+<!-- Flux (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-2 hover:text-primary transition-colors active:inner-shadow-lg shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2)]" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-sm text-label-sm mt-1 font-bold">Flux</span>
+</a>
+</nav>
+</div>
+</body></html>

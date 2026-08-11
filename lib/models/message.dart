@@ -19,6 +19,8 @@ class Message {
   final String? fileName;
   /// text | image | pdf
   final MessageType type;
+  final bool isEdited;
+  final bool isDeleted;
 
   Message({
     required this.id,
@@ -33,6 +35,8 @@ class Message {
     this.fileUrl,
     this.fileName,
     this.type = MessageType.text,
+    this.isEdited = false,
+    this.isDeleted = false,
   });
 
   bool get isMedia => type == MessageType.image || type == MessageType.pdf;
@@ -57,6 +61,8 @@ class Message {
       fileUrl: data['fileUrl'],
       fileName: data['fileName'],
       type: type,
+      isEdited: data['isEdited'] ?? false,
+      isDeleted: data['isDeleted'] ?? false,
     );
   }
 
@@ -70,6 +76,8 @@ class Message {
       'timestamp': Timestamp.fromDate(timestamp),
       'isRead': isRead,
       'type': type.name,
+      'isEdited': isEdited,
+      'isDeleted': isDeleted,
     };
     if (imageUrl != null) map['imageUrl'] = imageUrl;
     if (fileUrl != null) map['fileUrl'] = fileUrl;

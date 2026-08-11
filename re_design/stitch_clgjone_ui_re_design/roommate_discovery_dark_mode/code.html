@@ -1,0 +1,298 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Roommate Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#291803",
+                        "on-tertiary-fixed": "#241910",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-highest": "#353535",
+                        "on-tertiary-fixed-variant": "#524439",
+                        "on-secondary-fixed-variant": "#594329",
+                        "primary-fixed": "#e8e3cf",
+                        "surface-container": "#1f1f1f",
+                        "surface-tint": "#cbc7b4",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#494739",
+                        "secondary-fixed-dim": "#e1c19f",
+                        "secondary-container": "#5b452b",
+                        "background": "#131313",
+                        "surface-variant": "#353535",
+                        "on-surface": "#e2e2e2",
+                        "on-surface-variant": "#cac6bb",
+                        "on-background": "#e2e2e2",
+                        "on-primary-fixed": "#1d1c10",
+                        "on-primary": "#333124",
+                        "surface-dim": "#131313",
+                        "secondary-fixed": "#ffddb9",
+                        "primary-container": "#e1dcc9",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-bright": "#393939",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#636151",
+                        "tertiary-fixed-dim": "#d7c3b4",
+                        "inverse-on-surface": "#303030",
+                        "tertiary": "#fff7f2",
+                        "inverse-primary": "#615f50",
+                        "error": "#ffb4ab",
+                        "surface": "#131313",
+                        "on-secondary-container": "#d3b392",
+                        "tertiary-container": "#edd8c9",
+                        "on-secondary": "#402c14",
+                        "secondary": "#e1c19f",
+                        "primary": "#fef8e5",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline-variant": "#49473f",
+                        "primary-fixed-dim": "#cbc7b4",
+                        "outline": "#949187",
+                        "on-tertiary": "#3a2e24",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#f3dfcf",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#6c5d51"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max-width": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "headline-lg": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "title-md": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .neomorphic-card {
+            background-color: #412D15;
+            box-shadow: 
+                -4px -4px 10px rgba(254, 248, 229, 0.05),
+                4px 4px 15px rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(254, 248, 229, 0.1);
+        }
+        .neomorphic-input {
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(254, 248, 229, 0.05);
+        }
+        .glass-overlay {
+            background: rgba(254, 248, 229, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen pb-24 selection:bg-primary/20">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky backdrop-blur-xl bg-surface/10 shadow-none z-40">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 w-full">
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 transition-transform p-2 rounded-full glass-overlay">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-display-lg text-display-lg md:font-headline-lg md:text-headline-lg tracking-tighter text-primary">ClgJone</h1>
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 transition-transform p-2 rounded-full glass-overlay">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A small circular avatar of a student with a clean, modern aesthetic. The lighting is soft and natural, fitting an earth futurist luxury theme. The background is a subtle, out-of-focus dark earth tone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaQthtl9n0MOJrA6joAB01S5w0jWwNgtJ7mMq2st51nNP7BHIIqoXIltothPVeZzVeaywxqrS2669RMZlSR1n7bFiyTh-njDi-5OJdZp100buTas31Xawb2wiq1WgzQ5DYbS5_SUBsrI5aSWXBsWV8CFmA6B4Ia4W6-K85-veegeAwLAIq_GdVXxJ66dJMLkHMfGFsFW7WyLyvWkReJK7_x0pG3gQtJA1sh7FnRch8Nxrlt9f1Jf-Vog">
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop pt-8">
+<div class="mb-12">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-2">Find Your Match</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Discover compatible roommates based on lifestyle and budget.</p>
+</div>
+<!-- Filter Bar -->
+<div class="glass-overlay rounded-xl p-4 mb-10 flex flex-wrap gap-4 border border-outline-variant/30 sticky top-24 z-30">
+<div class="flex-1 min-w-[200px]">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">attach_money</span>
+<select class="w-full bg-surface-container neomorphic-input border-none rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md text-primary appearance-none focus:ring-1 focus:ring-primary/50 transition-shadow">
+<option value="">Any Budget</option>
+<option value="under500">Under $500/mo</option>
+<option value="500-1000">$500 - $1,000/mo</option>
+<option value="over1000">$1,000+/mo</option>
+</select>
+</div>
+</div>
+<div class="flex-1 min-w-[200px]">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">psychology</span>
+<select class="w-full bg-surface-container neomorphic-input border-none rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md text-primary appearance-none focus:ring-1 focus:ring-primary/50 transition-shadow">
+<option value="">Any Lifestyle</option>
+<option value="early">Early Bird</option>
+<option value="night">Night Owl</option>
+<option value="quiet">Quiet Study</option>
+</select>
+</div>
+</div>
+<button class="bg-primary text-on-primary rounded-lg px-6 py-3 font-label-md text-label-md hover:bg-primary-fixed transition-colors shadow-lg active:translate-y-0.5">Filter</button>
+</div>
+<!-- Roommate Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<article class="neomorphic-card rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 bg-secondary text-on-secondary font-label-sm text-label-sm px-4 py-1.5 rounded-bl-xl font-bold z-10 shadow-md">
+                    95% Match
+                </div>
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/20 shadow-inner shrink-0">
+<img class="w-full h-full object-cover" data-alt="A high-quality portrait of a college student in a dimly lit, sophisticated cafe environment. The lighting features soft amber tones highlighting their face against a deep brown, blurred background, fitting the luxury earth futurist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMdtvGuyR5RV5C9YN3k8GO0SSKqGTPRJxQegpOWBypBXlBzNxu72N1SBACsCjocg3swLH1KacNBi4IRX3zOlpNx2UQth3mEB5nBMIjBJy9Q2DevomSKIgVqR3UDDSttlWzzxdqvvDQm1oCXm-7XYxoUloA4220_8K4KQWuVBp3JQLyOOxOEho1VFwW9Bt6UqreW-eSVnaKtfz9nMhDVXc9hDnDgKBAmqPq9F4ppPzJcm3wxs6f7xd7pw">
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-primary mb-1">Julian Hayes</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">school</span>
+                            Architecture, Junior
+                        </p>
+</div>
+</div>
+<div class="mb-6 space-y-3 relative z-10">
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Budget</span>
+<span class="font-body-md text-body-md text-primary">$800/mo</span>
+</div>
+<div class="flex flex-wrap gap-2 pt-2">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Early Bird</span>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Neat Freak</span>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Non-Smoker</span>
+</div>
+</div>
+<div class="mt-auto relative z-10">
+<button class="w-full bg-surface-container border border-primary/20 text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group-hover:border-primary/50 shadow-md">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+                        Connect
+                    </button>
+</div>
+<!-- Decorative ambient light -->
+<div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+</article>
+<!-- Card 2 -->
+<article class="neomorphic-card rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 bg-secondary/80 text-on-secondary font-label-sm text-label-sm px-4 py-1.5 rounded-bl-xl font-bold z-10 shadow-md">
+                    88% Match
+                </div>
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/20 shadow-inner shrink-0">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young woman smiling slightly, set in a modern library with rich wood paneling in the background. Cinematic lighting with subtle warm highlights, capturing a premium, grounded feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjjIt2PX1mBvIrXUN6_R0B_wh5T9tXxsb0I-o2N406PbL8YqRl24PACdJ_IiMyB_iek6Y930efvnYtKBTx68IktprVpi_ds5AS5SoAPzYTOq2a7oPzrHy6N5MbiX9qe8RRftY5IyU-IuCXYBza1-3fLmYZXL4w3X-BsiOB2Qm6O8fBk2roP_sKWHJ8SQZlCuinDeR_eMG0kuqtliYjNOpa853azjUmHk_BamhGRGeW6MpzyWVZc4wq_g">
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-primary mb-1">Elena Rostova</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">school</span>
+                            Computer Science, Senior
+                        </p>
+</div>
+</div>
+<div class="mb-6 space-y-3 relative z-10">
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Budget</span>
+<span class="font-body-md text-body-md text-primary">$1,100/mo</span>
+</div>
+<div class="flex flex-wrap gap-2 pt-2">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Night Owl</span>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Pet Friendly</span>
+</div>
+</div>
+<div class="mt-auto relative z-10">
+<button class="w-full bg-surface-container border border-primary/20 text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group-hover:border-primary/50 shadow-md">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+                        Connect
+                    </button>
+</div>
+<div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+</article>
+<!-- Card 3 -->
+<article class="neomorphic-card rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 bg-secondary/60 text-on-secondary font-label-sm text-label-sm px-4 py-1.5 rounded-bl-xl font-bold z-10 shadow-md">
+                    72% Match
+                </div>
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/20 shadow-inner shrink-0">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male student looking thoughtful, illuminated by soft screen light in an otherwise dark, earthy-toned studio room. High end, moody atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArlJpaheH88LZ8YlxA1TnuRrRZwC_oGbYfwXfRP4AGoGTGudfB4543Rxt0htAaafVOUciYnliNnYQkyK6jwfxKtosM9Y7lquGukn9E37mqeYjYT0kxr50dQ8QughTDlvhYA4Lea0zNDvSX1Nmay1r5cSHFIc6arVTXN9NpLewIFNEePhFIbLxVqpU00uIBLQX3Tef8lmP7ZXguRmlw6KlMNhKxuvRh-if4juHVjD3nWQdnj9-cjmo7YQ">
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-primary mb-1">Marcus Chen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">school</span>
+                            Business, Sophomore
+                        </p>
+</div>
+</div>
+<div class="mb-6 space-y-3 relative z-10">
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Budget</span>
+<span class="font-body-md text-body-md text-primary">$600/mo</span>
+</div>
+<div class="flex flex-wrap gap-2 pt-2">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Quiet Study</span>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm backdrop-blur-sm">Social</span>
+</div>
+</div>
+<div class="mt-auto relative z-10">
+<button class="w-full bg-surface-container border border-primary/20 text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group-hover:border-primary/50 shadow-md">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+                        Connect
+                    </button>
+</div>
+<div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex justify-around items-center py-2 px-4 bg-surface-container/30 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] rounded-full overflow-hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Active Tab: Rooms (Maps conceptually to Roommates) -->
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group" data-weight="fill" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-label-sm text-label-sm mt-1">Rooms</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm mt-1">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-sm text-label-sm mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-sm text-label-sm mt-1">Flux</span>
+</a>
+</nav>
+</body></html>

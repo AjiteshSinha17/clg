@@ -1,0 +1,395 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Community Feed - ClgJone</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#291803",
+                    "on-tertiary-fixed": "#241910",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353535",
+                    "on-tertiary-fixed-variant": "#524439",
+                    "on-secondary-fixed-variant": "#594329",
+                    "primary-fixed": "#e8e3cf",
+                    "surface-container": "#1f1f1f",
+                    "surface-tint": "#cbc7b4",
+                    "on-error": "#690005",
+                    "on-primary-fixed-variant": "#494739",
+                    "secondary-fixed-dim": "#e1c19f",
+                    "secondary-container": "#5b452b",
+                    "background": "#131313",
+                    "surface-variant": "#353535",
+                    "on-surface": "#e2e2e2",
+                    "on-surface-variant": "#cac6bb",
+                    "on-background": "#e2e2e2",
+                    "on-primary-fixed": "#1d1c10",
+                    "on-primary": "#333124",
+                    "surface-dim": "#131313",
+                    "secondary-fixed": "#ffddb9",
+                    "primary-container": "#e1dcc9",
+                    "inverse-surface": "#e2e2e2",
+                    "surface-bright": "#393939",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-container": "#636151",
+                    "tertiary-fixed-dim": "#d7c3b4",
+                    "inverse-on-surface": "#303030",
+                    "tertiary": "#fff7f2",
+                    "inverse-primary": "#615f50",
+                    "error": "#ffb4ab",
+                    "surface": "#131313",
+                    "on-secondary-container": "#d3b392",
+                    "tertiary-container": "#edd8c9",
+                    "on-secondary": "#402c14",
+                    "secondary": "#e1c19f",
+                    "primary": "#fef8e5",
+                    "surface-container-lowest": "#0e0e0e",
+                    "outline-variant": "#49473f",
+                    "primary-fixed-dim": "#cbc7b4",
+                    "outline": "#949187",
+                    "on-tertiary": "#3a2e24",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#f3dfcf",
+                    "surface-container-low": "#1b1b1b",
+                    "on-tertiary-container": "#6c5d51"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max-width": "1280px",
+                    "unit": "8px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Lexend"
+                    ],
+                    "headline-lg-mobile": [
+                            "Lexend"
+                    ],
+                    "display-lg": [
+                            "Lexend"
+                    ],
+                    "body-md": [
+                            "Lexend"
+                    ],
+                    "label-md": [
+                            "Lexend"
+                    ],
+                    "headline-lg": [
+                            "Lexend"
+                    ],
+                    "label-sm": [
+                            "Lexend"
+                    ],
+                    "title-md": [
+                            "Lexend"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.03em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #1F150C; /* Deep Espresso */
+            color: #fef8e5; /* primary */
+        }
+        
+        .neo-card {
+            background-color: #412D15; /* Rich Brown */
+            box-shadow: inset 0 1px 0 0 rgba(254, 248, 229, 0.1), /* inner light stroke */
+                        -4px -4px 10px 0 rgba(254, 248, 229, 0.05), /* top-left soft cream light leak */
+                        8px 8px 16px 0 rgba(0, 0, 0, 0.4); /* bottom-right deep shadow */
+            border-radius: 0.75rem;
+        }
+
+        .neo-button {
+            box-shadow: -2px -2px 5px 0 rgba(254, 248, 229, 0.05),
+                        4px 4px 8px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .neo-button:active {
+            box-shadow: inset -2px -2px 5px 0 rgba(254, 248, 229, 0.05),
+                        inset 4px 4px 8px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-chip {
+            background-color: rgba(254, 248, 229, 0.1);
+            backdrop-filter: blur(20px);
+        }
+        
+        /* Hide scrollbar for category chips */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md text-body-md pb-24 md:pb-0 md:flex-row">
+<!-- Desktop SideNav (Hidden on Mobile) -->
+<aside class="hidden md:flex flex-col h-full w-80 rounded-r-xl bg-surface border-r border-outline-variant/20 shadow-2xl p-margin-mobile fixed left-0 top-0 z-40">
+<!-- Header -->
+<div class="flex items-center gap-4 mb-8">
+<img class="w-12 h-12 rounded-full object-cover shadow-md" data-alt="A cinematic, high-fashion portrait of a young male student named Alex Rivers in a dimly lit, futuristic architectural studio. Deep espresso shadows contrast with soft cream rim lighting on his face. He looks focused and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbEJZ6AzF5JERh0bfzx3GZRffFC8rj5RZOA_o-wv3OHnkMxXtrg-ZJXA98jAWeu5KoS4MRsMOYi8-tXKan2ME1QgIkUtwPT8ucuVL8pLGoC-X-K-w1V4wMUndcI7I_5tO4rnfmd5s2bDL_5u9NcFvY_n8tvONk657MaeEkgGh-gb_MzWF_Shg0hkznrtlrdC2otezp_pev12btGn-pVO4MvHSHO3kxcsTtPPIVBkcgLj8Ikd0EBBEoxQ">
+<div class="flex flex-col text-left">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Alex Rivers</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Senior @ Design Architecture</span>
+<span class="font-label-sm text-label-sm text-secondary mt-0.5">Premium Member</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2 flex-grow">
+<a class="flex items-center gap-4 p-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="font-body-md text-body-md">My Profile</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md text-body-md">Academic Path</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-md text-body-md">Campus Groups</span>
+</a>
+<!-- Feed is active here logically, though not explicitly in the side nav json list provided. We map it to the closest intent or just leave it un-highlighted if no exact match. Since we are on 'Feed' screen and the nav doesn't have it, we'll assume it's part of a broader 'Home' or just not highlight these specific user-focused tabs. Wait, the BottomNavBar has Feed. Let's just render the SideNav as requested by the json anchor, but none are strictly 'Feed'. -->
+<a class="flex items-center gap-4 p-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-98 mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body-md text-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-4 p-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col md:ml-80 w-full max-w-container-max-width mx-auto">
+<!-- TopAppBar (Mobile & Desktop) -->
+<header class="w-full top-0 sticky backdrop-blur-xl bg-surface/10 shadow-none z-30 flex justify-between items-center px-margin-mobile py-4 transition-transform md:px-margin-desktop">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-primary hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-display-lg text-display-lg tracking-tighter text-primary">ClgJone</h1>
+</div>
+<button class="w-10 h-10 rounded-full overflow-hidden hover:opacity-80 transition-opacity active:scale-95 shadow-md border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A small, circular avatar portrait of a student in a dimly lit, futuristic architectural studio. Deep espresso shadows with soft cream lighting. Same person as the sidebar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzn_5JMFhsUXhw1jMGWARn-wUSWrx4MHhcO_zVlWpt7krMKVwnXiJV9M4HitA7HOENALaHFwrDPh25oCtGc3YiQXi_Xosxs3KCHDUmJBNldriRhA3TGzzUHjRX1hnnM0CiceX__f0ncMlOYPFBttrvtO49ZqLZvNBYHHBH5HmTKK01q0IIwp99KwIChUZ2O2am-K1pt-0QvLZNsWHIlFkEDk6VmTaIO9ExXt3ARJcp2Ixe0m_erRwjcQ">
+</button>
+</header>
+<div class="px-margin-mobile md:px-margin-desktop py-6 flex-grow flex flex-col gap-6">
+<!-- Category Chips -->
+<div class="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
+<button class="glass-chip px-6 py-2 rounded-full font-label-md text-label-md text-primary shrink-0 neo-button active:scale-95 bg-primary/20">All</button>
+<button class="glass-chip px-6 py-2 rounded-full font-label-md text-label-md text-on-surface-variant shrink-0 hover:text-primary transition-colors neo-button">General</button>
+<button class="glass-chip px-6 py-2 rounded-full font-label-md text-label-md text-on-surface-variant shrink-0 hover:text-primary transition-colors neo-button">Academics</button>
+<button class="glass-chip px-6 py-2 rounded-full font-label-md text-label-md text-on-surface-variant shrink-0 hover:text-primary transition-colors neo-button">Notes</button>
+<button class="glass-chip px-6 py-2 rounded-full font-label-md text-label-md text-on-surface-variant shrink-0 hover:text-primary transition-colors neo-button">Events</button>
+</div>
+<!-- Feed Container (Bento/Asymmetric feel slightly adapted for feed) -->
+<div class="flex flex-col gap-8 w-full max-w-2xl mx-auto md:mx-0">
+<!-- Post Card 1: Text + Image -->
+<article class="neo-card p-6 flex flex-col gap-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A moody, high-contrast portrait of a female design student in a dark architectural studio setting. Warm, soft cream lighting illuminates one side of her face against a deep espresso background. She looks thoughtful." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ3rtTbBgQuyP0YC-VDazKmiI3HfY2wtzmHFmgPvey6pTxmEZXdOVb7O4fGBAtlFKjoniFVIZW66DaBeae0ZU-_u0EbasXmkVELzoWj68ZAmyGmEoI9-HAx9XqxH7O3_rRhixzezbsNyYxEnuHPbBCL9hmX-B3UuQn3cIgH2iF2zYk-sfdbnk7yBvi5GKsAojrm6rgrVkB9j9YWjwlRdPodI6BUryHITWo7_ZVnRQcFMJ_3RSsHqYIRw">
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary">Sarah Jenkins</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 hours ago • Academics</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary neo-button p-2 rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<div class="font-body-md text-body-md text-on-surface">
+<p>Just finished the final renders for the 'Organic Futurism' pavilion project. Exploring how semi-translucent materials can interact with natural light leaks to create a grounded, haptic experience. What do you all think of this approach?</p>
+</div>
+<div class="rounded-xl overflow-hidden mt-2 relative aspect-video" data-alt="A highly detailed architectural rendering of a futuristic, organic pavilion made of polished stone and semi-translucent resin. Soft, natural light leaks through the structure, casting deep espresso shadows and soft cream highlights. The environment is calm, tactile, and luxurious." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGlsowXjgFCNWBfi4FV7nt91H_YE5QcrEKP56Q5zlMSJDkkftRYfb3iqvAKCPzQbmJPUsmfLefZvOKuDVxkFM2_oYiSfT_PzGnwdYkIS6avPExa9Xg1w4hz6mH-BGSemTGY0GpiD0ZDQ0vB0LCAltnQaGsYAHGfHNxeAZcTK270kRTUtpm8s9iH1o9R4wA_rIrh7bkQ_tJuHnEyMci5IcB3bFYLQqplNDw4z0tLn2VYqTFzxzX4Si9mg')">
+<!-- Image placeholder background -->
+</div>
+<footer class="flex items-center justify-between mt-4 border-t border-outline-variant/30 pt-4">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors neo-button px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+<span class="font-label-md text-label-md">24</span>
+</button>
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors neo-button px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-label-md">5</span>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors neo-button p-2 rounded-full">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors neo-button p-2 rounded-full">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+</footer>
+</article>
+<!-- Post Card 2: Text + Document (Notes) -->
+<article class="neo-card p-6 flex flex-col gap-4">
+<header class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a male student wearing glasses, lit by a soft cream light source from a laptop screen in a dark, rich brown room. The aesthetic is focused, quiet luxury, and studious." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApviniqSTkdDqGjVu-m3xGDGwZ9M64s8tiuJISKZy9vkN_dzYTpXat0DUxAJVMG7MUEExlxYqm38cklynKVOB0Enp20x7s2_vra5nS1DsJoWgafcQJ6MwpnkOGJtNrUAnfghQl4f5BFX4lUfSyUdwunpBBYswD09E0gqqVnnVszr2TA0AhWWYLl2KSsI5mCDOd8cKZ7W_x7Ce0qSW2aUZp2aYwvJppn6iuafi74XaEKkVegzvWPirUxA">
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary">Marcus Vance</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">5 hours ago • Notes</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary neo-button p-2 rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<div class="font-body-md text-body-md text-on-surface">
+<p>Compiled all my study notes for Advanced Material Science (ARCH-401). Includes diagrams on resin tensile strength and glassmorphic structural load distribution. Hope this helps someone cramming for midterms!</p>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-lg border border-outline-variant/20 shadow-inner mt-2">
+<div class="bg-primary-container/20 p-3 rounded-lg text-primary">
+<span class="material-symbols-outlined text-3xl">picture_as_pdf</span>
+</div>
+<div class="flex flex-col flex-grow">
+<span class="font-label-md text-label-md text-primary">ARCH401_Midterm_Notes.pdf</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4.2 MB • 15 pages</span>
+</div>
+<button class="text-primary hover:opacity-80 p-2 neo-button rounded-full">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<footer class="flex items-center justify-between mt-4 border-t border-outline-variant/30 pt-4">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 text-primary hover:text-primary transition-colors neo-button px-3 py-1.5 rounded-full bg-primary/10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-label-md text-label-md">112</span>
+</button>
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors neo-button px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-label-md">18</span>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors neo-button p-2 rounded-full">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors neo-button p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (New Post) -->
+<button class="fixed right-6 bottom-28 md:bottom-12 w-14 h-14 bg-[#fef8e5] text-[#1F150C] rounded-full flex items-center justify-center shadow-[0_8px_16px_0_rgba(0,0,0,0.5)] hover:scale-105 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-2xl font-bold">add</span>
+</button>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex justify-around items-center py-2 px-4 bg-surface-container/30 backdrop-blur-2xl border-t border-primary/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] rounded-full overflow-hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm mt-1">Rooms</span>
+</a>
+<!-- Active Tab: Feed -->
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-2 hover:opacity-90 transition-opacity" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">forum</span>
+<span class="font-label-sm text-label-sm mt-1">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-sm text-label-sm mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-label-sm text-label-sm mt-1">Flux</span>
+</a>
+</nav>
+</body></html>

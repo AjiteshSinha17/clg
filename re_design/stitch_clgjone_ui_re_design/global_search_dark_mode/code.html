@@ -1,0 +1,237 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ClgJone - Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed-variant": "#524439",
+                        "tertiary": "#fff7f2",
+                        "outline-variant": "#49473f",
+                        "surface-container-highest": "#353535",
+                        "secondary": "#e1c19f",
+                        "surface-tint": "#cbc7b4",
+                        "inverse-on-surface": "#303030",
+                        "tertiary-fixed-dim": "#d7c3b4",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#e8e3cf",
+                        "surface-dim": "#131313",
+                        "tertiary-container": "#edd8c9",
+                        "surface": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "primary": "#fef8e5",
+                        "on-primary-container": "#636151",
+                        "surface-container": "#1f1f1f",
+                        "on-tertiary": "#3a2e24",
+                        "secondary-fixed": "#ffddb9",
+                        "inverse-surface": "#e2e2e2",
+                        "outline": "#949187",
+                        "on-secondary-fixed-variant": "#594329",
+                        "inverse-primary": "#615f50",
+                        "on-tertiary-fixed": "#241910",
+                        "on-background": "#e2e2e2",
+                        "on-secondary-fixed": "#291803",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#494739",
+                        "on-primary": "#333124",
+                        "on-secondary": "#402c14",
+                        "on-surface": "#e2e2e2",
+                        "background": "#131313",
+                        "on-primary-fixed": "#1d1c10",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#d3b392",
+                        "primary-fixed-dim": "#cbc7b4",
+                        "surface-variant": "#353535",
+                        "tertiary-fixed": "#f3dfcf",
+                        "secondary-fixed-dim": "#e1c19f",
+                        "on-tertiary-container": "#6c5d51",
+                        "surface-container-low": "#1b1b1b",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#cac6bb",
+                        "primary-container": "#e1dcc9",
+                        "secondary-container": "#5b452b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max-width": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "title-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "body-md": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #1F150C; color: #fef8e5; }
+        .glass-panel {
+            background: rgba(255, 247, 242, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 247, 242, 0.1);
+            box-shadow: -2px -2px 10px rgba(255,247,242,0.05), 4px 4px 10px rgba(0,0,0,0.4);
+        }
+        .neomorphic-input {
+            background: rgba(31, 21, 12, 0.8);
+            box-shadow: inset 4px 4px 8px rgba(0,0,0,0.6), inset -4px -4px 8px rgba(255,247,242,0.05);
+            border: none;
+        }
+        .chip {
+            background: rgba(255, 247, 242, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+        }
+        .chip.active {
+            background: #fef8e5;
+            color: #1F150C;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-body-md">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 backdrop-blur-xl bg-surface/80 dark:bg-surface-dim/80 shadow-[4px_4px_10px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] flex justify-between items-center px-margin-mobile h-16">
+<div class="flex items-center gap-4">
+<img class="w-8 h-8 rounded-full object-cover shadow-sm" data-alt="A small circular profile avatar of a college student, looking confident and approachable. The lighting is soft and warm, emphasizing a modern luxury organic aesthetic with deep espresso and soft cream tones in the background. High resolution, professional portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSHbNfGbpK7b0IeFB4yKmLVGV0bBsPMbf6-5bPktUmj-c53hZQfoxRtRMhA87l4eIf1f6CkK2hj9pdCnDujBG8cuHbUI8tU08NtOP1wkC3vNZE86mdnJ23dzIKuqXWKPfDbaSAnoS2SpxYRYVjGbOwjrx8SIwKM3rxtBEuG2ZSJPrvresMThcNhyi0NRjZwCt152GBrnu7F32b1Abg2KESOkxJXZnqrqPGmeufkn4cNhxdqfzQiUTtwg">
+</div>
+<div class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary">ClgJone</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</button>
+</header>
+<!-- Top Nav (Desktop) -->
+<header class="hidden md:flex fixed top-0 w-full z-50 backdrop-blur-xl bg-surface/80 dark:bg-surface-dim/80 shadow-[4px_4px_10px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] justify-between items-center px-margin-desktop h-20">
+<div class="font-display-lg text-headline-lg tracking-tighter text-primary">ClgJone</div>
+<nav class="flex gap-8">
+<a class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex flex-col items-center gap-1" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-sm text-label-sm">Campus Events</span>
+</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex flex-col items-center gap-1" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-label-sm text-label-sm">Verification</span>
+</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex flex-col items-center gap-1" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-label-sm text-label-sm">Connections</span>
+</a>
+<a class="text-primary hover:opacity-80 transition-all duration-300 active:scale-95 flex flex-col items-center gap-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-sm text-label-sm">Search</span>
+</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex flex-col items-center gap-1" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">Academic Assistant</span>
+</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-all duration-300 active:scale-95 flex flex-col items-center gap-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="flex items-center gap-4">
+<img class="w-10 h-10 rounded-full object-cover shadow-sm border-2 border-surface-variant" data-alt="A small circular profile avatar of a college student, looking confident and approachable. The lighting is soft and warm, emphasizing a modern luxury organic aesthetic with deep espresso and soft cream tones in the background. High resolution, professional portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD6pA5_5XNCu-Rr1GHBGXOqrSEbFPrDfVBeaWyKgvTZ-2jiwBYvFd0Zmgz1jmy7WJovfMwaRFlE99_e8QoJl_ucsEYFVcAXHmsVvpBrz_MyTNqqIVFvwG9RG9ughiCgTYtE4KC8FIQOBCC8ElRUpLqXcGzmub8fo5qIU6BrCIf_db6peaENBUSD0mmyGjrqXfrR-VF0AeGFaZuDzx7BSjtLwBbz4RTk2NM00SdFVYE3uasB7wlevM8ww">
+</div>
+</header>
+<main class="flex-grow pt-24 md:pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto w-full">
+<!-- Search Area -->
+<section class="mb-12">
+<div class="relative max-w-3xl mx-auto">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+</div>
+<input class="neomorphic-input w-full rounded-full py-4 pl-12 pr-4 text-primary font-body-lg text-body-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/50" placeholder="Search students, posts, events..." type="text">
+<div class="absolute inset-y-0 right-0 pr-2 flex items-center">
+<button class="p-2 rounded-full hover:bg-surface-variant/50 text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</div>
+<!-- Filters -->
+<div class="flex justify-center gap-3 mt-6 flex-wrap">
+<button class="chip active rounded-full px-6 py-2 font-label-md text-label-md transition-all">All</button>
+<button class="chip rounded-full px-6 py-2 font-label-md text-label-md text-primary transition-all hover:bg-surface-variant/30">Students</button>
+<button class="chip rounded-full px-6 py-2 font-label-md text-label-md text-primary transition-all hover:bg-surface-variant/30">Posts</button>
+<button class="chip rounded-full px-6 py-2 font-label-md text-label-md text-primary transition-all hover:bg-surface-variant/30">Events</button>
+</div>
+</section>
+<!-- Empty State / Recent -->
+<section class="max-w-3xl mx-auto glass-panel rounded-3xl p-8 md:p-12 text-center min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+<!-- subtle background texture effect could go here if needed via image -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" data-alt="A subtle, abstract topographic map texture serving as a background element. The lines are delicate and organic, rendered in soft cream on a deep espresso base, conveying a sense of geological permanence and luxury digital design." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCsuw7WGy14aWvdZDPIrsQfdmiaRgZTL-GFyVEDRUVIBHjBpTdPcp7AqP7iczG9kgCBCEKGl1XHDa24oDlLiwhlVrjfLDSKRrmJY8a2Hc_ho-5Hj0KbDB2Ltc7tHEDAFtspLjMIfSdyHWFjUZI1X1F6yPShdtGbrb5xcoB0LqHBKIGIfwcWtBY4Mv1OJAbLYZ1DLZ8kvRRnK5JwXuR479vYpxEQalXi6yArWoy8r2kWNlQ-fbj2Y6k7WA'); background-size: cover;"></div>
+<span class="material-symbols-outlined text-[64px] text-surface-variant mb-6">travel_explore</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Start Exploring</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto mb-8">Discover connections, upcoming campus events, and trending discussions within your academic community.</p>
+<div class="w-full max-w-md text-left">
+<h3 class="font-label-md text-label-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history</span> Recent Searches
+                 </h3>
+<ul class="space-y-3">
+<li class="flex items-center justify-between group cursor-pointer border-b border-[#412D15]/40 pb-2">
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Architecture finals study group</span>
+<span class="material-symbols-outlined text-surface-variant group-hover:text-primary transition-colors text-[18px]">north_west</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer border-b border-[#412D15]/40 pb-2">
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Alex Sterling</span>
+<span class="material-symbols-outlined text-surface-variant group-hover:text-primary transition-colors text-[18px]">north_west</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer border-b border-[#412D15]/40 pb-2">
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Winter Formal tickets</span>
+<span class="material-symbols-outlined text-surface-variant group-hover:text-primary transition-colors text-[18px]">north_west</span>
+</li>
+</ul>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] rounded-full backdrop-blur-2xl border border-white/10 bg-tertiary/10 dark:bg-surface-container/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] flex justify-around items-center py-2 px-4 z-50">
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+</a>
+<a class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 shadow-inner hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span> <!-- Mapped Search to Active -->
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">chat</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
+</nav>
+</body></html>

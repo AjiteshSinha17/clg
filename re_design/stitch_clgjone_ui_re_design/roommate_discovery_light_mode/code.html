@@ -1,0 +1,250 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Roommate Discovery - ClgJone</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#1d1c10",
+                        "surface-variant": "#e5e2e1",
+                        "surface-bright": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container": "#f0eded",
+                        "on-surface-variant": "#4e453d",
+                        "surface-tint": "#735a3e",
+                        "on-surface": "#1b1b1b",
+                        "primary": "#2a1804",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e8e3cf",
+                        "background": "#fcf9f8",
+                        "on-primary-fixed": "#291803",
+                        "surface": "#fcf9f8",
+                        "on-secondary-fixed": "#141f00",
+                        "outline": "#80756b",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#526d0f",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#ffddb9",
+                        "on-secondary-fixed-variant": "#384e00",
+                        "primary-container": "#412d15",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eae7e7",
+                        "surface-container-low": "#f6f3f2",
+                        "tertiary": "#1e1c10",
+                        "on-tertiary-container": "#9d9988",
+                        "tertiary-container": "#333124",
+                        "outline-variant": "#d1c4b9",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#4c6706",
+                        "secondary-fixed-dim": "#b2d26b",
+                        "on-background": "#1b1b1b",
+                        "primary-fixed-dim": "#e1c19f",
+                        "inverse-primary": "#e1c19f",
+                        "on-primary-container": "#b19474",
+                        "on-primary-fixed-variant": "#594329",
+                        "on-tertiary-fixed-variant": "#494739",
+                        "secondary-container": "#cdef84",
+                        "inverse-on-surface": "#f3f0ef",
+                        "tertiary-fixed-dim": "#cbc7b4",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#cdef84",
+                        "inverse-surface": "#313030"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "margin-desktop": "64px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "title-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "300" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "300" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .neu-soft {
+            box-shadow: -4px -4px 12px #FFFFFF, 4px 4px 12px rgba(115, 90, 62, 0.15);
+        }
+        .neu-inset {
+            box-shadow: inset -4px -4px 12px #FFFFFF, inset 4px 4px 12px rgba(115, 90, 62, 0.15);
+        }
+        .glass-filter {
+            backdrop-filter: blur(24px);
+            background: rgba(252, 249, 248, 0.8);
+        }
+        body {
+            background-color: #fcf9f8;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased pb-32">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky backdrop-blur-xl bg-surface/10 shadow-none z-40">
+<div class="flex justify-between items-center px-margin-mobile py-4 w-full">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary dark:text-primary p-2">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tighter text-primary">ClgJone</h1>
+<div class="w-10 h-10 rounded-full overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
+<img alt="Student Profile Avatar" class="w-full h-full object-cover" data-alt="A close up, well-lit, professional headshot of a diverse young college student with a warm smile, set against a soft, sun-drenched, neutral beige background reflecting a calm, premium Terra Lux Futura aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuaPPc1Or1DGETyPXyvc2sJLHOqJbPeJJGFbDm0RdHb3JgD2mWTAoYhxhfJpwz4ld3YF0zo-wjIoEbGrK16T-3pCFEJtHxzJ_EBD0IPoNnwfGJd868CwZQ2khsYrbmi1-6TOeSlpFz4GuyY-U99MsZ7qgZmTtHaHTNFPBuqUKZCCgf8wJ-vFRIX5XRU2vA7Uulb1-LmZYeoa2JkPDWRIbJhsTX_qpcye3DSEipwsWzq2G3eH0Jj4mWHQ">
+</div>
+</div>
+</header>
+<!-- Filter Bar (Glassmorphic) -->
+<div class="sticky top-20 z-30 mx-margin-mobile md:mx-margin-desktop mt-sm glass-filter rounded-full px-6 py-3 flex items-center justify-between border border-outline-variant/30 neu-soft">
+<div class="flex space-x-4 overflow-x-auto no-scrollbar items-center w-full">
+<button class="flex items-center space-x-2 bg-secondary text-on-secondary px-4 py-1.5 rounded-full font-label-md text-label-md whitespace-nowrap shrink-0">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Filters</span>
+</button>
+<div class="h-6 w-px bg-outline-variant/50 shrink-0"></div>
+<button class="px-4 py-1.5 rounded-full font-label-md text-label-md whitespace-nowrap shrink-0 bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors neu-soft">Major: Architecture</button>
+<button class="px-4 py-1.5 rounded-full font-label-md text-label-md whitespace-nowrap shrink-0 bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors neu-soft">Early Bird</button>
+<button class="px-4 py-1.5 rounded-full font-label-md text-label-md whitespace-nowrap shrink-0 bg-surface-container text-on-surface-variant hover:bg-surface-variant transition-colors neu-soft">Neat Freak</button>
+</div>
+</div>
+<!-- Main Canvas: Roommate Discovery Grid -->
+<main class="px-margin-mobile md:px-margin-desktop mt-lg max-w-7xl mx-auto">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-md">Discover Roommates</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Roommate Card 1 -->
+<article class="bg-surface-container rounded-xl p-6 neu-soft flex flex-col h-full relative overflow-hidden group">
+<div class="absolute top-4 right-4 z-10 bg-secondary/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center backdrop-blur-md">
+<span class="material-symbols-outlined text-[14px] mr-1" data-weight="fill">verified</span> 95% Match
+                </div>
+<div class="relative w-full h-48 rounded-lg overflow-hidden mb-6">
+<img alt="Sarah J." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A portrait of a thoughtful young female student sitting in a bright, modern, sun-drenched cafe with neutral clay tones, reading a book. The lighting is soft and natural, emphasizing a calm, professional, and warm aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9tOyJvEdxdZALNZsDuERGfHB7hVzGGC_-4lhydR2L0t0TVsjyT8nt2-1HxOXntdOlhq53aSP6ClGrVVsElVi1_Q0Avwhy81gE2jXVlR0Ewd0qRGm2wD3xtd4MZCywtkZQJ6NpsDvnIOF8yrjf_ZrW_Hog9JB-ONCghQbcENPIikAIEFaSuUeTo8y0cUCbdmdo0nml98ooMbr3EHWpwC2x1GYploKRxmJSDFfHETxRtXZYE4KjrM1sOg">
+<div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-on-primary">
+<h3 class="font-title-md text-title-md">Sarah Jenkins, 20</h3>
+<p class="font-label-sm text-label-sm opacity-90">Junior • Graphic Design</p>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 line-clamp-2">"Looking for a quiet, organized space. I spend most of my time in the studio or reading. Coffee enthusiast."</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Quiet</span>
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Non-smoker</span>
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Morning Person</span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center">
+                    Connect
+                </button>
+</article>
+<!-- Roommate Card 2 -->
+<article class="bg-surface-container rounded-xl p-6 neu-soft flex flex-col h-full relative overflow-hidden group">
+<div class="absolute top-4 right-4 z-10 bg-secondary/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center backdrop-blur-md">
+<span class="material-symbols-outlined text-[14px] mr-1" data-weight="fill">verified</span> 88% Match
+                </div>
+<div class="relative w-full h-48 rounded-lg overflow-hidden mb-6">
+<img alt="Marcus T." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A casual lifestyle photo of a young male student in an organic, minimalist living space with soft warm light. He is adjusting his glasses, looking approachable and friendly, fitting a premium, calm aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwKzeO5Uq84l61DFxRpe7z-7do9TSW94W64zwHmnXy4gI2EDsnbt9EgX5PlSKnwUqZdQU5CCNwVvA7KOb_XUU8qE7s6jwEoLCZF019Bfn_Sk7PYS_IxDUgOl4Jy7hkrKhLf75Io3WdAxRO2DKc-16QqvqTKYf9ofPaYuxv9DuNYa2tgEtiEuB2aauvFBKAeOGr_XkQXJwy_3jDT8NJfXOR-JfjgmN_EKeyEOMzq82uN63mzkw5Spa_ZA">
+<div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-on-primary">
+<h3 class="font-title-md text-title-md">Marcus Torres, 21</h3>
+<p class="font-label-sm text-label-sm opacity-90">Senior • Computer Science</p>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 line-clamp-2">"Super chill, mostly studying or gaming. I keep common areas clean. Open to hanging out or doing our own thing."</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Clean</span>
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Night Owl</span>
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Gamer</span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center">
+                    Connect
+                </button>
+</article>
+<!-- Roommate Card 3 -->
+<article class="bg-surface-container rounded-xl p-6 neu-soft flex flex-col h-full relative overflow-hidden group">
+<div class="absolute top-4 right-4 z-10 bg-secondary/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center backdrop-blur-md">
+<span class="material-symbols-outlined text-[14px] mr-1" data-weight="fill">verified</span> 82% Match
+                </div>
+<div class="relative w-full h-48 rounded-lg overflow-hidden mb-6">
+<img alt="Elena R." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A bright portrait of a female student outdoors on a sunny campus. The light is soft and warm, capturing an earthy, organic luxury feel. She looks active and outgoing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7-Rf1cHG-M7wYcN-GBoSQ9P0OqPtO4WAhpXWUdT31ZW7Oj9ayHbmD6W0chBZXIEPRIUyncSq3rwdmbm1enhYOWn853h0xLJZYOcAH0smPLPIQtAcm0gQ3xQPoSNa-KK648Y1xxboZyB6MWYHTdhuo9FQbn39twfs8RQ6cByZvJisM40a13sST9q1_pecd6tdUHb1nZtoIeplNgo-EVDp3iiexq8wwvxISA8zQprd4sBrVPy4GpBrezw">
+<div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-on-primary">
+<h3 class="font-title-md text-title-md">Elena Rostova, 19</h3>
+<p class="font-label-sm text-label-sm opacity-90">Sophomore • Biology</p>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 line-clamp-2">"Love cooking and hosting small dinners occasionally. Looking for a roommate who enjoys a friendly, warm home vibe."</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Social</span>
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Cooks</span>
+<span class="bg-[#7C9A3A]/10 text-secondary px-3 py-1 rounded-full font-label-sm text-label-sm">Pet Friendly</span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center">
+                    Connect
+                </button>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex justify-around items-center py-2 px-4 bg-surface-container/30 backdrop-blur-2xl border-t border-primary/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] rounded-full overflow-hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-2 hover:text-primary transition-colors active:inner-shadow-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm mt-1">Rooms</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm mt-1">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-sm text-label-sm mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-sm text-label-sm mt-1">Flux</span>
+</a>
+</nav>
+</body></html>

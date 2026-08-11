@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
-
-// Soft orange-white gradient palette (muted/creamy, not harsh saturated)
-const _softOrange = Color(0xFFFF8C38);
-const _softOrangeLight = Color(0xFFFFB870);
+import '../config/theme.dart';
 
 class RoommateCard extends StatelessWidget {
   final User profile;
@@ -25,57 +22,24 @@ class RoommateCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C1C1C) : const Color(0xFFFFF9F4),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : _softOrange.withValues(alpha: 0.15),
-            width: 1.2,
-          ),
-          boxShadow: [
-            // Main depth shadow
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.40 : 0.10),
-              blurRadius: 20,
-              spreadRadius: 0,
-              offset: const Offset(0, 8),
-            ),
-            // Inner highlight (skeuomorphism)
-            BoxShadow(
-              color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.75),
-              blurRadius: 0,
-              spreadRadius: 0,
-              offset: const Offset(0, -2),
-            ),
-            // Orange tint glow
-            BoxShadow(
-              color: _softOrange.withValues(alpha: isDark ? 0.08 : 0.05),
-              blurRadius: 16,
-              spreadRadius: 4,
-              offset: const Offset(0, 4),
-            ),
-          ],
+        decoration: AppTheme.liquidGlassDecoration(
+          isDark: isDark,
+          radius: 24,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 16),
 
-            // ── Avatar with clay ring ────────────────────────────────────────
+            // ── Avatar with bioluminescent ring ────────────────────────────────
             Container(
               padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [_softOrangeLight, _softOrange],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                gradient: AppTheme.primaryGradient(isDark),
                 boxShadow: [
                   BoxShadow(
-                    color: _softOrange.withValues(alpha: 0.35),
+                    color: AppTheme.aquaGlow.withValues(alpha: 0.4),
                     blurRadius: 12,
                     spreadRadius: 1,
                     offset: const Offset(0, 3),
@@ -85,8 +49,8 @@ class RoommateCard extends StatelessWidget {
               child: CircleAvatar(
                 radius: 30,
                 backgroundColor: isDark
-                    ? const Color(0xFF1C1C1C)
-                    : Colors.white,
+                    ? AppTheme.darkContainer
+                    : AppTheme.lightContainer,
                 backgroundImage: profile.avatarUrl.isNotEmpty
                     ? NetworkImage(profile.avatarUrl)
                     : null,
@@ -112,9 +76,9 @@ class RoommateCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
                 profile.name,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
-                  color: isDark ? Colors.white : Colors.black87,
+                  color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
                   fontSize: 14,
                 ),
                 maxLines: 1,
@@ -122,12 +86,12 @@ class RoommateCard extends StatelessWidget {
               ),
             ),
             if (profile.verificationStatus == 'verified')
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
                 child: Icon(
                   Icons.verified_rounded,
-                  size: 13,
-                  color: Colors.blue,
+                  size: 14,
+                  color: isDark ? AppTheme.darkOlive : AppTheme.oliveGreen,
                 ),
               ),
 
@@ -137,12 +101,12 @@ class RoommateCard extends StatelessWidget {
               child: Text(
                 profile.college.isNotEmpty
                     ? profile.college
-                    : 'Unknown College',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    : 'College Community',
+                style: TextStyle(
                   color: isDark
-                      ? Colors.white.withValues(alpha: 0.45)
-                      : Colors.black.withValues(alpha: 0.45),
-                  fontSize: 12,
+                      ? AppTheme.darkOnSurfaceVariant
+                      : AppTheme.lightOnSurfaceVariant,
+                  fontSize: 11,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -159,27 +123,20 @@ class RoommateCard extends StatelessWidget {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      _softOrangeLight.withValues(alpha: 0.25),
-                      _softOrange.withValues(alpha: 0.20),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
+                  color: (isDark ? AppTheme.darkOlive : AppTheme.oliveGreen)
+                      .withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                    color: _softOrange.withValues(alpha: 0.35),
+                    color: isDark ? AppTheme.darkOlive : AppTheme.oliveGreen,
                     width: 1,
                   ),
                 ),
                 child: Text(
                   profile.interestTags.first,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: _softOrange,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
+                  style: TextStyle(
+                    color: isDark ? AppTheme.darkOlive : AppTheme.oliveGreen,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
                   ),
                 ),
               ),
@@ -191,23 +148,20 @@ class RoommateCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 9),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    _softOrangeLight.withValues(alpha: isDark ? 0.12 : 0.08),
-                    _softOrange.withValues(alpha: isDark ? 0.14 : 0.10),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(22),
-                  bottomRight: Radius.circular(22),
-                ),
+                color: isDark
+                    ? AppTheme.darkContainerHigh.withValues(alpha: 0.8)
+                    : AppTheme.lightContainerHigh,
                 border: Border(
                   top: BorderSide(
-                    color: _softOrange.withValues(alpha: isDark ? 0.15 : 0.12),
-                    width: 0.8,
+                    color: isDark
+                        ? AppTheme.goldenBorder.withValues(alpha: 0.25)
+                        : AppTheme.lightPrimary.withValues(alpha: 0.2),
+                    width: 1,
                   ),
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
                 ),
               ),
               child: Row(
@@ -216,15 +170,16 @@ class RoommateCard extends StatelessWidget {
                   Icon(
                     Icons.visibility_rounded,
                     size: 13,
-                    color: _softOrange.withValues(alpha: 0.85),
+                    color: isDark ? AppTheme.softBeige : AppTheme.lightPrimary,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     'View Profile',
                     style: TextStyle(
-                      fontSize: 10,
-                      color: _softOrange.withValues(alpha: 0.85),
+                      fontSize: 11,
+                      color: isDark ? AppTheme.softBeige : AppTheme.lightPrimary,
                       fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
                     ),
                   ),
                 ],
@@ -236,3 +191,4 @@ class RoommateCard extends StatelessWidget {
     );
   }
 }
+

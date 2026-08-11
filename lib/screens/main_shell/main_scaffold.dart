@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:ui';
 
+import '../../config/theme.dart';
 import '../../state/theme_provider.dart';
 import '../../screens/roommates/roommate_search_screen.dart';
 import '../../screens/profile/profile_screen.dart';
@@ -38,163 +39,227 @@ class _MainScaffoldState extends State<MainScaffold> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
 
-    // Background Image Logic
-    final String bgImage = isDark
-        ? 'assets/images/dark_wallpaper.jpg'
-        : 'assets/images/lk.jpg';
-
     return Scaffold(
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
-      extendBody: true, // Allow body to extend behind bottom nav bar
+      extendBody: true,
       drawer: const AppDrawer(),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            onTap: () => _scaffoldKey.currentState?.openDrawer(),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              padding: const EdgeInsets.all(4),
-              child: Image.network(
-                'https://cdn-icons-png.flaticon.com/512/3523/3523063.png',
-                width: 28,
-                height: 28,
-              ),
-            ),
-          ),
-        ),
-        title: Text(
-          'ClgJone',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
-            shadows: [
-              Shadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: GestureDetector(
-                onTap: () => context.push('/shell/flux'),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF8B73FF), Color(0xFF6B4DFF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF6B4DFF).withValues(alpha: 0.4),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                decoration: AppTheme.liquidGlassDecoration(
+                  isDark: isDark,
+                  radius: 24,
+                ),
+                child: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  leading: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppTheme.darkPrimary.withValues(alpha: 0.15)
+                              : const Color(0xFF006A66).withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark
+                                ? AppTheme.darkPrimary.withValues(alpha: 0.4)
+                                : const Color(0xFF18D8D0),
+                            width: 1,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(6),
+                        child: Image.network(
+                          'https://cdn-icons-png.flaticon.com/512/3523/3523063.png',
+                          width: 24,
+                          height: 24,
+                          errorBuilder: (_, __, ___) => Icon(
+                            Icons.menu,
+                            color: isDark
+                                ? AppTheme.darkPrimary
+                                : AppTheme.lightPrimary,
+                            size: 20,
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                  child: Row(
+                  title: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.auto_awesome,
-                        color: Colors.white,
-                        size: 14,
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/images/clglogo.png',
+                          width: 28,
+                          height: 28,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Flux',
+                      const SizedBox(width: 8),
+                      Text(
+                        'ClgJone',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                          color: isDark
+                              ? AppTheme.darkOnSurface
+                              : AppTheme.lightOnSurface,
+                          shadows: isDark
+                              ? [
+                                  Shadow(
+                                    color: AppTheme.aquaGlow.withValues(alpha: 0.5),
+                                    blurRadius: 8,
+                                  ),
+                                ]
+                              : null,
                         ),
                       ),
                     ],
                   ),
+                  centerTitle: true,
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () => context.push('/shell/flux'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppTheme.darkAquaticBg
+                                  : AppTheme.lightPrimaryContainer,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isDark
+                                    ? AppTheme.goldenBorder
+                                    : AppTheme.lightPrimary,
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isDark ? AppTheme.goldenBorder : AppTheme.aquaGlow)
+                                      .withValues(alpha: isDark ? 0.35 : 0.25),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome,
+                                  color: isDark ? AppTheme.softBeige : Colors.white,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Flux AI',
+                                  style: TextStyle(
+                                    color: isDark ? AppTheme.softBeige : Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
-      body: Stack(
-        children: [
-          // Background Wallpaper
-          Positioned.fill(
-            child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
-                BlendMode.darken,
-              ),
-              child: Image.asset(bgImage, fit: BoxFit.cover),
-            ),
-          ),
-
-          // Content
-          SafeArea(
-            bottom: false, // Allow content to go behind nav bar
-            child: _pages[_selectedIndex],
-          ),
-        ],
+      body: Container(
+        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        child: SafeArea(bottom: false, child: _pages[_selectedIndex]),
       ),
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              spreadRadius: 5,
-            ),
-          ],
+        margin: const EdgeInsets.fromLTRB(44, 0, 44, 18),
+        decoration: AppTheme.liquidGlassDecoration(
+          isDark: isDark,
+          radius: 32,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(32),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
             child: NavigationBar(
-              height: 70,
+              height: 60,
               selectedIndex: _selectedIndex,
               onDestinationSelected: _onItemTapped,
-              backgroundColor: isDark
-                  ? Colors.black.withValues(alpha: 0.6)
-                  : Colors.white.withValues(
-                      alpha: 0.6,
-                    ), // Transparent in light mode
+              backgroundColor: Colors.transparent,
               indicatorColor: isDark
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : Colors.black.withValues(alpha: 0.1),
+                  ? AppTheme.darkAquaticBg
+                  : const Color(0xFF006A66).withValues(alpha: 0.15),
               elevation: 0,
-              destinations: const [
+              destinations: [
                 NavigationDestination(
-                  icon: FaIcon(FontAwesomeIcons.comments),
+                  icon: FaIcon(
+                    FontAwesomeIcons.comments,
+                    size: 18,
+                    color: isDark
+                        ? AppTheme.darkOutline
+                        : AppTheme.lightOutline,
+                  ),
+                  selectedIcon: FaIcon(
+                    FontAwesomeIcons.comments,
+                    size: 18,
+                    color: isDark
+                        ? AppTheme.softBeige
+                        : AppTheme.lightPrimary,
+                  ),
                   label: 'Community',
                 ),
                 NavigationDestination(
-                  icon: FaIcon(FontAwesomeIcons.magnifyingGlass),
+                  icon: FaIcon(
+                    FontAwesomeIcons.magnifyingGlass,
+                    size: 18,
+                    color: isDark
+                        ? AppTheme.darkOutline
+                        : AppTheme.lightOutline,
+                  ),
+                  selectedIcon: FaIcon(
+                    FontAwesomeIcons.magnifyingGlass,
+                    size: 18,
+                    color: isDark
+                        ? AppTheme.softBeige
+                        : AppTheme.lightPrimary,
+                  ),
                   label: 'Search',
                 ),
                 NavigationDestination(
-                  icon: FaIcon(FontAwesomeIcons.user),
+                  icon: FaIcon(
+                    FontAwesomeIcons.user,
+                    size: 18,
+                    color: isDark
+                        ? AppTheme.darkOutline
+                        : AppTheme.lightOutline,
+                  ),
+                  selectedIcon: FaIcon(
+                    FontAwesomeIcons.user,
+                    size: 18,
+                    color: isDark
+                        ? AppTheme.softBeige
+                        : AppTheme.lightPrimary,
+                  ),
                   label: 'Profile',
                 ),
               ],
@@ -205,3 +270,4 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
   }
 }
+

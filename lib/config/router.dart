@@ -18,6 +18,7 @@ import '../screens/ai/flux_chat_screen.dart';
 
 import '../screens/notifications/notifications_screen.dart';
 import '../screens/connections/connection_requests_screen.dart';
+import '../screens/events/events_screen.dart';
 import '../models/user.dart';
 
 final router = GoRouter(
@@ -81,6 +82,10 @@ final router = GoRouter(
             GoRoute(
               path: 'flux',
               builder: (context, state) => const FluxChatScreen(),
+            ),
+            GoRoute(
+              path: 'events',
+              builder: (context, state) => const EventsScreen(),
             ),
           ],
         ),

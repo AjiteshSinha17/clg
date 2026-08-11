@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../models/user.dart';
 import '../../state/theme_provider.dart';
+import '../../config/theme.dart';
 import '../../widgets/roommate_card.dart';
 import 'roommate_filter_sheet.dart';
 
@@ -118,6 +119,8 @@ class _RoommateSearchScreenState extends State<RoommateSearchScreen> {
     final isDark = themeProvider.themeMode == ThemeMode.dark;
     final displayUsers = _filteredUsers;
 
+    final primaryColor = isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -131,27 +134,54 @@ class _RoommateSearchScreenState extends State<RoommateSearchScreen> {
                 children: [
                   Row(
                     children: [
-                      // Title with orange underline accent
+                      if (context.canPop()) ...[
+                        GestureDetector(
+                          onTap: () => context.pop(),
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppTheme.darkContainer
+                                  : Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark
+                                    ? AppTheme.darkPrimary.withValues(alpha: 0.2)
+                                    : const Color(0xFF18D8D0).withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.arrow_back_rounded,
+                              color: isDark
+                                  ? AppTheme.darkOnSurface
+                                  : AppTheme.lightOnSurface,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                      // Title with primary accent underline
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Find Roommates',
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  color: isDark ? Colors.white : Colors.black87,
-                                  letterSpacing: -0.5,
-                                ),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: isDark
+                                  ? AppTheme.darkOnSurface
+                                  : AppTheme.lightOnSurface,
+                              letterSpacing: -0.3,
+                            ),
                           ),
                           const SizedBox(height: 3),
                           Container(
                             width: 50,
                             height: 3,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [_softOrangeLight, _softOrange],
-                              ),
+                              gradient: AppTheme.primaryGradient(isDark),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -160,59 +190,36 @@ class _RoommateSearchScreenState extends State<RoommateSearchScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-  
+
                   // ── Search Bar + Filter ─────────────────────────────────────
                   Row(
                     children: [
-                      // Clay search bar
+                      // Search bar
                       Expanded(
                         child: Container(
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E1E1E)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : _softOrange.withValues(alpha: 0.18),
-                              width: 1.2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(
-                                  alpha: isDark ? 0.30 : 0.07,
-                                ),
-                                blurRadius: 16,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 6),
-                              ),
-                              BoxShadow(
-                                color: Colors.white.withValues(
-                                  alpha: isDark ? 0.04 : 0.80,
-                                ),
-                                blurRadius: 0,
-                                offset: const Offset(0, -1),
-                              ),
-                            ],
+                          decoration: AppTheme.liquidGlassDecoration(
+                            isDark: isDark,
+                            radius: 20,
                           ),
                           child: TextField(
                             controller: _searchController,
                             onChanged: (value) => setState(() {}),
                             style: TextStyle(
-                              color: isDark ? Colors.white : Colors.black87,
+                              color: isDark
+                                  ? AppTheme.darkOnSurface
+                                  : AppTheme.lightOnSurface,
                               fontSize: 14,
                             ),
                             decoration: InputDecoration(
                               hintText: 'Search by name...',
                               hintStyle: TextStyle(
                                 color: isDark
-                                    ? Colors.white.withValues(alpha: 0.35)
-                                    : Colors.black.withValues(alpha: 0.35),
+                                    ? AppTheme.darkOnSurfaceVariant
+                                    : AppTheme.lightOnSurfaceVariant,
                               ),
                               prefixIcon: Icon(
                                 Icons.search_rounded,
-                                color: _softOrange.withValues(alpha: 0.70),
+                                color: primaryColor,
                                 size: 20,
                               ),
                               border: InputBorder.none,
@@ -225,31 +232,22 @@ class _RoommateSearchScreenState extends State<RoommateSearchScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Clay filter button with gradient
+                      // Filter button with gradient
                       GestureDetector(
                         onTap: _openFilterSheet,
                         child: Container(
-                          width: 50,
-                          height: 50,
+                          width: 48,
+                          height: 48,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [_softOrangeLight, _softOrange],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: AppTheme.primaryGradient(isDark),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: _softOrange.withValues(alpha: 0.45),
-                                blurRadius: 14,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 5),
-                              ),
-                              const BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 0,
-                                spreadRadius: -2,
-                                offset: Offset(0, -2),
+                                color: AppTheme.aquaGlow.withValues(
+                                  alpha: isDark ? 0.35 : 0.2,
+                                ),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),

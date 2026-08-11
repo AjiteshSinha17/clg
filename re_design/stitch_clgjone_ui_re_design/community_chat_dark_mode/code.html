@@ -1,0 +1,274 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Architecture Study Group - Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#291803",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-fixed-variant": "#594329",
+                        "on-tertiary-container": "#6c5d51",
+                        "on-tertiary-fixed-variant": "#524439",
+                        "primary": "#fef8e5",
+                        "surface-container": "#1f1f1f",
+                        "on-primary-fixed": "#1d1c10",
+                        "secondary-fixed": "#ffddb9",
+                        "surface-dim": "#131313",
+                        "on-tertiary-fixed": "#241910",
+                        "surface-bright": "#393939",
+                        "on-primary": "#333124",
+                        "error": "#ffb4ab",
+                        "outline": "#949187",
+                        "on-secondary-container": "#d3b392",
+                        "tertiary": "#fff7f2",
+                        "primary-fixed": "#e8e3cf",
+                        "inverse-primary": "#615f50",
+                        "secondary-container": "#5b452b",
+                        "tertiary-fixed": "#f3dfcf",
+                        "error-container": "#93000a",
+                        "outline-variant": "#49473f",
+                        "tertiary-fixed-dim": "#d7c3b4",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary": "#402c14",
+                        "background": "#131313",
+                        "on-primary-container": "#636151",
+                        "inverse-on-surface": "#303030",
+                        "on-background": "#e2e2e2",
+                        "secondary": "#e1c19f",
+                        "surface": "#131313",
+                        "primary-container": "#e1dcc9",
+                        "on-error": "#690005",
+                        "on-surface": "#e2e2e2",
+                        "surface-container-highest": "#353535",
+                        "secondary-fixed-dim": "#e1c19f",
+                        "primary-fixed-dim": "#cbc7b4",
+                        "on-tertiary": "#3a2e24",
+                        "on-surface-variant": "#cac6bb",
+                        "tertiary-container": "#edd8c9",
+                        "surface-tint": "#cbc7b4",
+                        "surface-variant": "#353535",
+                        "surface-container-low": "#1b1b1b",
+                        "on-primary-fixed-variant": "#494739",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-container-lowest": "#0e0e0e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "container-max-width": "1280px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "title-md": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom Styles for Luxury Earth Theme */
+        body {
+            background-color: #1F150C; /* Deep Espresso */
+            color: #fef8e5; /* Primary */
+        }
+        
+        /* Neumorphic Extrusions and Glassmorphic Overlays */
+        .glass-panel {
+            background: rgba(254, 248, 229, 0.05); /* Soft Cream 5% */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(254, 248, 229, 0.1);
+        }
+        
+        .neumorphic-bubble-received {
+            background: #412D15; /* Rich Brown */
+            box-shadow: inset 0 1px 0 rgba(254, 248, 229, 0.2), /* Top bevel */
+                        4px 4px 10px rgba(0, 0, 0, 0.4), /* Deep shadow */
+                        -2px -2px 5px rgba(254, 248, 229, 0.05); /* Light leak */
+        }
+        
+        .neumorphic-bubble-sent {
+            background: #2a2a2a; /* Surface Container High */
+            box-shadow: inset 0 1px 0 rgba(254, 248, 229, 0.1), /* Top bevel */
+                        4px 4px 10px rgba(0, 0, 0, 0.4), /* Deep shadow */
+                        -2px -2px 5px rgba(254, 248, 229, 0.05); /* Light leak */
+        }
+        
+        .neumorphic-input {
+            background: #131313; /* Surface Dim */
+            box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.6), 
+                        inset -2px -2px 5px rgba(254, 248, 229, 0.05);
+            color: #fef8e5;
+        }
+        
+        .neumorphic-button {
+            background: rgba(254, 248, 229, 0.1);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3),
+                        -1px -1px 3px rgba(254, 248, 229, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .neumorphic-button:active {
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3),
+                        inset -1px -1px 3px rgba(254, 248, 229, 0.05);
+        }
+
+        /* Hide scrollbar for neatness but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col font-body-md text-body-md overflow-hidden antialiased">
+<!-- Header (Similar to TopAppBar Shared Component logic, applied contextually) -->
+<header class="glass-panel z-10 flex-shrink-0 px-margin-mobile md:px-margin-desktop py-4 flex items-center justify-between border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+<div class="flex items-center gap-4">
+<button aria-label="Go back" class="neumorphic-button p-2 rounded-full flex items-center justify-center text-primary md:hidden">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover border-2 border-primary/20" data-alt="A macro shot of a sleek, modern architectural model made of light wood and dark stone, softly lit with warm light on a deep espresso background. Abstract and highly textural." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC23n5fmCIWHYiqE3a_GqBaKi4UeiTQB__zb1svVZ62YiaJ2IQvaN3Y0QS9P5oZlaLuWizpTis5-boWQAAyzN0agCNN6qDw7dw-HtF_zQ8xo9Z_oV63g9AXP77i4lT5yjZxtXycBz_uaHIBuKXfmWjTDfc89PArCEcVeV-I3qdHt8GojtbawMo9nKClEWNqPhkqQN_0OMBKpNnesSM8ZcG-6R7jXNX-VZFBWxv5F-RkY7huxRTi0Ic07A">
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-[#1F150C]"></div>
+</div>
+<div class="flex flex-col">
+<h1 class="font-title-md text-title-md text-primary tracking-tight">Architecture Study Group</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 14px;">group</span> 42 Members
+                </p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button aria-label="Search chat" class="neumorphic-button p-2 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button aria-label="More options" class="neumorphic-button p-2 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Chat Canvas -->
+<main class="flex-1 overflow-y-auto no-scrollbar p-margin-mobile md:p-margin-desktop flex flex-col gap-6 scroll-smooth">
+<!-- Date Separator -->
+<div class="flex justify-center my-2">
+<span class="px-4 py-1 rounded-full bg-surface-container-highest/50 font-label-sm text-label-sm text-on-surface-variant backdrop-blur-md border border-white/5">Today</span>
+</div>
+<!-- Received Message (Sarah Jenkins) -->
+<div class="flex gap-3 max-w-[85%] md:max-w-[70%]">
+<img class="w-8 h-8 rounded-full object-cover flex-shrink-0 mt-1" data-alt="A professional headshot of a young woman with curly hair, wearing a dark blazer, softly lit in a modern office environment with deep earthy tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYdU2aRb13OEVb81_2Iut5sWPeY6JP973wr3i4fEPlxIPO_E2c9eon5hiDI_VW3ZH7SdhLtV5nkyPBHug5yBmkbjcCPvsv8bhefijQeT2WHadWcn2r7oj5vEnTRa3THP7173WpDHe9y9vu7k5huLj-UMN8V9CGxcD_xPVYbBlM5AV_xEZFdukFZIHZGOBYR0Vv-J9_TFrPrpsFtOG1WblOMxIJBafiNFOsbPXQ6ET0GZFkOA8Fn80wJQ">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline gap-2 ml-1">
+<span class="font-label-md text-label-md text-secondary">Sarah Jenkins</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:24 AM</span>
+</div>
+<div class="neumorphic-bubble-received rounded-2xl rounded-tl-none p-4 text-primary">
+                    Hey everyone, did anyone catch the lecture on Brutalist integrations in modern landscape architecture? I'm struggling with the case study on the Barbican Centre.
+                </div>
+</div>
+</div>
+<!-- Sent Message (User) -->
+<div class="flex gap-3 max-w-[85%] md:max-w-[70%] self-end flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex-shrink-0 mt-1 flex items-center justify-center text-primary font-label-md border border-primary/30">
+                U
+            </div>
+<div class="flex flex-col gap-1 items-end">
+<div class="flex items-baseline gap-2 mr-1 flex-row-reverse">
+<span class="font-label-md text-label-md text-primary">You</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:28 AM</span>
+</div>
+<div class="neumorphic-bubble-sent rounded-2xl rounded-tr-none p-4 text-on-background">
+                    Yeah, I have my notes. The key is how they used the rough concrete textures as a canvas for the greenery, creating that stark contrast.
+                </div>
+</div>
+</div>
+<!-- Received Message (Marcus Vance) with Attachment -->
+<div class="flex gap-3 max-w-[85%] md:max-w-[70%]">
+<img class="w-8 h-8 rounded-full object-cover flex-shrink-0 mt-1" data-alt="A moody, high-contrast portrait of a man with glasses looking thoughtfully away, illuminated by a warm rim light against a completely dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1_gXXU5-XsrunrcmOMhQHKYwJiE6jN9yQ7XlDOhoNUzVaK0YGBKHNaClj4aFBamFDj_W2VD4Xarss1PmCGyOhwU3k6OdQ2m2-iGR5d7Z0jjcNz4i7-j23vPpU9c49mV5Cg4nCL6wp9HSSI8FuBJFBD2w2L78NdGW-cu8L7hk2c2Ldx0SVe1fZjOGYV33pKblAFcmy-TMYR4dHLwm07w9DJgHwtlVHWG6EZqrjJZrDK-CjnWVAgpW6bA">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline gap-2 ml-1">
+<span class="font-label-md text-label-md text-[#d3b392]">Marcus Vance</span> <!-- on-secondary-container -->
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:35 AM</span>
+</div>
+<div class="neumorphic-bubble-received rounded-2xl rounded-tl-none p-4 text-primary flex flex-col gap-3">
+<p>I found this diagram super helpful for that specific case study. It breaks down the spatial hierarchy.</p>
+<!-- Image Attachment inside bubble -->
+<div class="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer">
+<img class="w-full h-48 object-cover opacity-90 group-hover:opacity-100 transition-opacity" data-alt="A highly detailed architectural blueprint and spatial diagram showing geometric concrete structures overgrown with stylized lush green vegetation, presented on a dark textured paper background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpL6Wkt8XSFqtLBA3JL80jAoR-3DSv2aCXyFPVNN9nFp-p_zjboIZ8z8K9gzQi6nYK-_NeljUcrr_3NpDC-f6A2sx--qQ1qeE6kGte4ePhp5dh4ScTixTUEOZHxgQqBQXffaYZP70-gsAnSGnUzbgS14OmsP_6ern26Or3h7YFva37B_Pez7Qu6tWMfSKQ3xx_e46VYLiofWXgOe91Z5fz9r9YiVy_Y5ekFrmGi77E13LXW_keRrCvTg">
+<div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sent Message (User) -->
+<div class="flex gap-3 max-w-[85%] md:max-w-[70%] self-end flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex-shrink-0 mt-1 flex items-center justify-center text-primary font-label-md border border-primary/30">
+                U
+            </div>
+<div class="flex flex-col gap-1 items-end">
+<div class="flex items-baseline gap-2 mr-1 flex-row-reverse">
+<span class="font-label-md text-label-md text-primary">You</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:42 AM</span>
+</div>
+<div class="neumorphic-bubble-sent rounded-2xl rounded-tr-none p-4 text-on-background">
+                    Perfect, thanks Marcus. That clarifies the courtyard levels.
+                </div>
+</div>
+</div>
+<div class="h-4"></div> <!-- Spacer for bottom -->
+</main>
+<!-- Message Input Bar -->
+<footer class="glass-panel z-10 flex-shrink-0 p-4 pb-8 md:pb-6 border-t border-white/5">
+<div class="max-w-container-max-width mx-auto flex items-end gap-3">
+<!-- CRITICAL: Attachment Button -->
+<button aria-label="Attach file" class="neumorphic-button h-12 w-12 rounded-full flex-shrink-0 flex items-center justify-center text-on-surface-variant hover:text-primary mb-[2px]">
+<span class="material-symbols-outlined font-light">attach_file</span>
+</button>
+<!-- Text Input -->
+<div class="flex-1 relative">
+<textarea class="neumorphic-input w-full rounded-2xl py-3 pl-4 pr-12 border-none focus:ring-1 focus:ring-primary/50 resize-none font-body-md text-body-md min-h-[48px] max-h-[120px]" placeholder="Type a message..." rows="1" style="scrollbar-width: none;"></textarea>
+<button class="absolute right-3 bottom-3 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</button>
+</div>
+<!-- Send Button -->
+<button aria-label="Send message" class="bg-primary text-[#1F150C] h-12 w-12 rounded-full flex-shrink-0 flex items-center justify-center hover:bg-secondary-fixed transition-colors shadow-[0_4px_15px_rgba(254,248,229,0.15)] mb-[2px]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</footer>
+</body></html>

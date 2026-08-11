@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
@@ -7,10 +8,7 @@ import '../../state/theme_provider.dart';
 import '../../state/user_provider.dart';
 import '../../services/flux_ai_provider.dart';
 import '../../models/flux_chat_message.dart';
-
-// Flux soft theme
-const _fluxPrimary = Color(0xFF6B4DFF); // Soft electric purple
-const _fluxPrimaryLight = Color(0xFF8B73FF); // Lighter purple variant
+import '../../config/theme.dart';
 
 class FluxChatScreen extends StatelessWidget {
   const FluxChatScreen({super.key});
@@ -56,12 +54,14 @@ class _FluxChatBodyState extends State<_FluxChatBody> {
     });
   }
 
-  Future<void> _sendMessage(BuildContext context) async {
-    final text = _textController.text.trim();
+  Future<void> _sendMessage(BuildContext context, [String? presetText]) async {
+    final text = (presetText ?? _textController.text).trim();
     if (text.isEmpty) return;
 
-    _textController.clear();
-    _focusNode.requestFocus();
+    if (presetText == null) {
+      _textController.clear();
+    }
+    _focusNode.unfocus();
 
     final ai = context.read<FluxAiProvider>();
     await ai.sendMessage(text);
@@ -79,87 +79,454 @@ class _FluxChatBodyState extends State<_FluxChatBody> {
     if (aiState.autoScroll) _scrollToBottom();
 
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF161618) : const Color(0xFFF8F9FB),
-      appBar: AppBar(
-        title: const Text(
-          'Flux AI',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[300],
-              backgroundImage: currentUser?.profileImageUrl != null
-                  ? NetworkImage(currentUser!.profileImageUrl!)
-                  : null,
-              child: currentUser?.profileImageUrl == null
-                  ? const Icon(Icons.person, size: 20, color: Colors.grey)
-                  : null,
+      backgroundColor: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+      body: Stack(
+        children: [
+          // Ambient Radial Background Gradient
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, -0.6),
+                  radius: 1.2,
+                  colors: isDark
+                      ? const [
+                          Color(0xFF412D15),
+                          Color(0xFF1F150C),
+                          Color(0xFF090604),
+                        ]
+                      : [
+                          const Color(0xFFFAF3EA),
+                          const Color(0xFFF3FBFA),
+                          Colors.white,
+                        ],
+                ),
+              ),
             ),
+          ),
+
+          SafeArea(
+            child: Column(
+              children: [
+                // Top Custom Header Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1F150C).withValues(alpha: 0.8)
+                                : Colors.white.withValues(alpha: 0.8),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isDark
+                                  ? AppTheme.goldenBorder.withValues(alpha: 0.3)
+                                  : AppTheme.lightOutline,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.menu_rounded,
+                            color: isDark ? AppTheme.softBeige : AppTheme.lightOnSurface,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'ClgJone',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                          color: isDark ? AppTheme.softBeige : AppTheme.lightOnSurface,
+                        ),
+                      ),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? AppTheme.goldenBorder : AppTheme.lightPrimary,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: isDark ? AppTheme.darkContainer : AppTheme.lightContainer,
+                          backgroundImage: currentUser?.avatarUrl != null && currentUser!.avatarUrl.isNotEmpty
+                              ? NetworkImage(currentUser.avatarUrl) as ImageProvider
+                              : null,
+                          child: currentUser?.avatarUrl == null || currentUser!.avatarUrl.isEmpty
+                              ? Icon(
+                                  Icons.person_rounded,
+                                  size: 20,
+                                  color: isDark ? AppTheme.softBeige : AppTheme.lightPrimary,
+                                )
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Main Workspace Scroll Area
+                Expanded(
+                  child: ListView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 110),
+                    children: [
+                      // 1. AI Wave Processing Loader Header & Welcoming Text
+                      const SizedBox(height: 12),
+                      const _WaveDotLoader(),
+                      const SizedBox(height: 16),
+                      Text(
+                        currentUser?.name.isNotEmpty == true
+                            ? 'Welcome, ${currentUser!.name.split(' ').first}! 👋'
+                            : 'Welcome to Flux AI 👋',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppTheme.softBeige : AppTheme.lightOnSurface,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Your intelligent assistant for academics, hackathons, roommate tips & career roadmaps.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Section Title
+                      Text(
+                        'What can Flux AI do?',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // 2. 4 Interactive Capability Cards Grid (2x2)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildBentoCard(
+                              context: context,
+                              isDark: isDark,
+                              icon: Icons.school_rounded,
+                              title: 'Academic Helper',
+                              subtitle: 'Explain concepts & prepare for exams',
+                              onTap: () => _sendMessage(
+                                context,
+                                'Help me summarize key concepts and prepare for upcoming college exams.',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildBentoCard(
+                              context: context,
+                              isDark: isDark,
+                              icon: Icons.emoji_events_rounded,
+                              title: 'Events & Hackathons',
+                              subtitle: 'Find top competitions & prize pools',
+                              onTap: () => _sendMessage(
+                                context,
+                                'What are the top upcoming college hackathons and tech events in India?',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildBentoCard(
+                              context: context,
+                              isDark: isDark,
+                              icon: Icons.group_rounded,
+                              title: 'Roommate Advice',
+                              subtitle: 'Tips for living & finding roommates',
+                              onTap: () => _sendMessage(
+                                context,
+                                'What are the best tips for finding a compatible college roommate and managing budget?',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildBentoCard(
+                              context: context,
+                              isDark: isDark,
+                              icon: Icons.alt_route_rounded,
+                              title: 'Career Roadmaps',
+                              subtitle: 'Step-by-step paths for AI & Coding',
+                              onTap: () => _sendMessage(
+                                context,
+                                'Create a step-by-step learning roadmap for Web & Mobile Development in 2026.',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // 4. Conversation Messages Stream
+                      if (aiState.messages.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Divider(
+                          color: isDark
+                              ? AppTheme.goldenBorder.withValues(alpha: 0.2)
+                              : Colors.black12,
+                        ),
+                        const SizedBox(height: 16),
+                        ...aiState.messages.map((msg) {
+                          final isUser = msg.type == FluxMessageType.user;
+                          return _buildMessageBubble(
+                            msg.content,
+                            isUser,
+                            isDark,
+                            currentUser?.avatarUrl,
+                            msg.isMarkdown,
+                          );
+                        }),
+                      ],
+
+                      if (aiState.isLoading)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: isDark ? AppTheme.goldenBorder : AppTheme.lightPrimary,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Flux is thinking...',
+                                style: TextStyle(
+                                  color: isDark ? AppTheme.softBeige : AppTheme.lightOnSurfaceVariant,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 5. Glassmorphic Floating Bottom Input Bar
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 20,
+            child: _buildFloatingInputBar(isDark, context),
           ),
         ],
       ),
-      body: SafeArea(
+    );
+  }
+
+  // ── Bento Cards ─────────────────────────────────────────────────────────────
+  Widget _buildBentoCard({
+    required BuildContext context,
+    required bool isDark,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 130),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF412D15).withValues(alpha: 0.6) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark
+                ? AppTheme.goldenBorder.withValues(alpha: 0.25)
+                : AppTheme.lightOutline,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                itemCount: aiState.messages.length,
-                itemBuilder: (context, index) {
-                  final msg = aiState.messages[index];
-                  final isUser = msg.type == FluxMessageType.user;
-                  return _buildMessageBubble(
-                    msg.content,
-                    isUser,
-                    isDark,
-                    currentUser?.profileImageUrl,
-                    msg.isMarkdown,
-                  );
-                },
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isDark ? AppTheme.darkAquaticBg : const Color(0xFFE6F5F3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: isDark ? AppTheme.goldenBorder : AppTheme.lightPrimary,
+                size: 20,
               ),
             ),
-            if (aiState.isLoading)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(_fluxPrimary),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Flux is typing...',
-                      style: TextStyle(
-                        color: isDark ? Colors.white54 : Colors.black54,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                  ),
                 ),
-              ),
-            _buildInputBar(isDark, context),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
+
+
+  // ── Floating Glassmorphic Input Bar ────────────────────────────────────────
+  Widget _buildFloatingInputBar(bool isDark, BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: isDark
+            ? const Color(0xFF1F150C).withValues(alpha: 0.85)
+            : Colors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(
+          color: isDark
+              ? AppTheme.goldenBorder.withValues(alpha: 0.3)
+              : AppTheme.lightOutline,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.12),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isDark ? AppTheme.darkAquaticBg : const Color(0xFFE6F5F3),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isDark ? AppTheme.goldenBorder : AppTheme.lightPrimary,
+                  width: 1.2,
+                ),
+              ),
+              child: Icon(
+                Icons.add_rounded,
+                color: isDark ? AppTheme.softBeige : AppTheme.lightPrimary,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: _textController,
+              focusNode: _focusNode,
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => _sendMessage(context),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? AppTheme.softBeige : AppTheme.lightOnSurface,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Ask Flux anything...',
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: isDark ? AppTheme.darkOnSurfaceVariant : AppTheme.lightOnSurfaceVariant,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => _sendMessage(context),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient(isDark),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: (isDark ? AppTheme.goldenBorder : AppTheme.lightPrimary)
+                        .withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.arrow_upward_rounded,
+                color: isDark ? AppTheme.darkOnPrimary : Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Message Bubbles ────────────────────────────────────────────────────────
   Widget _buildMessageBubble(
     String text,
     bool isUser,
@@ -170,68 +537,55 @@ class _FluxChatBodyState extends State<_FluxChatBody> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser)
             Container(
               margin: const EdgeInsets.only(right: 8, bottom: 4),
               padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: _fluxPrimary,
+              decoration: BoxDecoration(
+                color: isDark ? AppTheme.darkAquaticBg : AppTheme.lightPrimary,
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: isDark ? AppTheme.goldenBorder : Colors.transparent,
+                ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.auto_awesome,
-                color: Colors.white,
+                color: isDark ? AppTheme.softBeige : Colors.white,
                 size: 14,
               ),
             ),
           Flexible(
             child: isUser
-                ? _buildUserBubble(text)
+                ? _buildUserBubble(text, isDark)
                 : _buildModelBubble(text, isDark, isMarkdown),
           ),
-          if (isUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 14,
-              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[300],
-              backgroundImage:
-                  userAvatarUrl != null ? NetworkImage(userAvatarUrl) : null,
-              child: userAvatarUrl == null
-                  ? const Icon(Icons.person, size: 16, color: Colors.grey)
-                  : null,
-            ),
-          ],
         ],
       ),
     );
   }
 
-  Widget _buildUserBubble(String text) {
+  Widget _buildUserBubble(String text, bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: _fluxPrimary,
+        color: isDark ? AppTheme.darkAquaticBg : AppTheme.lightPrimary,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(6),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: _fluxPrimary.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: isDark ? Border.all(color: AppTheme.goldenBorder, width: 1.2) : null,
       ),
       child: Text(
         text,
-        style: const TextStyle(color: Colors.white, fontSize: 16),
+        style: TextStyle(
+          color: isDark ? AppTheme.softBeige : Colors.white,
+          fontSize: 14,
+        ),
       ),
     );
   }
@@ -240,20 +594,16 @@ class _FluxChatBodyState extends State<_FluxChatBody> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF242424) : Colors.white,
+        color: isDark ? AppTheme.darkContainer : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
           bottomRight: Radius.circular(20),
           bottomLeft: Radius.circular(6),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: isDark ? AppTheme.goldenBorder.withValues(alpha: 0.2) : Colors.black12,
+        ),
       ),
       child: isMarkdown
           ? MarkdownBody(
@@ -261,12 +611,8 @@ class _FluxChatBodyState extends State<_FluxChatBody> {
               selectable: true,
               styleSheet: MarkdownStyleSheet(
                 p: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontSize: 15,
-                ),
-                a: const TextStyle(
-                  color: _fluxPrimaryLight,
-                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                  fontSize: 14,
                 ),
               ),
               onTapLink: (t, href, title) async {
@@ -281,85 +627,81 @@ class _FluxChatBodyState extends State<_FluxChatBody> {
           : Text(
               text,
               style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontSize: 15,
+                color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+                fontSize: 14,
               ),
             ),
     );
   }
+}
 
-  Widget _buildInputBar(bool isDark, BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF161618) : const Color(0xFFF8F9FB),
-      ),
+// ── 4-Dot Animated Wave Loader ────────────────────────────────────────────────
+class _WaveDotLoader extends StatefulWidget {
+  const _WaveDotLoader();
+
+  @override
+  State<_WaveDotLoader> createState() => _WaveDotLoaderState();
+}
+
+class _WaveDotLoaderState extends State<_WaveDotLoader>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
       child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: TextField(
-                controller: _textController,
-                focusNode: _focusNode,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _sendMessage(context),
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Ask Flux anything...',
-                  hintStyle: TextStyle(
-                    color: isDark ? Colors.white38 : Colors.black38,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                  suffixIcon: Icon(
-                    Icons.mic_none_outlined,
-                    color: _fluxPrimary.withValues(alpha: 0.8),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(4, (index) {
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              final delay = index * 0.25;
+              final sinValue = math.sin((_controller.value * 2 * math.pi) - delay);
+              final offsetY = sinValue * 8;
+              final opacity = 0.5 + (sinValue + 1) * 0.25;
+
+              return Transform.translate(
+                offset: Offset(0, offsetY),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFE4C17C), Color(0xFF5B452B)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFE4C17C)
+                            .withValues(alpha: opacity.clamp(0.2, 0.8)),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: () => _sendMessage(context),
-            child: Container(
-              height: 52,
-              width: 52,
-              decoration: BoxDecoration(
-                color: _fluxPrimary,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: _fluxPrimary.withValues(alpha: 0.4),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.send_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-          ),
-        ],
+              );
+            },
+          );
+        }),
       ),
     );
   }

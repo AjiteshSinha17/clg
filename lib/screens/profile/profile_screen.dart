@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui';
 
 import '../../state/auth_provider.dart';
 import '../../state/user_provider.dart';
 import '../../state/theme_provider.dart';
+import '../../config/theme.dart';
 import '../../widgets/theme_toggle_button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,48 +16,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // ── Soft orange-white gradient (less saturated, cream-orange) ─────────────
-  static const _softOrange = Color(0xFFFF8C38); // muted warm orange
-  static const _softOrangeLight = Color(0xFFFFB870); // very light orange-cream
-  static const _softOrangeGlow = Color(0x33FF8C38); // soft glow
-
-  static const _editBtnGradient = LinearGradient(
-    colors: [_softOrangeLight, _softOrange],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  // Clay shadow stack for buttons
-  static List<BoxShadow> _clayBtnShadow() => [
-    BoxShadow(
-      color: _softOrange.withValues(alpha: 0.35),
-      blurRadius: 18,
-      spreadRadius: 0,
-      offset: const Offset(0, 6),
-    ),
-    const BoxShadow(
-      color: Colors.white,
-      blurRadius: 0,
-      spreadRadius: -2,
-      offset: Offset(0, -2),
-    ),
-  ];
-
-  static List<BoxShadow> _clayCardShadow(bool isDark) => [
-    BoxShadow(
-      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.10),
-      blurRadius: 20,
-      spreadRadius: 0,
-      offset: const Offset(0, 8),
-    ),
-    BoxShadow(
-      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.80),
-      blurRadius: 0,
-      spreadRadius: 0,
-      offset: const Offset(0, -2),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -68,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    final primaryColor = isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary;
 
     return SingleChildScrollView(
       child: Column(
@@ -83,8 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF1A1A1A)
-                      : const Color(0xFFF0EDE8),
+                      ? AppTheme.darkSurface
+                      : AppTheme.lightSurface,
                   image: user.bannerUrl.isNotEmpty
                       ? DecorationImage(
                           image: NetworkImage(user.bannerUrl),
@@ -95,7 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     bottom: Radius.circular(36),
                   ),
                 ),
-                // Gradient overlay at bottom of banner
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.vertical(
@@ -106,46 +65,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        (isDark ? Colors.black : Colors.white).withValues(
-                          alpha: 0.5,
-                        ),
+                        (isDark ? AppTheme.darkSurface : AppTheme.lightSurface)
+                            .withValues(alpha: 0.8),
                       ],
                     ),
                   ),
                 ),
               ),
 
-              // Clay avatar ring
+              // Avatar ring with cyan/sapphire glow
               Positioned(
                 bottom: -58,
                 child: Stack(
                   children: [
-                    // Outer glow ring
                     Container(
                       width: 132,
                       height: 132,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [_softOrangeLight, _softOrange],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                        gradient: AppTheme.primaryGradient(isDark),
                         boxShadow: [
                           BoxShadow(
-                            color: _softOrangeGlow,
+                            color: AppTheme.aquaGlow.withValues(alpha: 0.5),
                             blurRadius: 20,
-                            spreadRadius: 4,
+                            spreadRadius: 3,
                           ),
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
                         ],
                       ),
                     ),
-                    // Inner white ring + avatar
                     Positioned(
                       left: 4,
                       top: 4,
@@ -155,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isDark
-                              ? const Color(0xFF1A1A1A)
+                              ? AppTheme.darkContainer
                               : Colors.white,
                           border: Border.all(
                             color: Colors.white.withValues(alpha: 0.9),
@@ -167,18 +119,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ? Image.network(user.avatarUrl, fit: BoxFit.cover)
                               : Container(
                                   color: isDark
-                                      ? const Color(0xFF2A2A2A)
-                                      : const Color(0xFFF5F0EB),
-                                  child: const Icon(
+                                      ? AppTheme.darkContainerHigh
+                                      : const Color(0xFFE6F5F3),
+                                  child: Icon(
                                     Icons.person,
                                     size: 60,
-                                    color: _softOrange,
+                                    color: primaryColor,
                                   ),
                                 ),
                         ),
                       ),
                     ),
-                    // Edit badge
                     Positioned(
                       bottom: 4,
                       right: 4,
@@ -187,16 +138,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [_softOrangeLight, _softOrange],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: AppTheme.primaryGradient(isDark),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2.5),
+                            border: Border.all(color: Colors.white, width: 2),
                             boxShadow: [
                               BoxShadow(
-                                color: _softOrange.withValues(alpha: 0.40),
+                                color: AppTheme.aquaGlow.withValues(alpha: 0.40),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -221,21 +168,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // ── Name + Email ───────────────────────────────────────────────────
           Text(
             user.name,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+              letterSpacing: -0.3,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             user.email,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark
+                  ? AppTheme.darkOnSurfaceVariant
+                  : AppTheme.lightOnSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 28),
 
-          // ── College Info Card (clay glass) ─────────────────────────────────
+          // ── College Info Card (Liquid Glass) ──────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _ClayCard(
@@ -252,7 +204,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       user.college,
                     ),
                     Divider(
-                      color: Colors.grey.withValues(alpha: isDark ? 0.15 : 0.2),
+                      color: isDark
+                          ? AppTheme.darkOutline.withValues(alpha: 0.15)
+                          : AppTheme.lightOutline.withValues(alpha: 0.2),
                       height: 1,
                     ),
                     _buildInfoRow(
@@ -263,7 +217,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       user.branch,
                     ),
                     Divider(
-                      color: Colors.grey.withValues(alpha: isDark ? 0.15 : 0.2),
+                      color: isDark
+                          ? AppTheme.darkOutline.withValues(alpha: 0.15)
+                          : AppTheme.lightOutline.withValues(alpha: 0.2),
                       height: 1,
                     ),
                     _buildInfoRow(
@@ -288,6 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 _buildGradientButton(
                   context,
+                  isDark,
                   'Edit Profile',
                   Icons.edit_rounded,
                   () => context.push('/shell/edit-profile'),
@@ -300,8 +257,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Icons.verified_user_rounded,
                   () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Verification coming soon!'),
+                      SnackBar(
+                        content: const Text('Verification coming soon!'),
+                        backgroundColor: isDark
+                            ? AppTheme.darkPrimaryContainer
+                            : AppTheme.lightPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                     );
                   },
@@ -330,17 +293,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(9),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [_softOrangeLight, _softOrange],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
+                                gradient: AppTheme.primaryGradient(isDark),
+                                borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: _softOrange.withValues(alpha: 0.3),
+                                    color: AppTheme.aquaGlow.withValues(alpha: 0.3),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),
@@ -355,11 +314,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             const SizedBox(width: 14),
-                            const Text(
+                            Text(
                               'Theme',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
+                                color: isDark
+                                    ? AppTheme.darkOnSurface
+                                    : AppTheme.lightOnSurface,
                               ),
                             ),
                           ],
@@ -370,14 +332,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Divider(
                     height: 1,
-                    color: Colors.grey.withValues(alpha: 0.15),
+                    color: isDark
+                        ? AppTheme.darkOutline.withValues(alpha: 0.15)
+                        : AppTheme.lightOutline.withValues(alpha: 0.15),
                   ),
                   _buildSettingTile(
                     context,
                     isDark,
                     Icons.logout_rounded,
                     'Logout',
-                    Colors.red,
+                    const Color(0xFFFF4D4D),
                     () async {
                       await Provider.of<AuthProvider>(
                         context,
@@ -410,15 +374,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [_softOrangeLight, _softOrange],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              gradient: AppTheme.primaryGradient(isDark),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: _softOrange.withValues(alpha: 0.30),
+                  color: AppTheme.aquaGlow.withValues(alpha: 0.30),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -429,7 +389,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(width: 14),
           Text(
             '$label:',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: isDark ? AppTheme.darkOnSurface : AppTheme.lightOnSurface,
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -438,9 +402,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(
                 color: value.isNotEmpty
                     ? (isDark
-                          ? Colors.white.withValues(alpha: 0.85)
-                          : Colors.black87)
-                    : Colors.grey,
+                          ? AppTheme.darkOnSurface
+                          : AppTheme.lightOnSurface)
+                    : (isDark
+                          ? AppTheme.darkOutline
+                          : AppTheme.lightOutline),
                 fontStyle: value.isNotEmpty ? null : FontStyle.italic,
                 fontSize: 14,
               ),
@@ -454,6 +420,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildGradientButton(
     BuildContext context,
+    bool isDark,
     String label,
     IconData icon,
     VoidCallback onPressed,
@@ -462,11 +429,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onTap: onPressed,
       child: Container(
         width: double.infinity,
-        height: 56,
+        height: 54,
         decoration: BoxDecoration(
-          gradient: _editBtnGradient,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: _clayBtnShadow(),
+          gradient: AppTheme.primaryGradient(isDark),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.aquaGlow.withValues(alpha: isDark ? 0.4 : 0.25),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -499,28 +472,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onTap: onPressed,
       child: Container(
         width: double.infinity,
-        height: 56,
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: _softOrange.withValues(alpha: 0.35),
-            width: 1.5,
-          ),
-          boxShadow: _clayCardShadow(isDark),
+        height: 54,
+        decoration: AppTheme.liquidGlassDecoration(
+          isDark: isDark,
+          radius: 24,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: _softOrange, size: 20),
+            Icon(
+              icon,
+              color: isDark ? AppTheme.darkPrimary : AppTheme.lightPrimary,
+              size: 20,
+            ),
             const SizedBox(width: 10),
             Text(
               label,
               style: TextStyle(
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.85)
-                    : Colors.black87,
-                fontSize: 16,
+                    ? AppTheme.darkOnSurface
+                    : AppTheme.lightOnSurface,
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -540,7 +512,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
@@ -577,40 +549,13 @@ class _ClayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(26),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.07)
-                : Colors.white.withValues(alpha: 0.80),
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.10)
-                  : Colors.white.withValues(alpha: 0.90),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.30 : 0.08),
-                blurRadius: 24,
-                spreadRadius: 0,
-                offset: const Offset(0, 10),
-              ),
-              BoxShadow(
-                color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.70),
-                blurRadius: 0,
-                spreadRadius: 0,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: child,
-        ),
+    return Container(
+      decoration: AppTheme.liquidGlassDecoration(
+        isDark: isDark,
+        radius: 26,
       ),
+      child: child,
     );
   }
 }
+

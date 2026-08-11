@@ -1,0 +1,224 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Chat List - Terra Lux Futura</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-surface-variant": "#4e453d",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#1d1c10",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#d1c4b9",
+                        "on-tertiary-fixed-variant": "#494739",
+                        "secondary": "#4c6706",
+                        "background": "#fcf9f8",
+                        "inverse-primary": "#e1c19f",
+                        "on-secondary-fixed-variant": "#384e00",
+                        "on-primary": "#ffffff",
+                        "outline": "#80756b",
+                        "on-primary-container": "#b19474",
+                        "on-surface": "#1b1b1b",
+                        "on-secondary-container": "#526d0f",
+                        "tertiary": "#1e1c10",
+                        "secondary-fixed": "#cdef84",
+                        "on-secondary-fixed": "#141f00",
+                        "primary": "#2a1804",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "surface-container-high": "#eae7e7",
+                        "tertiary-fixed": "#e8e3cf",
+                        "secondary-container": "#cdef84",
+                        "surface-tint": "#735a3e",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-fixed-variant": "#594329",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#412d15",
+                        "tertiary-container": "#333124",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffddb9",
+                        "on-tertiary-container": "#9d9988",
+                        "secondary-fixed-dim": "#b2d26b",
+                        "surface-bright": "#fcf9f8",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#291803",
+                        "tertiary-fixed-dim": "#cbc7b4",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#e1c19f",
+                        "on-background": "#1b1b1b",
+                        "surface-dim": "#dcd9d9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "margin-mobile": "16px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "margin-desktop": "64px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Lexend"],
+                        "label-md": ["Lexend"],
+                        "headline-lg-mobile": ["Lexend"],
+                        "label-sm": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "headline-lg": ["Lexend"],
+                        "display-lg": ["Lexend"],
+                        "body-md": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "300" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "300" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .neumorphic-soft {
+            box-shadow: 4px 4px 12px rgba(65, 45, 21, 0.05), -4px -4px 12px rgba(255, 255, 255, 0.8);
+        }
+        .neumorphic-inset {
+            box-shadow: inset 2px 2px 5px rgba(65, 45, 21, 0.05), inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen pb-[100px]">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 backdrop-blur-xl bg-surface/80 dark:bg-surface-dim/80 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.5)] border-b border-outline-variant/10 flex justify-between items-center px-margin-mobile h-16 transition-all duration-300">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden neumorphic-soft border-2 border-surface">
+<img class="w-full h-full object-cover" data-alt="A portrait of a diverse user in natural sunlight, highly detailed, soft warm lighting, earthy beige tones, professional headshot in an architectural space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACsA4j0B1q22Y-pgo7hWy34U90SgLlm7m5Qy2gDuxMncgnKX4YK5i0fUXXaYzAuvsD47gwypQiUD7QwyBlomFizrxrUPnGXLNv4FXbuazJwG4eamGkJaU4sAH26VlD7VC36RwKaXj0uYtDab5cEwZyVZHNYnLkl0mZgdt3yI8uq9bE-YeJsNJB5PveG5bQmp4NXq3qUJxgVrjWeL7KftjExtJqx6d1cwRDlcwy3Nz4zC92HtzUqpyrVA">
+</div>
+</div>
+<div class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary font-bold">
+            ClgJone
+        </div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center neumorphic-soft text-primary hover:opacity-80 transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto space-y-md">
+<!-- Search Bar -->
+<div class="w-full rounded-full neumorphic-inset bg-surface-container flex items-center px-4 py-3">
+<span class="material-symbols-outlined text-outline mr-sm">search</span>
+<input class="bg-transparent border-none outline-none flex-grow font-label-md text-label-md text-on-surface placeholder:text-outline-variant focus:ring-0" placeholder="Search conversations..." type="text">
+</div>
+<!-- Chat List -->
+<section class="space-y-4 pt-sm">
+<!-- Chat Item 1 (Unread) -->
+<article class="p-4 rounded-2xl bg-surface-container neumorphic-soft flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="relative flex-shrink-0">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-surface shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young woman with curly hair, natural earth tones, warm morning light, standing in front of a raw concrete architectural wall." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALlialpGQMDe6bOqafEMGcyAazyiK3QLTqZUq1UQfUANfpzPxkJgUwUIzRpMA-mVk-M_XRN4eUf7FH5Rv-bju38bHFNIgPedEmXMxGxwuHb7c8cS2Uat0KWO3PF7radSxQoInNmb8Txvc8QNxz-Uxh7g410nxJYoii-QH5v9L8W5HZiyNkPj6Vl-KQftZ_If05SlMN0U85VYsNQ6dr14ChAEBhbbmX79zOtFH_PwK5UPkwGrDVdJs3RQ">
+</div>
+<!-- Online Status -->
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-secondary rounded-full border-2 border-surface-container"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-xs">
+<h3 class="font-title-md text-title-md text-on-surface truncate pr-2">Elena Rostova</h3>
+<span class="font-label-sm text-label-sm text-secondary whitespace-nowrap">10:42 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium truncate">The blueprints for the new villa are ready for review.</p>
+</div>
+<div class="flex-shrink-0 flex flex-col items-end gap-1 pl-2">
+<div class="w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-label-sm text-label-sm">3</div>
+</div>
+</article>
+<!-- Chat Item 2 -->
+<article class="p-4 rounded-2xl bg-surface-container neumorphic-soft flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="relative flex-shrink-0">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-surface shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A portrait of a man in a linen shirt, subtle earth tones, standing near a sunlit window with soft shadows, minimalist luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV6yb-GJc5ycIGZ4g0hQZhVX1YpI94S6H0Rw8zsBhvEgIrOjrpKGCKfhakOnGv76QVElOiQdhZYChTbyurX-_gN-KMdoFpAtyZb1LojvmRB01COjg9pt5EeqbFeYIah0bzLMVNXa_UvB7hX2OIiE1QOInkdWk8QL22jR8BKG-iYWMdBDAWNjY5QIVsIDNVdrnq883hg3GdlcMvyb5snanf4QH8jqdcTbml-saGmiMrU-e_p4BHPAPzmA">
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-xs">
+<h3 class="font-title-md text-title-md text-on-surface truncate pr-2">Marcus Vance</h3>
+<span class="font-label-sm text-label-sm text-outline whitespace-nowrap">Yesterday</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Let's touch base on the sustainable materials sourcing next week.</p>
+</div>
+</article>
+<!-- Chat Item 3 -->
+<article class="p-4 rounded-2xl bg-surface-container neumorphic-soft flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="relative flex-shrink-0">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-surface shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a sleek architectural model made of light wood and white plaster, sitting on a sun-drenched table, casting long geometric shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtZCSx8ekGnkYCjwYnWbmUmwyezW1bwIZhkePOXVTX1L1CamnbZ8X5d4iaibILrQp5dfdtWViKUGB4ryK95SaZkKGOe_hkJ0aIgAstAq0EPkttDazfO1wJIz4pOFPZBZKB1tpiS3fJpjjx14qvq3-h80bSS1fmuoNwHcDdACBAZ4ftlK9etfM-EhuhCywtgzf3hlTopb-Zbwh3YwliAaiqlz5VIEMu5n1OS9ELHQkXjVSamJ0bQw7HQQ">
+</div>
+<!-- Offline/Away Status -->
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-outline-variant rounded-full border-2 border-surface-container"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-xs">
+<h3 class="font-title-md text-title-md text-on-surface truncate pr-2">Design Studio Team</h3>
+<span class="font-label-sm text-label-sm text-outline whitespace-nowrap">Mon</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">You: Attached the final rendering.</p>
+</div>
+</article>
+<!-- Chat Item 4 -->
+<article class="p-4 rounded-2xl bg-surface-container neumorphic-soft flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer group opacity-75">
+<div class="relative flex-shrink-0">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-surface shadow-sm bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">domain</span>
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-baseline mb-xs">
+<h3 class="font-title-md text-title-md text-on-surface truncate pr-2">System Notifications</h3>
+<span class="font-label-sm text-label-sm text-outline whitespace-nowrap">Oct 12</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Your project archive is complete.</p>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] rounded-full backdrop-blur-2xl border border-white/10 bg-tertiary/10 dark:bg-surface-container/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] bg-gradient-to-br from-white/10 to-transparent flex justify-around items-center py-2 px-4 z-50">
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined font-label-sm text-label-sm">home</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined font-label-sm text-label-sm">group</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined font-label-sm text-label-sm">smart_toy</span>
+</button>
+<button class="flex items-center justify-center bg-primary text-on-primary rounded-full w-12 h-12 shadow-inner hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined font-label-sm text-label-sm" style="font-variation-settings: 'FILL' 1;">chat</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/60 w-12 h-12 hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined font-label-sm text-label-sm">person</span>
+</button>
+</nav>
+</body></html>

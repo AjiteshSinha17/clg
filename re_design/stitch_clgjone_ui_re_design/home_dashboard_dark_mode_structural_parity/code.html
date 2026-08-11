@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ClgJone - Home Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-secondary": "#402c14",
+                "surface-tint": "#cbc7b4",
+                "secondary-container": "#5b452b",
+                "surface-container": "#1f1f1f",
+                "surface-container-highest": "#353535",
+                "on-surface-variant": "#cac6bb",
+                "outline": "#949187",
+                "on-primary-fixed": "#1d1c10",
+                "inverse-on-surface": "#303030",
+                "inverse-surface": "#e2e2e2",
+                "primary-fixed": "#e8e3cf",
+                "secondary-fixed-dim": "#e1c19f",
+                "tertiary-fixed-dim": "#d7c3b4",
+                "surface-variant": "#353535",
+                "secondary-fixed": "#ffddb9",
+                "surface-dim": "#131313",
+                "on-secondary-container": "#d3b392",
+                "outline-variant": "#49473f",
+                "on-secondary-fixed-variant": "#594329",
+                "on-tertiary-fixed-variant": "#524439",
+                "primary": "#fef8e5",
+                "on-primary-container": "#636151",
+                "secondary": "#e1c19f",
+                "surface": "#131313",
+                "on-secondary-fixed": "#291803",
+                "error-container": "#93000a",
+                "on-tertiary": "#3a2e24",
+                "inverse-primary": "#615f50",
+                "surface-container-low": "#1b1b1b",
+                "surface-container-high": "#2a2a2a",
+                "tertiary": "#fff7f2",
+                "on-tertiary-container": "#6c5d51",
+                "on-primary": "#333124",
+                "on-surface": "#e2e2e2",
+                "on-error": "#690005",
+                "error": "#ffb4ab",
+                "surface-bright": "#393939",
+                "on-background": "#e2e2e2",
+                "on-error-container": "#ffdad6",
+                "tertiary-container": "#edd8c9",
+                "tertiary-fixed": "#f3dfcf",
+                "on-primary-fixed-variant": "#494739",
+                "primary-fixed-dim": "#cbc7b4",
+                "background": "#131313",
+                "primary-container": "#e1dcc9",
+                "on-tertiary-fixed": "#241910",
+                "surface-container-lowest": "#0e0e0e"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-max-width": "1280px",
+                "unit": "8px",
+                "margin-desktop": "64px",
+                "margin-mobile": "16px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "label-md": [
+                        "Lexend"
+                ],
+                "display-lg": [
+                        "Lexend"
+                ],
+                "headline-lg-mobile": [
+                        "Lexend"
+                ],
+                "title-md": [
+                        "Lexend"
+                ],
+                "body-lg": [
+                        "Lexend"
+                ],
+                "body-md": [
+                        "Lexend"
+                ],
+                "label-sm": [
+                        "Lexend"
+                ],
+                "headline-lg": [
+                        "Lexend"
+                ]
+        },
+        "fontSize": {
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "title-md": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.03em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "fontWeight": "500"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .glass-panel {
+            background: rgba(19, 19, 19, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 247, 242, 0.05);
+        }
+        .neumorphic-card {
+            background: #1f1f1f;
+            box-shadow: -4px -4px 10px rgba(255, 247, 242, 0.05), 4px 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neumorphic-card:hover {
+            box-shadow: -2px -2px 5px rgba(255, 247, 242, 0.05), 2px 2px 8px rgba(0, 0, 0, 0.4);
+            transform: translateY(2px);
+        }
+        .neumorphic-inset {
+            background: #1f1f1f;
+            box-shadow: inset -4px -4px 10px rgba(255, 247, 242, 0.02), inset 4px 4px 15px rgba(0, 0, 0, 0.6);
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen relative overflow-x-hidden font-body-md">
+<!-- Background Image -->
+<div class="fixed inset-0 z-[-1] bg-cover bg-center opacity-40" data-alt="A moody, high-end abstract architectural rendering featuring smooth, polished stone structures and soft, glowing light leaks in deep espresso and soft cream tones. The composition is serene, conveying a sense of geological permanence and organic futurism suitable for a premium dark mode dashboard background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC2J7Hm65xoYmxz1Q0QVPtY0XyELlnjL0qSKtBWyvLmIZQz2lUWYssPnxRD1c65GOPSdfmvG4aTB6KZlJOU8cmBAJB_a2czl5O08jFydO5vRaepFcYWbkod05MANoTaHtyZMmpBj1rhvWKa2W25XAr-pKUfXYPvJHD6BXQr63iPKf0H6dPoBmY4t4RB2xa6tMTEscCJlJMOGBdA_MN5ch9ur2oW2lpX_VzGPRa7WAHvHrZ2VU66mrJF5A')"></div>
+<div class="fixed inset-0 z-[-1] bg-gradient-to-b from-transparent via-background/40 to-background"></div>
+<!-- Main Container -->
+<main class="max-w-[container-max-width] mx-auto min-h-screen pt-4 pb-32 px-margin-mobile md:px-margin-desktop md:pt-margin-desktop relative z-10 flex flex-col items-center">
+<!-- Frosted Glass Panel Wrapper -->
+<div class="glass-panel w-full max-w-4xl rounded-3xl p-6 md:p-12 flex flex-col gap-8 shadow-2xl relative overflow-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full bg-transparent text-primary backdrop-blur-xl bg-surface/10 shadow-none">
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary p-2 rounded-full hover:bg-surface-variant/50 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-lg-mobile tracking-tighter text-primary">ClgJone</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform text-primary p-2 rounded-full hover:bg-surface-variant/50 flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<img alt="Student Profile Avatar" class="w-12 h-12 rounded-full object-cover border-2 border-surface-container-highest shadow-sm" data-alt="A polished, professional headshot of a student named Alex, taken in soft, moody studio lighting. The aesthetic is clean, premium, and sophisticated, matching an organic futurist app environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3FSDAOPriwCunQarI6EvP-uDKY4N0KIrmTyrsoDc7Vl2HzetVch4-Ap9JHupbJMvkbzK3osZdtz_8WM7OQyQ4kbRrEMLNr0gN3BoKlnToGabGCZRlEpc6ynZQJqNijNQLgJWEP0xQbKRECQ80XunTK7QKnO_H6jX5o6Z9NY5gEUrb1VukXR0y2_JIvf3qNUw0gBE4Fx_QCrvnjehsWpOTdqfNXF-Htp6uNMw1sxa8DiuBDCsT6Om2-A">
+</div>
+</header>
+<!-- Greeting Section -->
+<section class="flex flex-col gap-2 mt-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Good morning, Ajitesh 👋</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Here's what's happening on campus today.</p>
+</section>
+<!-- Quick Actions Bento Grid -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-6">
+<!-- Action 1: Roommates -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest text-secondary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Roommates</span>
+</a>
+<!-- Action 2: Community -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest text-secondary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="hub" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Community</span>
+</a>
+<!-- Action 3: Chat -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest text-secondary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="forum" style="font-variation-settings: 'FILL' 1;">forum</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Chat</span>
+</a>
+<!-- Action 4: Events -->
+<a class="neumorphic-card rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 aspect-square group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest text-secondary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-icon="event_available" style="font-variation-settings: 'FILL' 1;">event_available</span>
+</div>
+<span class="font-title-md text-title-md text-primary">Events</span>
+</a>
+</section>
+<!-- Upcoming Highlight Card (Example of asymmetric content) -->
+<section class="mt-8">
+<div class="neumorphic-inset rounded-3xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center">
+<div class="flex-1 flex flex-col gap-4">
+<span class="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary font-label-sm text-label-sm w-max">Featured Event</span>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Architecture Symposium '24</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Join industry leaders in the main hall for a discussion on sustainable organic structures.</p>
+<button class="mt-2 bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-xl w-max hover:opacity-90 transition-opacity shadow-md">RSVP Now</button>
+</div>
+<div class="w-full md:w-1/3 aspect-video md:aspect-square rounded-2xl overflow-hidden shadow-lg relative">
+<img class="object-cover w-full h-full" data-alt="A cinematic, high-contrast architectural photograph of a modern symposium hall. The structure features sleek, intersecting neomorphic planes and warm interior lighting glowing against a deep espresso night sky. The image exudes premium quality, intellectual focus, and structural elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQVqaZsVHc-_zLKHb8jWXp3fSj5j7c6eB3DCmE4oafJEni8h5r8uLDYqYPyUFme6UgkZHP5-zUvBj-9mUyuCDgzXTWAn1v8vS47k9LLhDkBt5WzI1ioAqI4rY7AqDQqcBJ28Gmiz3G38CajqFsueOMJIGpdj3M7_hSqsC9gUEWTyOmdF5R80E1sbBtkDWgWnBB7lXk6YEqkydqRxG4KWY2_WAToMD54SuDJM0iyoZ3-os2Fb39BzJ5FQ">
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only as per guidelines) -->
+<nav class="md:hidden bg-surface-container/30 text-primary font-label-sm text-label-sm font-display-lg text-display-lg text-primary fixed bottom-4 left-4 right-4 rounded-full overflow-hidden backdrop-blur-2xl border-t border-primary/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 flex justify-around items-center py-2 px-4">
+<button class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm">Rooms</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="forum">forum</span>
+<span class="font-label-sm text-label-sm">Feed</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="event_available">event_available</span>
+<span class="font-label-sm text-label-sm">Events</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-colors active:inner-shadow-lg group">
+<span class="material-symbols-outlined mb-1" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-sm text-label-sm">Flux</span>
+</button>
+</nav>
+</body></html>
